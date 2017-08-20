@@ -1,0 +1,5 @@
+<tr>
+{% for column_k, column in line.items %}
+    <td>{% include 'chess_engine/board_cell.html' with cell=column l_key=line_key c_key=column_k %}</td>
+{% endfor %}
+</tr>

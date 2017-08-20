@@ -1,0 +1,22 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chess - Game</title>
+
+    <script>
+        function pieceClicked(element) {
+            console.log('pieceClicked : ' + element.id);
+
+            return false;
+        }
+    </script>
+</head>
+<body>
+
+{{ context.html_board|safe }}
+
+</body>
+</html>

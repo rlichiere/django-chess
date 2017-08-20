@@ -1,0 +1,21 @@
+{% load static %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chess - Home</title>
+</head>
+<body>
+
+<ul>List of games :
+{% for game in context.games %}
+    <li><a href="{% url 'game' game.id %}">{{ game.id }}</a></li>
+{% empty %}
+    <li>No games.</li>
+{% endfor %}
+</ul>
+
+</body>
+</html>

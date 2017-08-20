@@ -1,0 +1,8 @@
+{% load static %}
+{% if cell == '-' %}
+    <img src="/static/chess_engine/pieces/empty_cell.png" />
+{% else %}
+    <a id="{{ l_key }}_{{ c_key }}" href="#" onclick="return pieceClicked(this);">
+        <img src="/static/chess_engine/pieces/{{ cell.side.name|slice:'0:1' }}_{{ cell.picture }}" />
+    </a>
+{% endif %}

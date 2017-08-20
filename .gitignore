@@ -1,0 +1,7 @@
+*.pyc
+.idea/*
+db.sqlite3
+README.md
+*.psd
+chess_engine/migrations/0*
+
