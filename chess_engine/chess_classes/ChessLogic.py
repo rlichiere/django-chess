@@ -1,5 +1,6 @@
 
 from chess_engine.chess_classes import ChessBoard
+from utils import utils
 
 
 class ChessGame:
@@ -8,6 +9,5 @@ class ChessGame:
         self.board = ChessBoard.Board(color_set=color_set)
         if game_data:
             self.board.load_grid(game_data)
-        # else:
-        #     self.board.load_new_grid()
-        #     self.board.save_grid()
+        if not game_data.get_data('token/step/name'):
+            game_data.set_data('token/step/name', 'waitCellSource')
