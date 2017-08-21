@@ -18,14 +18,19 @@ class BoardColorSet:
 class Board:
     template_name = 'chess_engine/board.html'
 
-    def __init__(self, color_set):
+    def __init__(self):
         print 'ChessBoard.__init__'
-        self.color_set = color_set
         self.grid = dict()
         self.game_data = None
         self.sides = dict()
         self.sides['white'] = Side('white')
         self.sides['black'] = Side('black')
+
+        self.default_color_set = BoardColorSet(checkerboard={'white': '#bbb', 'black': '#888'})
+        self.color_set = self.default_color_set
+
+    def set_color_set(self, color_set):
+        self.color_set = color_set
 
     def load_grid(self, game_data):
         self.game_data = game_data

@@ -1,5 +1,13 @@
 {% load static %}
-{% if cell == '-' %}
+
+{% if game_data.token.step.data.sourceCell.column == c_key and game_data.token.step.data.sourceCell.line|add:"0" == l_key %}
+<td bgColor="#555599">
+{% elif game_data.token.step.data.targetCell.column == c_key and game_data.token.step.data.targetCell.line|add:"0" == l_key %}
+<td bgColor="#559955">
+{% else %}
+<td bgColor="{{ even }}">
+{% endif %}
+    {% if cell == '-' %}
     {% if game_data.token.step.name == 'waitCellTarget' %}
         <a id="{{ l_key }}_{{ c_key }}" href="{% url 'piece-action' pk=game.id action='move' line=l_key column=c_key %}">
             <img src="/static/chess_engine/pieces/empty_cell.png" />
@@ -20,3 +28,4 @@
         <img src="/static/chess_engine/pieces/{{ cell.side.name|slice:'0:1' }}_{{ cell.picture }}" />
     {% endif %}
 {% endif %}
+</td>
