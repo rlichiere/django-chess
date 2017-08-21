@@ -1,8 +1,22 @@
 {% load static %}
 {% if cell == '-' %}
-    <img src="/static/chess_engine/pieces/empty_cell.png" />
+    {% if game_data.token.step.name == 'waitCellTarget' %}
+        <a id="{{ l_key }}_{{ c_key }}" href="{% url 'piece-action' pk=game.id action='move' line=l_key column=c_key %}">
+            <img src="/static/chess_engine/pieces/empty_cell.png" />
+        </a>
+    {% else %}
+        <img src="/static/chess_engine/pieces/empty_cell.png" />
+    {% endif %}
 {% else %}
-    <a id="{{ l_key }}_{{ c_key }}" href="#" onclick="return pieceClicked(this);">
+    {% if game_data.token.step.name == 'waitCellSource' %}
+    <a id="{{ l_key }}_{{ c_key }}" href="{% url 'piece-action' pk=game.id action='select' line=l_key column=c_key %}">
         <img src="/static/chess_engine/pieces/{{ cell.side.name|slice:'0:1' }}_{{ cell.picture }}" />
     </a>
+    {% elif game_data.token.step.name == 'waitCellTarget' %}
+    <a id="{{ l_key }}_{{ c_key }}" href="{% url 'piece-action' pk=game.id action='move' line=l_key column=c_key %}">
+        <img src="/static/chess_engine/pieces/{{ cell.side.name|slice:'0:1' }}_{{ cell.picture }}" />
+    </a>
+    {% else %}
+        <img src="/static/chess_engine/pieces/{{ cell.side.name|slice:'0:1' }}_{{ cell.picture }}" />
+    {% endif %}
 {% endif %}

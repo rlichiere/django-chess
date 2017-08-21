@@ -38,7 +38,7 @@ class PersistentObject (models.Model):
             # write data in path
             data = json.loads(self.data)
             utils.access(data, path, new_data)
-            self.data = json.dumps(new_data, separators=(',', ':'), cls=MyEncoder)
+            self.data = json.dumps(data, separators=(',', ':'), cls=MyEncoder)
         else:
             # write data at root
             self.data = json.dumps(new_data, separators=(',', ':'), cls=MyEncoder)

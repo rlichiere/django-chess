@@ -29,14 +29,13 @@ class Board:
 
     def load_grid(self, game_data):
         self.game_data = game_data
-        loaded_grid = game_data.get_data(None)
-        if len(loaded_grid) < 8:
+        loaded_grid = self.game_data.get_data('board')
+        if not loaded_grid:
+            print 'Board.load_grid: unfound data, so create new one.'
             self.load_new_grid()
-            self.game_data.set_data(None, self.grid)
-            self.game_data.save()
-            print 'Board.load_grid: unfound data, so created some.'
+            self.save_grid()
+            print 'Board.load_grid: created.'
         else:
-
             # build Pieces from data
             for line_key in loaded_grid:
                 line = loaded_grid[line_key]
@@ -51,93 +50,92 @@ class Board:
                             side = self.sides['black']
 
                         if cell['r'] == 'P':
-                            piece = ChessPiece.PiecePawn(cell['n'], side)
+                            piece = ChessPiece.PiecePawn(self, cell['n'], side)
                         elif cell['r'] == 'R':
-                            piece = ChessPiece.PieceRook(cell['n'], side)
+                            piece = ChessPiece.PieceRook(self, cell['n'], side)
                         elif cell['r'] == 'H':
-                            piece = ChessPiece.PieceHorse(cell['n'], side)
+                            piece = ChessPiece.PieceHorse(self, cell['n'], side)
                         elif cell['r'] == 'B':
-                            piece = ChessPiece.PieceBishop(cell['n'], side)
+                            piece = ChessPiece.PieceBishop(self, cell['n'], side)
                         elif cell['r'] == 'Q':
-                            piece = ChessPiece.PieceQueen(cell['n'], side)
+                            piece = ChessPiece.PieceQueen(self, cell['n'], side)
                         elif cell['r'] == 'K':
-                            piece = ChessPiece.PieceKing(cell['n'], side)
+                            piece = ChessPiece.PieceKing(self, cell['n'], side)
                         utils.access(self.grid, '%s/%s' % (line_key, cell_key), piece)
-                        # self.grid[line_key][cell_key] = piece
-        print 'Board.load_grid: loaded.'
+            print 'Board.load_grid: loaded.'
 
     def save_grid(self):
-        self.game_data.set_data('', self.grid)
-        print 'Board.load_grid: loaded.'
+        self.game_data.set_data('board', self.grid)
+        print 'Board.save_grid: saved.'
 
     def load_new_grid(self):
         whites = Side('white')
-        wp1 = ChessPiece.PiecePawn('p1', whites)
+        wp1 = ChessPiece.PiecePawn(self, 'p1', whites)
         whites.pieces.append(wp1)
-        wp2 = ChessPiece.PiecePawn('p2', whites)
+        wp2 = ChessPiece.PiecePawn(self, 'p2', whites)
         whites.pieces.append(wp2)
-        wp3 = ChessPiece.PiecePawn('p3', whites)
+        wp3 = ChessPiece.PiecePawn(self, 'p3', whites)
         whites.pieces.append(wp3)
-        wp4 = ChessPiece.PiecePawn('p4', whites)
+        wp4 = ChessPiece.PiecePawn(self, 'p4', whites)
         whites.pieces.append(wp4)
-        wp5 = ChessPiece.PiecePawn('p5', whites)
+        wp5 = ChessPiece.PiecePawn(self, 'p5', whites)
         whites.pieces.append(wp5)
-        wp6 = ChessPiece.PiecePawn('p6', whites)
+        wp6 = ChessPiece.PiecePawn(self, 'p6', whites)
         whites.pieces.append(wp6)
-        wp7 = ChessPiece.PiecePawn('p7', whites)
+        wp7 = ChessPiece.PiecePawn(self, 'p7', whites)
         whites.pieces.append(wp7)
-        wp8 = ChessPiece.PiecePawn('p8', whites)
+        wp8 = ChessPiece.PiecePawn(self, 'p8', whites)
         whites.pieces.append(wp8)
-        wr1 = ChessPiece.PieceRook('r1', whites)
+        wr1 = ChessPiece.PieceRook(self, 'r1', whites)
         whites.pieces.append(wr1)
-        wh1 = ChessPiece.PieceHorse('h1', whites)
+        wh1 = ChessPiece.PieceHorse(self, 'h1', whites)
         whites.pieces.append(wh1)
-        wb1 = ChessPiece.PieceBishop('b1', whites)
+        wb1 = ChessPiece.PieceBishop(self, 'b1', whites)
         whites.pieces.append(wb1)
-        wq = ChessPiece.PieceQueen('q', whites)
+        wq = ChessPiece.PieceQueen(self, 'q', whites)
         whites.pieces.append(wq)
-        wk = ChessPiece.PieceKing('k', whites)
+        wk = ChessPiece.PieceKing(self, 'k', whites)
         whites.pieces.append(wk)
-        wb2 = ChessPiece.PieceBishop('b2', whites)
+        wb2 = ChessPiece.PieceBishop(self, 'b2', whites)
         whites.pieces.append(wb2)
-        wh2 = ChessPiece.PieceHorse('h2', whites)
+        wh2 = ChessPiece.PieceHorse(self, 'h2', whites)
         whites.pieces.append(wh2)
-        wr2 = ChessPiece.PieceRook('r2', whites)
+        wr2 = ChessPiece.PieceRook(self, 'r2', whites)
         whites.pieces.append(wr2)
         self.sides['white'] = whites
 
         blacks = Side('black')
-        bp1 = ChessPiece.PiecePawn('p1', blacks)
+        bp1 = ChessPiece.PiecePawn(self, 'p1', blacks)
         blacks.pieces.append(bp1)
-        bp2 = ChessPiece.PiecePawn('p2', blacks)
+        bp2 = ChessPiece.PiecePawn(self, 'p2', blacks)
         blacks.pieces.append(bp2)
-        bp3 = ChessPiece.PiecePawn('p3', blacks)
+        bp3 = ChessPiece.PiecePawn(self, 'p3', blacks)
         blacks.pieces.append(bp3)
-        bp4 = ChessPiece.PiecePawn('p4', blacks)
+        bp4 = ChessPiece.PiecePawn(self, 'p4', blacks)
         blacks.pieces.append(bp4)
-        bp5 = ChessPiece.PiecePawn('p5', blacks)
+        bp5 = ChessPiece.PiecePawn(self, 'p5', blacks)
         blacks.pieces.append(bp5)
-        bp6 = ChessPiece.PiecePawn('p6', blacks)
+        bp6 = ChessPiece.PiecePawn(self, 'p6', blacks)
         blacks.pieces.append(bp6)
-        bp7 = ChessPiece.PiecePawn('p7', blacks)
+        bp7 = ChessPiece.PiecePawn(self, 'p7', blacks)
         blacks.pieces.append(bp7)
-        bp8 = ChessPiece.PiecePawn('p8', blacks)
+        bp8 = ChessPiece.PiecePawn(self, 'p8', blacks)
         blacks.pieces.append(bp8)
-        br1 = ChessPiece.PieceRook('r1', blacks)
+        br1 = ChessPiece.PieceRook(self, 'r1', blacks)
         blacks.pieces.append(br1)
-        bh1 = ChessPiece.PieceHorse('h1', blacks)
+        bh1 = ChessPiece.PieceHorse(self, 'h1', blacks)
         blacks.pieces.append(bh1)
-        bb1 = ChessPiece.PieceBishop('b1', blacks)
+        bb1 = ChessPiece.PieceBishop(self, 'b1', blacks)
         blacks.pieces.append(bb1)
-        bq = ChessPiece.PieceQueen('q', blacks)
+        bq = ChessPiece.PieceQueen(self, 'q', blacks)
         blacks.pieces.append(bq)
-        bk = ChessPiece.PieceKing('k', blacks)
+        bk = ChessPiece.PieceKing(self, 'k', blacks)
         blacks.pieces.append(bk)
-        bb2 = ChessPiece.PieceBishop('b2', blacks)
+        bb2 = ChessPiece.PieceBishop(self, 'b2', blacks)
         blacks.pieces.append(bb2)
-        bh2 = ChessPiece.PieceHorse('h2', blacks)
+        bh2 = ChessPiece.PieceHorse(self, 'h2', blacks)
         blacks.pieces.append(bh2)
-        br2 = ChessPiece.PieceRook('r2', blacks)
+        br2 = ChessPiece.PieceRook(self, 'r2', blacks)
         blacks.pieces.append(br2)
         self.sides['black'] = blacks
 
@@ -156,5 +154,22 @@ class Board:
         template = loader.get_template(self.template_name)
         context = dict()
         context['grid'] = self.grid
+        context['game'] = self.game_data
+        context['game_data'] = self.game_data.get_data(None)
         html_board = template.render(context)
         return html_board
+
+    def is_cell_free(self, x, y):
+        x = chr(x + 97)
+        target_path = 'board/%s/%s' % (y, x)
+        print 'Board.is_cell_free: target_path : %s' % target_path
+        target_data = self.game_data.get_data(target_path)
+        print 'Board.is_cell_free: target_data : %s' % target_data
+
+        if target_data != '-':
+            return False
+        return True
+
+    def get_piece_at(self, x, y):
+        # return self.game_data.get_data('board/%s/%s' % (x, y))
+        return utils.access(self.grid, '%s/%s' % (x, y))

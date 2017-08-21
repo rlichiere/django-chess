@@ -1,3 +1,4 @@
+from abc import ABCMeta, abstractmethod
 
 class PieceRole:
     def __init__(self, name, label):
@@ -36,11 +37,15 @@ class PieceRoleKing(PieceRole):
 
 
 class Piece(object):
-    def __init__(self, name, role, picture, side):
+    __metaclass__ = ABCMeta
+
+    def __init__(self, board, name, role, picture, side):
         self.name = name
         self.role = role
         self.side = side
         self.picture = picture
+
+        self.board = board
 
     def __str__(self):
         return self.name
@@ -51,32 +56,100 @@ class Piece(object):
     def __json__(self):
         return {'n': self.name, 'r': self.role.name, 's': self.side.name[0:1]}
 
+    """ abstract public """
+
+    @abstractmethod
+    def is_move_valid(self, src_x, src_y, dest_x, dest_y):
+        # check if move is valid according to piece role and grid content
+        return True
+
+    """ abstract private """
+
 
 class PiecePawn(Piece):
-    def __init__(self, name, side):
-        Piece.__init__(self, name, PieceRolePawn(), 'pawn.png', side)
+    def __init__(self, board, name, side):
+        Piece.__init__(self, board, name, PieceRolePawn(), 'pawn.png', side)
+
+    def is_move_valid(self, src_x, src_y, dest_x, dest_y):
+        src_x = ord(src_x) - 97
+        dest_x = ord(dest_x) - 97
+        src_y = int(src_y)
+        dest_y = int(dest_y)
+        print 'PiecePawn.is_move_valid: src_x:%s, src_y:%s, dest_x:%s, dest_y:%s' % (src_x, src_y, dest_x, dest_y)
+
+        if self.side.name == 'white':
+            start_axis = 2
+        else:
+            start_axis = 7
+
+        if src_x == dest_x:
+            # move front side
+            if src_y == start_axis:
+                # can move of 1 or 2 cases front
+                max_len = 2
+            else:
+                # can move of 1 case front
+                max_len = 1
+            if self.side.name == 'white':
+                if dest_y - src_y <= max_len:
+                    # si dest_x,dest_y est occupee, on ne peut pas s'y deplacer
+                    if not self.board.is_cell_free(dest_x, dest_y):
+                        print 'PiecePawn.is_move_valid: target is not free'
+                        return False
+                    return True
+            else:
+                if src_y - dest_y <= max_len:
+                    # si dest_x,dest_y est occupee, on ne peut pas s'y deplacer
+                    if not self.board.is_cell_free(dest_x, dest_y):
+                        return False
+                    return True
+
+        elif (abs(dest_x - src_x) == 1) and (dest_y - src_y == 1):
+            # attack move
+            if self.board.is_cell_free(dest_x, dest_y):
+                return False
+            return True
+
+        return False
 
 
 class PieceRook(Piece):
-    def __init__(self, name, side):
-        Piece.__init__(self, name, PieceRoleRook(), 'rook.png', side)
+    def __init__(self, board, name, side):
+        Piece.__init__(self, board, name, PieceRoleRook(), 'rook.png', side)
+
+    def is_move_valid(self, src_x, src_y, dest_x, dest_y):
+        return True
 
 
 class PieceHorse(Piece):
-    def __init__(self, name, side):
-        Piece.__init__(self, name, PieceRoleHorse(), 'horse.png', side)
+    def __init__(self, board, name, side):
+        Piece.__init__(self, board, name, PieceRoleHorse(), 'horse.png', side)
+
+    def is_move_valid(self, src_x, src_y, dest_x, dest_y):
+        return True
 
 
 class PieceBishop(Piece):
-    def __init__(self, name, side):
-        Piece.__init__(self, name, PieceRoleBishop(), 'bishop.png', side)
+    def __init__(self, board, name, side):
+        Piece.__init__(self, board, name, PieceRoleBishop(), 'bishop.png', side)
+
+    def is_move_valid(self, src_x, src_y, dest_x, dest_y):
+        return True
 
 
 class PieceQueen(Piece):
-    def __init__(self, name, side):
-        Piece.__init__(self, name, PieceRoleQueen(), 'queen.png', side)
+    def __init__(self, board, name, side):
+        Piece.__init__(self, board, name, PieceRoleQueen(), 'queen.png', side)
+
+    def is_move_valid(self, src_x, src_y, dest_x, dest_y):
+        return True
 
 
 class PieceKing(Piece):
-    def __init__(self, name, side):
-        Piece.__init__(self, name, PieceRoleKing(), 'king.png', side)
+    def __init__(self, board, name, side):
+        Piece.__init__(self, board, name, PieceRoleKing(), 'king.png', side)
+
+    def is_move_valid(self, src_x, src_y, dest_x, dest_y):
+        return True
+
+
