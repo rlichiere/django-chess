@@ -13,6 +13,8 @@ class Side:
 class BoardColorSet:
     def __init__(self, checkerboard):
         self.checkerboard = checkerboard
+        self.source_piece = '#559'
+        self.target_piece = '#595'
 
 
 class Board:
@@ -158,7 +160,7 @@ class Board:
     def render(self):
         template = loader.get_template(self.template_name)
         context = dict()
-        context['grid'] = self.grid
+        context['board'] = self
         context['game'] = self.game_data
         context['game_data'] = self.game_data.get_data(None)
         html_board = template.render(context)

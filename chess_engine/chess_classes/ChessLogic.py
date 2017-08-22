@@ -20,7 +20,6 @@ class ChessGame:
         # store board in game
         # give token to white side
         self.game_data = GamePersistentData()
-        self.game_data.save()
         self.game_data.set_data('token/step/side', 'white')
         return self.game_data
 
@@ -91,7 +90,6 @@ class ChessGame:
         self.game_data.set_data('token/step/data', '.')
         self.game_data.set_data('token/step/data/sourceCell', data)
         self.game_data.set_data('token/step/name', 'waitCellTarget')
-        self.game_data.save()
         return True
 
     def move_piece_select_target(self, user, x, y):
@@ -116,7 +114,6 @@ class ChessGame:
             # return to source selection
             self.game_data.set_data('token/step/data', '.')
             self.game_data.set_data('token/step/name', 'waitCellSource')
-            self.game_data.save()
             return False
 
         # - faire le deplacement dans la grille (dropper, popper)
@@ -133,7 +130,6 @@ class ChessGame:
         }
         self.game_data.set_data('token/step/data/targetCell', data)
         self.game_data.set_data('token/step/name', 'pieceMoved')
-        self.game_data.save()
 
         # passer la main
         self._finalize_turn()
@@ -144,9 +140,13 @@ class ChessGame:
         pass
 
     """ end of game """
+    # - accept checkmate
     # - accept revanche
     # - accept belle
     # - quit game (-> sauver)
+
+    def accept_checkmate(self, user):
+        self.game_data.set_data('token/result', 'checkmate')
 
     def accept_revanche(self, user):
         pass
@@ -168,7 +168,6 @@ class ChessGame:
             self.game_data.set_data('token/step/side', 'white')
 
         self.game_data.set_data('token/step/name', 'waitCellSource')
-        self.game_data.save()
 
     def _check_color_authorization(self, piece):
         # check if game accepts a move of this color
