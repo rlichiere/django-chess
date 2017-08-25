@@ -188,3 +188,11 @@ class Board:
                 print 'you cannot kill you pieces dude !'
                 return True
         return False
+
+    def target_is_enemy(self, piece, target_x, target_y):
+        target_piece = self.get_piece_at(target_y, target_x)
+        if target_piece != "-":
+            if target_piece.side.name != piece.side.name:
+                print 'this is an enemy'
+                return True
+        return False
