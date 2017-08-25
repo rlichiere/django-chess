@@ -180,3 +180,11 @@ class Board:
     def get_piece_at(self, x, y):
         # return self.game_data.get_data('board/%s/%s' % (x, y))
         return utils.access(self.grid, '%s/%s' % (x, y))
+
+    def target_is_friendly(self, piece, target_x, target_y):
+        target_piece = self.get_piece_at(target_y, target_x)
+        if target_piece != "-":
+            if target_piece.side.name == piece.side.name:
+                print 'you cannot kill you pieces dude !'
+                return True
+        return False
