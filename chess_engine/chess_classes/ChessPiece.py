@@ -168,13 +168,6 @@ class PiecePawn(Piece):
 
     def is_move_valid(self, src_x, src_y, dest_x, dest_y):
 
-        # check if target piece is not from players color
-        # target_piece = self.board.get_piece_at(dest_y, dest_x)
-        # if target_piece != "-":
-        #     if target_piece.side.name == self.side.name:
-        #         print 'you cannot kill you pieces dude !'
-        #         return False
-
         if self.board.target_is_friendly(self, dest_x, dest_y):
             return False
 
@@ -302,13 +295,87 @@ class PieceHorse(Piece):
         Piece.__init__(self, board, name, PieceRoleHorse(), 'horse.png', side)
 
     def is_move_valid(self, src_x, src_y, dest_x, dest_y):
+
+        # check if destination is not friendly
+        if self.board.target_is_friendly(self, dest_x, dest_y):
+            # cannot move on a friendly piece
+            return False
+
+        if not self._check_direction_coherence(src_x, src_y, dest_x, dest_y):
+            return False
+
         return True
 
     """ abstract implementations """
 
     def _check_direction_coherence(self, source_x, source_y, target_x, target_y):
-        # always true for Horse
-        return True
+        print 'PieceHors._check_direction_coherence(%s,%s, %s,%s)' % (source_x, source_y, target_x, target_y)
+        src_x = ord(source_x) - 97
+        dest_x = ord(target_x) - 97
+        src_y = int(source_y)
+        dest_y = int(target_y)
+        print 'PieceHors._check_direction_coherence(%s,%s, %s,%s)' % (src_x, src_y, dest_x, dest_y)
+
+        # list targetable cells
+
+        targetable = list()
+        cell_1_h_x = src_x + 1
+        cell_1_h_y = src_y + 2
+        # if not cell_1_h_x > 7:
+        #     if not cell_1_h_y > 8:
+        targetable.append({'x': cell_1_h_x, 'y': cell_1_h_y, 'name': '1h'})
+
+        cell_2_h_x = src_x + 2
+        cell_2_h_y = src_y + 1
+        # if not cell_2_h_x > 7:
+        #     if not cell_2_h_y > 8:
+        targetable.append({'x': cell_2_h_x, 'y': cell_2_h_y, 'name': '2h'})
+
+        cell_4_h_x = src_x + 2
+        cell_4_h_y = src_y - 1
+        # if not cell_4_h_x > 7:
+        #     if not cell_4_h_y < 1:
+        targetable.append({'x': cell_4_h_x, 'y': cell_4_h_y, 'name': '4h'})
+
+        cell_5_h_x = src_x + 1
+        cell_5_h_y = src_y - 2
+        # if not cell_5_h_x > 7:
+        #     if not cell_5_h_y < 1:
+        targetable.append({'x': cell_5_h_x, 'y': cell_5_h_y, 'name': '5h'})
+
+        cell_7_h_x = src_x - 1
+        cell_7_h_y = src_y - 2
+        # if not cell_7_h_x < 1:
+        #     if not cell_7_h_y < 0:
+        targetable.append({'x': cell_7_h_x, 'y': cell_7_h_y, 'name': '7h'})
+
+        cell_8_h_x = src_x - 2
+        cell_8_h_y = src_y - 1
+        # if not cell_8_h_x < 1:
+        #     if not cell_8_h_y < 0:
+        targetable.append({'x': cell_8_h_x, 'y': cell_8_h_y, 'name': '8h'})
+
+        cell_10_h_x = src_x - 2
+        cell_10_h_y = src_y + 1
+        # if not cell_10_h_x < 1:
+        #     if not cell_10_h_y > 8:
+        targetable.append({'x': cell_10_h_x, 'y': cell_10_h_y, 'name': '10h'})
+
+        cell_11_h_x = src_x - 1
+        cell_11_h_y = src_y + 2
+        # if not cell_11_h_x < 1:
+        #     if not cell_11_h_y > 8:
+        targetable.append({'x': cell_11_h_x, 'y': cell_11_h_y, 'name': '11h'})
+
+        # check if target is in targetable list
+        for cell in targetable:
+            print 'PieceHorse._check_direction_coherence: targetable : %s,%s (%s) for dest:%s,%s'\
+                  % (cell['x'], cell['y'], cell['name'], dest_x, dest_y)
+            if cell['x'] == dest_x and cell['y'] == dest_y:
+                print 'PieceHorse._check_direction_coherence: is TARGETABLE : %s,%s (%s). True.' % (cell['x'], cell['y'], cell['name'])
+                return True
+        print 'PieceHorse._check_direction_coherence: NO target found. False.'
+        return False
 
     def _check_path_disponibility(self, source_x, source_y, target_x, target_y):
         # always true for Horse
