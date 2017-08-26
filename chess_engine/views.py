@@ -56,6 +56,61 @@ class PieceActionView(View):
             game_logic.move_piece_select_target(request.user, column_k, line_k)
             return HttpResponseRedirect(reverse('chess-game', kwargs={'pk': game_id}))
 
+        elif action == 'promote':
+            role_name = kwargs['role_name']
+            game_logic.promote_piece(request.user, role_name)
+            return HttpResponseRedirect(reverse('chess-game', kwargs={'pk': game_id}))
+
         else:
             print 'PieceAction.get ERROR: unknown action : %s' % action
         return HttpResponseRedirect(reverse('home'))
+
+
+class PiecePromoteView(View):
+
+    def get(self, request, *args, **kwargs):
+        game_id = self.kwargs['pk']
+
+        game_logic = ChessLogic.ChessGame(game_id)
+        if not game_logic:
+            print ('PieceActionView.get ERROR : game not found : %s' % game_id)
+            return HttpResponseRedirect(reverse('home'))
+
+        role_name = kwargs['role_name']
+        game_logic.promote_piece(request.user, role_name)
+        return HttpResponseRedirect(reverse('chess-game', kwargs={'pk': game_id}))
+
+
+class MenuView(View):
+
+    def get(self, request, *args, **kwargs):
+        game_id = self.kwargs['pk']
+        game_logic = ChessLogic.ChessGame(game_id)
+        if not game_logic:
+            print ('PieceActionView.get ERROR : game not found : %s' % game_id)
+            return HttpResponseRedirect(reverse('home'))
+        action = kwargs['action']
+        if action == 'abandon':
+            game_logic.game_data.set_data('token/step/name', 'abandon')
+
+            history = game_logic.game_data.get_data('history')
+            history_game = dict()
+            history_game['token'] = game_logic.game_data.get_data('token')
+            history_game['board'] = game_logic.game_data.get_data('board')
+
+            if history:
+                new_game_key = 'game_%02d' % (len(history) + 1)
+            else:
+                history = dict()
+                new_game_key = 'game_01'
+            history[new_game_key] = history_game
+            game_logic.game_data.set_data(None, {})
+            game_logic.game_data.set_data('history', history)
+        elif action == 'reset_game':
+            history = game_logic.game_data.get_data('history')
+            game_logic.game_data.set_data(None, {})
+            game_logic.game_data.set_data('history', history)
+        elif action == 'reset_all':
+            game_logic.game_data.set_data(None, {})
+
+        return HttpResponseRedirect(reverse('chess-game', kwargs={'pk': game_id}))

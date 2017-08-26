@@ -1,5 +1,5 @@
 
-from chess_engine.chess_classes import ChessBoard
+from chess_engine.chess_classes import ChessBoard, ChessPiece
 from utils import utils
 from chess_engine.models import *
 
@@ -129,11 +129,37 @@ class ChessGame:
             'column': x
         }
         self.game_data.set_data('token/step/data/targetCell', data)
-        self.game_data.set_data('token/step/name', 'pieceMoved')
+
+        # check if a promotion must be purposed
+        if self._check_promotion(source_piece, data):
+            self.game_data.set_data('token/step/name', 'promote')
+        else:
+            # passer la main
+            self._finalize_turn()
+
+        return True
+
+    def promote_piece(self, user, role_name):
+        # check if game accepts selection of piece
+        current_waited_state = self.game_data.get_data('token/step/name')
+        if current_waited_state != 'promote':
+            print 'ChessGame.promote_piece : current_wait_state does not wait promote : %s' % current_waited_state
+            return False
+
+        target_line = self.game_data.get_data('token/step/data/targetCell/line')
+        target_column = self.game_data.get_data('token/step/data/targetCell/column')
+
+        side = self.game_data.get_data('token/step/side')
+        target_piece_data = {
+            "s": side[0:1],
+            "r": role_name,
+            "n": "%s_promo" % role_name
+        }
+        self.game_data.set_data('board/{line}/{column}'.format(line=target_line, column=target_column), target_piece_data)
+        print 'ChessGame.promote_piece: Queen promoted at : %s,%s' % (target_column, target_line)
 
         # passer la main
         self._finalize_turn()
-
         return True
 
     def abandonment(self, user):
@@ -159,15 +185,69 @@ class ChessGame:
 
     """ private mechanics tools """
 
-    def _finalize_turn(self):
-        current_play_color = self.game_data.get_data('token/step/side')
+    def _check_promotion(self, piece, data):
+        if piece.role.name == 'P':
+            if self.game_data.get_data('token/step/side') == 'white':
+                promotion_line = 8
+            else:
+                promotion_line = 1
+            if int(data['line']) == int(promotion_line):
+                return True
+        return False
 
-        if current_play_color == 'white':
+    def _check_king_troubles(self, side):
+        # checks if king is in trouble.
+        # - returns 'checkmate' when it's the case, and list of attacking pieces
+        # - returns 'check' when it's the case, and list of attacking pieces
+        # - returns False if no trouble, and empty list
+        print 'GameLogic._check_kingchecks: TODO'
+        king_possible_cells = list()    # liste du roi (= la ou il peut se deplacer sans etre attaque)
+        king_forbidden_cells = list()   # liste des interdits du roi
+        target_cells = list()           # liste de cellules cibles
+        attackingPieces = dict()        # dictionnaire des attaquants
+
+        # find king in board
+
+        # memoriser la position du roi
+        # construire la liste des deplacements possibles du roi
+
+        # parcourir la liste des pieces opposees au roi
+        #   pour chaque piece:
+        #       construire la liste des cellules que la piece attaque
+        #       pour chaque cellule que la piece attaque:
+        #           si la cellule est dans la liste du roi:
+        #               ajouter la piece dans la liste des attaquants (si elle n'y est pas deja)
+        #               ajouter la cellule dans la liste d'interdits du roi (si elle n'y est pas deja)
+        # king_forbidden_cells.append('e7')
+        king_possible_cells.append('e7')
+        # si le roi est attaque:
+        if len(king_forbidden_cells) > 0:
+            if len(king_possible_cells) == len(king_forbidden_cells):
+                # le roi ne peut pas bouger
+                result = 'checkmate'
+            else:
+                result = 'check'
+            # sauver la liste des attaquants
+            self.game_data.set_data('token/step/attackers', attackingPieces)
+            return result, attackingPieces
+        else:
+            self.game_data.set_data('token/step/attackers', '.')
+        return False, []
+
+    def _finalize_turn(self):
+        # - king-checks
+        side = self.game_data.get_data('token/step/side')
+        king_checks = self._check_king_troubles(side)
+        print ('ChessGame._finalize_turn: king_checks : %s' % king_checks.__str__())
+        if king_checks[0] == 'checkmate':
+            self.game_data.set_data('token/step/name', 'checkmate')
+        else:
+            # no trouble or simple check
+            self.game_data.set_data('token/step/name', 'waitCellSource')
+        if side == 'white':
             self.game_data.set_data('token/step/side', 'black')
         else:
             self.game_data.set_data('token/step/side', 'white')
-
-        self.game_data.set_data('token/step/name', 'waitCellSource')
 
     def _check_color_authorization(self, piece):
         # check if game accepts a move of this color

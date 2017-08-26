@@ -169,9 +169,7 @@ class Board:
     def is_cell_free(self, x, y):
         x = chr(x + 97)
         target_path = 'board/%s/%s' % (y, x)
-        print 'Board.is_cell_free: target_path : %s' % target_path
         target_data = self.game_data.get_data(target_path)
-        print 'Board.is_cell_free: target_data : %s' % target_data
 
         if target_data != '-':
             return False

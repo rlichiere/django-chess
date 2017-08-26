@@ -13,3 +13,54 @@
 </table>
 <br/>
 Turn : {{ game_data.token.step.side }}
+<div id="panel_promotion" style="display: none;">
+    <table border="1">
+        <tr>
+            <td>
+                <a id="{{ l_key }}_{{ c_key }}" href="{% url 'piece-promote' pk=game.id role_name='Q' %}">
+                    <img src="/static/chess_engine/pieces/{{ game_data.token.step.side|slice:'0:1' }}_queen.png" />
+                </a>
+            </td>
+            <td>
+                <a id="{{ l_key }}_{{ c_key }}" href="{% url 'piece-promote' pk=game.id role_name='R' %}">
+                    <img src="/static/chess_engine/pieces/{{ game_data.token.step.side|slice:'0:1' }}_rook.png" />
+                </a>
+            </td>
+            <td>
+                <a id="{{ l_key }}_{{ c_key }}" href="{% url 'piece-promote' pk=game.id role_name='B' %}">
+                    <img src="/static/chess_engine/pieces/{{ game_data.token.step.side|slice:'0:1' }}_bishop.png" />
+                </a>
+            </td>
+            <td>
+                <a id="{{ l_key }}_{{ c_key }}" href="{% url 'piece-promote' pk=game.id role_name='H' %}">
+                    <img src="/static/chess_engine/pieces/{{ game_data.token.step.side|slice:'0:1' }}_horse.png" />
+                </a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div id="panel_buttons">
+    <table border="1">
+        <tr>
+            <td>
+                <a id="button_abandon" href="{% url 'menu-action' pk=game.id action='abandon' value=game_data.token.step.side %}">Abandon</a>
+            </td>
+            <td>
+                <a id="button_abandon" href="{% url 'menu-action' pk=game.id action='reset_game' value=game_data.token.step.side %}">Reset Game</a>
+            </td>
+            <td>
+                <a id="button_abandon" href="{% url 'menu-action' pk=game.id action='reset_all' value=game_data.token.step.side %}">Reset All</a>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function() {
+        console.log('document ready');
+        {% if game_data.token.step.name == 'promote' %}
+            $('#panel_promotion').show();
+        {% endif %}
+
+    });
+</script>
