@@ -51,6 +51,36 @@ class PersistentObject (models.Model):
         # todo : delete path leaf
         return item
 
+    #                'token' 'logs' 'log_xxx': {}
+    def add_item(self, path, key, data, rule='%02d'):
+        items = self.get_data('%s/%s' % (path, key))
+        if not items:
+            items = dict()
+        new_key = rule % (len(items) + 1)
+        items[new_key] = data
+        self.set_data('%s/%s' % (path, key), items)
+        return True
+
 
 class GamePersistentData (PersistentObject):
-    pass
+
+    def add_log(self, src_x, src_y, source_piece, dest_x, dest_y, target_piece=None):
+        if target_piece == '-':
+            target_piece = None
+        side = source_piece.side.name[0:1]
+        log_data = {
+            'side': side,
+            'official': 'Bxd1',     # e4
+            'source': {
+                'piece': source_piece,
+                'x': src_x,
+                'y': src_y
+            },
+            'target': {
+                'x': dest_x,
+                'y': dest_y
+            }
+        }
+        if target_piece:
+            log_data['target']['piece'] = target_piece
+        self.add_item('token', 'logs', log_data, '%03d.')

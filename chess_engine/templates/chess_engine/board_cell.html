@@ -1,6 +1,8 @@
 {% load static %}
 
-{% if game_data.token.step.data.sourceCell.column == c_key and game_data.token.step.data.sourceCell.line|add:"0" == l_key %}
+{% if cell.role.name == 'K' and cell.side.name == game_data.token.step.side and game_data.token.step.attackers %}
+<td bgColor="#FF2222">
+{% elif game_data.token.step.data.sourceCell.column == c_key and game_data.token.step.data.sourceCell.line|add:"0" == l_key %}
 <td bgColor="{{ board.color_set.source_piece }}">
 {% elif game_data.token.step.data.targetCell.column == c_key and game_data.token.step.data.targetCell.line|add:"0" == l_key %}
 <td bgColor="{{ board.color_set.target_piece }}">
@@ -8,7 +10,7 @@
 <td bgColor="{{ even }}">
 {% endif %}
     {% if cell == '-' %}
-    {% if game_data.token.step.name == 'waitCellTarget'%}
+    {% if game_data.token.step.name == 'waitCellTarget' or game_data.token.step.name == 'check' %}
         <a id="{{ l_key }}_{{ c_key }}" href="{% url 'piece-action' pk=game.id action='move' line=l_key column=c_key %}">
             <img src="/static/chess_engine/pieces/empty_cell.png" />
         </a>
@@ -16,11 +18,11 @@
         <img src="/static/chess_engine/pieces/empty_cell.png" />
     {% endif %}
 {% else %}
-    {% if game_data.token.step.name == 'waitCellSource' and game_data.token.step.side == cell.side.name  %}
+    {% if game_data.token.step.name == 'waitCellSource' and game_data.token.step.side == cell.side.name  or game_data.token.step.name == 'check' %}
     <a id="{{ l_key }}_{{ c_key }}" href="{% url 'piece-action' pk=game.id action='select' line=l_key column=c_key %}">
         <img src="/static/chess_engine/pieces/{{ cell.side.name|slice:'0:1' }}_{{ cell.picture }}" />
     </a>
-    {% elif game_data.token.step.name == 'waitCellTarget' %}
+    {% elif game_data.token.step.name == 'waitCellTarget' or game_data.token.step.name == 'check' %}
     <a id="{{ l_key }}_{{ c_key }}" href="{% url 'piece-action' pk=game.id action='move' line=l_key column=c_key %}">
         <img src="/static/chess_engine/pieces/{{ cell.side.name|slice:'0:1' }}_{{ cell.picture }}" />
     </a>

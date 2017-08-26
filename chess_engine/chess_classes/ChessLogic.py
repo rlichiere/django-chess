@@ -117,7 +117,10 @@ class ChessGame:
             return False
 
         # - faire le deplacement dans la grille (dropper, popper)
-        # paste piece at target position
+        target_piece = self.game_data.get_data('board/{line}/{column}'.format(line=y, column=x))
+
+        self.game_data.add_log(source_column, source_line, source_piece, x, y, target_piece)
+
         self.game_data.set_data('board/{line}/{column}'.format(line=y, column=x), source_piece)
 
         # purge source position
@@ -218,27 +221,39 @@ class ChessGame:
         #           si la cellule est dans la liste du roi:
         #               ajouter la piece dans la liste des attaquants (si elle n'y est pas deja)
         #               ajouter la cellule dans la liste d'interdits du roi (si elle n'y est pas deja)
-        # king_forbidden_cells.append('e7')
+        king_forbidden_cells.append('e7')
         king_possible_cells.append('e7')
         # si le roi est attaque:
         if len(king_forbidden_cells) > 0:
             if len(king_possible_cells) == len(king_forbidden_cells):
                 # le roi ne peut pas bouger
-                result = 'checkmate'
+                result = 'check'    # 'checkmate'
             else:
                 result = 'check'
             # sauver la liste des attaquants
             self.game_data.set_data('token/step/attackers', attackingPieces)
             return result, attackingPieces
         else:
-            self.game_data.set_data('token/step/attackers', '.')
+            self.game_data.set_data('token/step/attackers', {})
         return False, []
 
     def _finalize_turn(self):
         # - king-checks
         side = self.game_data.get_data('token/step/side')
-        king_checks = self._check_king_troubles(side)
-        print ('ChessGame._finalize_turn: king_checks : %s' % king_checks.__str__())
+
+        king_checks = (False, [])   # self._check_king_troubles(side)                           # todo : remake properly
+        # print ('ChessGame._finalize_turn: king_checks : %s' % king_checks.__str__())
+        # if king_checks[0] == 'checkmate':
+        # temporary solution to implement checkmate (done manually by player)
+        logs = self.game_data.get_data('token/logs')
+        if logs:
+            last_log = logs['%03d.' % len(logs)]
+            eaten_piece = utils.access(last_log, 'target/piece')
+            print 'eaten_piece : %s' % eaten_piece
+            if eaten_piece:
+                if eaten_piece['r'] == 'K':
+                    # the guy died, checkmate
+                    king_checks = ('checkmate', [])
         if king_checks[0] == 'checkmate':
             self.game_data.set_data('token/step/name', 'checkmate')
         else:
