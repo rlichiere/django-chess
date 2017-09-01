@@ -1,18 +1,17 @@
 
-def build_official_move(src_x, src_y, source_piece, dest_x, dest_y, target_piece=None, check='', ep=None, rook=None):
+
+def build_official_move(src_x, src_y, source_piece, dest_x, dest_y,
+                        target_piece=None, check=None, ep=None, rook=None, promo=None):
     # print 'build_official_move: target_piece : %s' % target_piece
 
     if rook:
         # treat rook cases
         if abs(dest_x - src_x) == 2:
-            # print 'rook 2'
             res = 'O-O'
         elif abs(dest_x - src_x) == 3:
-            # print 'rook3'
             res = 'O-O-O'
         else:
-            # print 'rook unknown : %s' % abs(dest_x - src_x)
-            res = '***warning***'
+            res = '***warning rook: %s***' % rook
     else:
         # normal move
 
@@ -37,11 +36,18 @@ def build_official_move(src_x, src_y, source_piece, dest_x, dest_y, target_piece
         if ep:
             res_ep = 'ep'
 
-        # potential check
-        res_check = check   # ''/'+'/'#'
+        # potential promotion
+        res_promo = ''
+        if promo:
+            res_promo = promo
 
-        res = '{piece_name}{source_coords}{catch}{target_coords}{ep}{check}'.format(
+        # potential check
+        res_check = ''
+        if check:
+            res_check = check   # ''/'+'/'#'
+
+        res = '{piece_name}{source_coords}{catch}{target_coords}{ep}{promo}{check}'.format(
                 piece_name=res_piece_name, source_coords=res_source_coords, catch=res_catch,
-                target_coords=res_target_coords, ep=res_ep, check=res_check
+                target_coords=res_target_coords, ep=res_ep, promo=res_promo, check=res_check
         )
     return res

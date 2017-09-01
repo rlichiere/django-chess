@@ -132,9 +132,10 @@ class ChessGame:
         #   - check case
         check = None
 
-        # ecrire le log
+        # ecrire le log ; todo : should be executed later, in order to take consideration of promotion case
+        promo = None
         self.game_data.add_log(source_column, source_line, source_piece, x, y,
-                               target_piece=target_piece, check=check, ep=ep, rook=rook)
+                               target_piece=target_piece, check=check, ep=ep, rook=rook, promo=promo)
 
         # positionner la piece deplacee sur la cible
         self.game_data.set_data('board/{line}/{column}'.format(line=y, column=x), source_piece)

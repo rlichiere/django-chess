@@ -65,12 +65,13 @@ class PersistentObject (models.Model):
 
 class GamePersistentData (PersistentObject):
 
-    def add_log(self, src_x, src_y, source_piece, dest_x, dest_y, target_piece=None, check=None, ep=None, rook=None):
+    def add_log(self, src_x, src_y, source_piece, dest_x, dest_y,
+                target_piece=None, check=None, ep=None, rook=None, promo=None):
         if target_piece == '-':
             target_piece = None
         side = source_piece.side.name[0:1]
         official = ChessUtils.build_official_move(src_x, src_y, source_piece, dest_x, dest_y,
-                                                  target_piece=target_piece, check=check, ep=ep, rook=rook)
+                                                  target_piece=target_piece, check=check, ep=ep, rook=rook, promo=promo)
         log_data = {
             'side': side,
             'official': official,
