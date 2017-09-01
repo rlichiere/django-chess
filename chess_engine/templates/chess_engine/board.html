@@ -48,6 +48,7 @@
          <div id="panel_log">
             <table border="1">
                 <tr><td><b>Step</b></td>
+                    <td><b>Offic.</b></td>
                     <td><b>Piece</b></td>
                     <td><b>Source</b></td>
                     <td><b>Target</b></td>
@@ -56,6 +57,7 @@
                 {% for log_key, log in game_data.token.logs.items|dictsort:"0.lower" %}
                 <tr>
                     <td>{{ log_key }}</td>
+                    <td>{{ log.official }}</td>
                     <td>{{ log.source.piece.r }}</td>
                     <td>{{ log.source.x }}{{ log.source.y }}</td>
                     <td>{{ log.target.x }}{{ log.target.y }}</td>

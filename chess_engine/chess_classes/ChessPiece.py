@@ -274,9 +274,17 @@ class PiecePawn(Piece):
 
             # check if move in good way
             if self.side.name == 'white':
+                # ep case
+                # todo
+
+                # normal case
                 if not dest_y > src_y:
                     return False
             else:
+                # ep case
+                # todo
+
+                # normal case
                 if not dest_y < src_y:
                     return False
 

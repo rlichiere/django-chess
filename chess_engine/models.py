@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 import json
 from django.db import models
 from utils import utils
+from chess_engine.chess_classes import ChessUtils
 
 # Create your models here.
 
@@ -64,13 +65,15 @@ class PersistentObject (models.Model):
 
 class GamePersistentData (PersistentObject):
 
-    def add_log(self, src_x, src_y, source_piece, dest_x, dest_y, target_piece=None):
+    def add_log(self, src_x, src_y, source_piece, dest_x, dest_y, target_piece=None, check=None, ep=None, rook=None):
         if target_piece == '-':
             target_piece = None
         side = source_piece.side.name[0:1]
+        official = ChessUtils.build_official_move(src_x, src_y, source_piece, dest_x, dest_y,
+                                                  target_piece=target_piece, check=check, ep=ep, rook=rook)
         log_data = {
             'side': side,
-            'official': 'Bxd1',     # e4
+            'official': official,
             'source': {
                 'piece': source_piece,
                 'x': src_x,

@@ -117,11 +117,30 @@ class ChessGame:
             return False
 
         # - faire le deplacement dans la grille (dropper, popper)
+
+        # preparation des informations additionnelles de deplacement
+        #   - si pawn move + 2 : memorize en-passant (on him on or on his trace-cell ?)
+        #   todo
+
         target_piece = self.game_data.get_data('board/{line}/{column}'.format(line=y, column=x))
 
-        self.game_data.add_log(source_column, source_line, source_piece, x, y, target_piece)
+        # etablir le contexte apres deplacement :
+        #   - ep case
+        ep = None
+        #   - rook case
+        rook = None
+        #   - check case
+        check = None
 
+        # ecrire le log
+        self.game_data.add_log(source_column, source_line, source_piece, x, y,
+                               target_piece=target_piece, check=check, ep=ep, rook=rook)
+
+        # positionner la piece deplacee sur la cible
         self.game_data.set_data('board/{line}/{column}'.format(line=y, column=x), source_piece)
+
+        # memoriser le kill
+        # todo
 
         # purge source position
         self.game_data.set_data('board/{line}/{column}'.format(line=source_line, column=source_column), '-')
