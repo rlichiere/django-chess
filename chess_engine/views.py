@@ -56,11 +56,6 @@ class PieceActionView(View):
             game_logic.move_piece_select_target(request.user, column_k, line_k)
             return HttpResponseRedirect(reverse('chess-game', kwargs={'pk': game_id}))
 
-        elif action == 'promote':
-            role_name = kwargs['role_name']
-            game_logic.promote_piece(request.user, role_name)
-            return HttpResponseRedirect(reverse('chess-game', kwargs={'pk': game_id}))
-
         else:
             print 'PieceAction.get ERROR: unknown action : %s' % action
         return HttpResponseRedirect(reverse('home'))

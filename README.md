@@ -43,7 +43,29 @@
 
 
 
+###### limitations
+- no rook
+- no check/checkmate arbitration (checkmate must be manually played to be appliyed)
+
+###### known bugs
+# GRAVE (not contournable)
+
+# MAJOR (contournable manually)
+
+# MINOR
+- promotion available when checkmate
+
+
 ###### todo
+
+
+### finish implementing properly class DataPieceMove
+# must manage all data produced (by a move) and required (by interfaces)
+- source_piece (real Piece object)
+- target_piece (real Piece object)
+- promotion
+- eat
+- en_passant
 
 ### moves
 - implement remaining moves :

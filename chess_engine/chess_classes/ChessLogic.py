@@ -132,16 +132,13 @@ class ChessGame:
         #   - check case
         check = None
 
-        # ecrire le log ; todo : should be executed later, in order to take consideration of promotion case
-        promo = None
-        self.game_data.add_log(source_column, source_line, source_piece, x, y,
-                               target_piece=target_piece, check=check, ep=ep, rook=rook, promo=promo)
-
         # positionner la piece deplacee sur la cible
         self.game_data.set_data('board/{line}/{column}'.format(line=y, column=x), source_piece)
 
         # memoriser le kill
-        # todo
+        if target_piece != '-':
+            print 'ChessGame.move_piece_select_target: kill memorized'
+            self.game_data.set_data('token/step/data/eaten', target_piece)
 
         # purge source position
         self.game_data.set_data('board/{line}/{column}'.format(line=source_line, column=source_column), '-')
@@ -154,11 +151,26 @@ class ChessGame:
         self.game_data.set_data('token/step/data/targetCell', data)
 
         # check if a promotion must be purposed
-        if self._check_promotion(source_piece, data):
+        promo = self._check_promotion(source_piece, data)
+
+        if promo:
             self.game_data.set_data('token/step/name', 'promote')
         else:
+            move_data = {
+                'source_piece': source_piece,
+                'src_x': source_column,
+                'src_y': source_line,
+                'dest_x': x,
+                'dest_y': y,
+                'target_piece': target_piece,
+                'rook': rook,
+                'ep': ep,
+                'check': check,
+                'promo': None,
+            }
+
             # passer la main
-            self._finalize_turn()
+            self._finalize_turn(move_data)
 
         return True
 
@@ -181,8 +193,26 @@ class ChessGame:
         self.game_data.set_data('board/{line}/{column}'.format(line=target_line, column=target_column), target_piece_data)
         print 'ChessGame.promote_piece: Queen promoted at : %s,%s' % (target_column, target_line)
 
+        # prepare log_data
+        source_line = self.game_data.get_data('token/step/data/sourceCell/line')
+        source_column = self.game_data.get_data('token/step/data/sourceCell/column')
+        source_piece = self.board.get_piece_at(target_line, target_column)  # piece has still move to target
+        print 'ChessGame.promote_piece: source_piece (l:%s, c:%s) : %s' % (source_line, source_column, source_piece)
+        move_data = {
+            'source_piece': source_piece,
+            'src_x': source_column,
+            'src_y': source_line,
+            'target_piece': target_piece_data,
+            'dest_x': target_column,
+            'dest_y': target_line,
+            'rook': None,
+            'ep': None,     # todo
+            'check': None,  # todo
+            'promo': target_piece_data,  # todo
+        }
+
         # passer la main
-        self._finalize_turn()
+        self._finalize_turn(move_data)
         return True
 
     def abandonment(self, user):
@@ -217,6 +247,18 @@ class ChessGame:
             if int(data['line']) == int(promotion_line):
                 return True
         return False
+
+    def _check_king_troubles_temp(self, side):
+        # temporary solution to implement checkmate (done manually by player)
+        # print 'ChessGame._check_king_troubles_temp: test checkmate...'
+        eaten_piece = self.game_data.get_data('token/step/data/eaten')
+        if eaten_piece:
+            # print 'ChessGame._check_king_troubles_temp: eaten piece found : %s' % eaten_piece
+            if eaten_piece['r'] == 'K':
+                # the guy died, checkmate
+                # print 'ChessGame._check_king_troubles_temp: check mate found.'
+                return 'checkmate', []
+        return False, ''
 
     def _check_king_troubles(self, side):
         # checks if king is in trouble.
@@ -257,25 +299,21 @@ class ChessGame:
             self.game_data.set_data('token/step/attackers', {})
         return False, []
 
-    def _finalize_turn(self):
+    def _finalize_turn(self, move_data):
+
         # - king-checks
         side = self.game_data.get_data('token/step/side')
 
-        king_checks = (False, [])   # self._check_king_troubles(side)                           # todo : remake properly
+        # ecrire le log
+        self.game_data.add_log(move_data)
+
+        king_checks = self._check_king_troubles_temp(side)                           # todo : remake properly
         # print ('ChessGame._finalize_turn: king_checks : %s' % king_checks.__str__())
         # if king_checks[0] == 'checkmate':
-        # temporary solution to implement checkmate (done manually by player)
-        logs = self.game_data.get_data('token/logs')
-        if logs:
-            last_log = logs['%03d.' % len(logs)]
-            eaten_piece = utils.access(last_log, 'target/piece')
-            print 'eaten_piece : %s' % eaten_piece
-            if eaten_piece:
-                if eaten_piece['r'] == 'K':
-                    # the guy died, checkmate
-                    king_checks = ('checkmate', [])
+
         if king_checks[0] == 'checkmate':
             self.game_data.set_data('token/step/name', 'checkmate')
+            print 'ChessGame._finalize_turn: checkmate set.'
         else:
             # no trouble or simple check
             self.game_data.set_data('token/step/name', 'waitCellSource')

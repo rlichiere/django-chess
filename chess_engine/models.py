@@ -65,26 +65,22 @@ class PersistentObject (models.Model):
 
 class GamePersistentData (PersistentObject):
 
-    def add_log(self, src_x, src_y, source_piece, dest_x, dest_y,
-                target_piece=None, check=None, ep=None, rook=None, promo=None):
-        if target_piece == '-':
-            target_piece = None
-        side = source_piece.side.name[0:1]
-        official = ChessUtils.build_official_move(src_x, src_y, source_piece, dest_x, dest_y,
-                                                  target_piece=target_piece, check=check, ep=ep, rook=rook, promo=promo)
+    def add_log(self, move_data):
+        side = move_data['source_piece'].side.name[0:1]
+        official = ChessUtils.build_official_move(move_data)
         log_data = {
             'side': side,
             'official': official,
             'source': {
-                'piece': source_piece,
-                'x': src_x,
-                'y': src_y
+                'piece': move_data['source_piece'],
+                'x': move_data['src_x'],
+                'y': move_data['src_y']
             },
             'target': {
-                'x': dest_x,
-                'y': dest_y
+                'x': move_data['dest_x'],
+                'y': move_data['dest_y']
             }
         }
-        if target_piece:
-            log_data['target']['piece'] = target_piece
+        if 'target_piece' in move_data:
+            log_data['target']['piece'] = move_data['target_piece']
         self.add_item('token', 'logs', log_data, '%03d.')

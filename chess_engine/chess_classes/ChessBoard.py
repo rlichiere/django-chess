@@ -176,7 +176,6 @@ class Board:
         return True
 
     def get_piece_at(self, x, y):
-        # return self.game_data.get_data('board/%s/%s' % (x, y))
         return utils.access(self.grid, '%s/%s' % (x, y))
 
     def target_is_friendly(self, piece, target_x, target_y):

@@ -1,50 +1,49 @@
 
 
-def build_official_move(src_x, src_y, source_piece, dest_x, dest_y,
-                        target_piece=None, check=None, ep=None, rook=None, promo=None):
+def build_official_move(move_data):
     # print 'build_official_move: target_piece : %s' % target_piece
 
-    if rook:
+    if move_data['rook']:
         # treat rook cases
-        if abs(dest_x - src_x) == 2:
+        if abs(move_data['dest_x'] - move_data['src_x']) == 2:
             res = 'O-O'
-        elif abs(dest_x - src_x) == 3:
+        elif abs(move_data['dest_x'] - move_data['src_x']) == 3:
             res = 'O-O-O'
         else:
-            res = '***warning rook: %s***' % rook
+            res = '***warning rook: %s***' % move_data['rook']
     else:
         # normal move
 
         # piece part
         res_piece_name = ''
-        if source_piece.role.name != 'P':
-            res_piece_name = source_piece.role.name
+        if move_data['source_piece'].role.name != 'P':
+            res_piece_name = move_data['source_piece'].role.name
 
         # source coordinates
-        res_source_coords = '%s%s' % (src_x, src_y)
+        res_source_coords = '%s%s' % (move_data['src_x'], move_data['src_y'])
 
         # potential catch
         res_catch = '-'
-        if target_piece:
+        if move_data['target_piece'] != '-':
             res_catch = 'x'
 
         # target coordinates
-        res_target_coords = '%s%s' % (dest_x, dest_y)
+        res_target_coords = '%s%s' % (move_data['dest_x'], move_data['dest_y'])
 
         # potential ep
         res_ep = ''
-        if ep:
+        if move_data['ep']:
             res_ep = 'ep'
 
         # potential promotion
         res_promo = ''
-        if promo:
-            res_promo = promo
+        if move_data['promo']:
+            res_promo = move_data['promo']['r']
 
         # potential check
         res_check = ''
-        if check:
-            res_check = check   # ''/'+'/'#'
+        if move_data['check']:
+            res_check = move_data['check']   # ''/'+'/'#'
 
         res = '{piece_name}{source_coords}{catch}{target_coords}{ep}{promo}{check}'.format(
                 piece_name=res_piece_name, source_coords=res_source_coords, catch=res_catch,
