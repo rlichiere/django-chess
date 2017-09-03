@@ -30,6 +30,7 @@ class GameView(TemplateView):
             html_board = game_logic.board.render()
             context['html_board'] = html_board
             context['json_data'] = json2html.convert(json=game_logic.game_data.data)
+            context['game_logic'] = game_logic
 
             return {'context': context}
         else:

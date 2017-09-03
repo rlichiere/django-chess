@@ -226,6 +226,8 @@ class PiecePawn(Piece):
     """ private specific implementations """
 
     def _is_move_valid_specific(self, src_x, src_y, dest_x, dest_y):
+        print 'PiecePawn.is_move_valid: begins'
+
         if self.board.target_is_friendly(self, dest_x, dest_y):
             return False
 
@@ -239,6 +241,7 @@ class PiecePawn(Piece):
         else:
             start_axis = 7
 
+        enpassant_data = self.board.game_data.get_data('token/step/enpassant')
         if src_x == dest_x:
             # move front side
             if src_y == start_axis:
@@ -250,6 +253,7 @@ class PiecePawn(Piece):
             if self.side.name == 'white':
                 # check if move in good way
                 if not dest_y > src_y:
+                    print 'PiecePawn.is_move_valid: wrong way'
                     return False
 
                 if dest_y - src_y <= max_len:
@@ -261,28 +265,45 @@ class PiecePawn(Piece):
             else:
                 # check if move in good way
                 if not dest_y < src_y:
+                    print 'PiecePawn.is_move_valid: wrong way'
                     return False
 
                 if src_y - dest_y <= max_len:
                     # si dest_x,dest_y est occupee, on ne peut pas s'y deplacer
                     if not self.board.is_cell_free(dest_x, dest_y):
+                        print 'PiecePawn.is_move_valid: target is not free'
                         return False
                     return True
 
         elif (abs(dest_x - src_x) == 1) and (abs(dest_y - src_y) == 1):
             # attack move
 
+            # special cases
+            # check enpassant case
+            if enpassant_data:
+                print 'todo : treat move enpassant : dest_x:%s, dest_y:%s' % (dest_x, dest_y)
+                if (dest_y == enpassant_data['y']) and (dest_x == enpassant_data['x']):
+                    print 'enpassable :D'
+                    return True
+                else:
+                    print 'no enpassable :('
+                    return False
+
+            # normal cases
             # check if move in good way
             if self.side.name == 'white':
                 # ep case
-                # todo
+                print 'enpassant_data : %s' % enpassant_data
+                if enpassant_data:
+                    decay = 1
+                    print 'todo : treat move enpassant'
 
                 # normal case
                 if not dest_y > src_y:
                     return False
             else:
                 # ep case
-                # todo
+                print 'enpassant_data : %s' % enpassant_data
 
                 # normal case
                 if not dest_y < src_y:
@@ -292,6 +313,7 @@ class PiecePawn(Piece):
                 return False
             return True
 
+        print 'default False'
         return False
 
 

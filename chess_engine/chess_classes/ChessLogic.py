@@ -120,13 +120,25 @@ class ChessGame:
 
         # preparation des informations additionnelles de deplacement
         #   - si pawn move + 2 : memorize en-passant (on him on or on his trace-cell ?)
-        #   todo
+        enpassant_set = None
+        if source_piece.role.name == 'P':
+            enpassant_set = self._prepare_enpassant_vulnerability(source_column, source_line, source_piece, x, y)
+            if enpassant_set:
+                print 'ChessGame.move_piece_select_target: enpassant vulnerability set.'
 
         target_piece = self.game_data.get_data('board/{line}/{column}'.format(line=y, column=x))
 
         # etablir le contexte apres deplacement :
         #   - ep case
-        ep = None
+        ep = False
+        enpassant_data = self.game_data.get_data('token/step/enpassant')
+        if source_piece.role.name == 'P' and enpassant_data:
+            src_x = ord(x) - 97
+            src_y = int(y)
+            if (src_x == enpassant_data['x']) and (src_y == enpassant_data['y']):
+                print 'ChessGame.move_piece_select_target: En passant done.'
+                ep = True
+
         #   - rook case
         rook = None
         #   - check case
@@ -142,6 +154,11 @@ class ChessGame:
 
         # purge source position
         self.game_data.set_data('board/{line}/{column}'.format(line=source_line, column=source_column), '-')
+
+        # purge enpassant vulnerability
+        if not enpassant_set:
+            self.board.game_data.pop_data('token/step', 'enpassant')
+            print 'ChessGame.move_piece_select_target: enpassant popped'
 
         # - mettre a jour le data context
         data = {
@@ -246,6 +263,28 @@ class ChessGame:
                 promotion_line = 1
             if int(data['line']) == int(promotion_line):
                 return True
+        return False
+
+    def _prepare_enpassant_vulnerability(self, source_x, source_y, source_piece, target_x, target_y):
+        src_x = ord(source_x) - 97
+        dest_x = ord(target_x) - 97
+        src_y = int(source_y)
+        dest_y = int(target_y)
+        if source_piece.side.name == 'white':
+            start_axis = 2
+            enpassant_cell = {'x': dest_x, 'y': int(dest_y) - 1}
+        else:
+            start_axis = 7
+            enpassant_cell = {'x': dest_x, 'y': int(dest_y) + 1}
+
+        if src_y != start_axis:
+            return False
+
+        if abs(dest_y - src_y) == 2:
+            # memorize enpassant
+            print 'ChessLogic._prepare_enpassant_vulnerability: enpassant set.'
+            self.game_data.set_data('token/step/enpassant', enpassant_cell)
+            return enpassant_cell
         return False
 
     def _check_king_troubles_temp(self, side):

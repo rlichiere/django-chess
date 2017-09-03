@@ -48,13 +48,18 @@ class PersistentObject (models.Model):
         self.save()
         return True
 
-    def pop_data(self, path):
+    def pop_data(self, path, key):
         """ pops item designed by path """
         item = self.get_data(path)
-        # todo : delete path leaf
-        return item
+        if item:
+            result = dict()
+            for k, v in item.items():
+                if k != key:
+                    result[k] = v
+            self.set_data(path, result)
+            return True
+        return False
 
-    #                'token' 'logs' 'log_xxx': {}
     def add_item(self, path, key, data, rule='%02d'):
         items = self.get_data('%s/%s' % (path, key))
         if not items:
