@@ -183,9 +183,9 @@ class Board:
 
     def target_is_friendly(self, piece, target_x, target_y):
         target_piece = self.get_piece_at(target_y, target_x)
-        if target_piece != "-":
+        if target_piece != '-':
             if target_piece.side.name == piece.side.name:
-                print 'you cannot kill you pieces dude !'
+                print 'you cannot kill your own pieces (%s, %s) dude ! (%s == %s)' % (target_x, target_y, target_piece.side.name, piece.side.name)
                 return True
         return False
 
@@ -196,3 +196,48 @@ class Board:
                 print 'this is an enemy'
                 return True
         return False
+
+    def get_side_pieces(self, side):
+        # print 'ChessBoard.get_side_pieces: side : %s' % side
+        pieces = list()
+        for line_coord, line in self.grid.items():
+            for column_coord, cell in line.items():
+                if cell != '-':
+                    piece = cell
+                    if piece.side.name == side:
+                        pieces.append(piece)
+        return pieces
+
+    def get_piece_coords(self, searched_piece):
+        # for line_coord, line in self.grid.items():
+
+        for line_coord, line in self.game_data.get_data('board').items():
+            # print 'ChessBoard.get_piece_coords: line_coord:%s\nline:%s' % (line_coord, line)
+            for column_coord, cell in line.items():
+                # print 'ChessBoard.get_piece_coords: column_coord:%s\ncell:%s' % (column_coord, cell)
+                if cell != '-':
+                    piece = cell
+                    if cell['n'] == searched_piece.name and cell['s'] == searched_piece.side.name[0:1]:
+                        return column_coord, line_coord
+        print 'ChessBoard.get_piece_coords: *** warning *** piece not found : %s' % searched_piece
+        return False, False
+
+    def get_piece_from_role(self, role_name, side):
+        for line_coord, line in self.grid.items():
+            for column_coord, cell in line.items():
+                if cell != '-':
+                    piece = cell
+                    if piece.role.name == role_name and piece.side.name == side:
+                        # print 'ChessBoard.get_piece_from_role: piece.role.name:%s, piece.side.name:%s' \
+                        #       % (piece.role.name, piece.side.name)
+                        return piece
+        return False
+
+    def get_piece_coords_from_role(self, role_name, side):
+        for line_coord, line in self.grid.items():
+            for column_coord, cell in line.items():
+                if cell != '-':
+                    piece = cell
+                    if piece.role.name == role_name and piece.side.name == side:
+                        return column_coord, line_coord
+        return False, False

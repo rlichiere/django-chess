@@ -24,7 +24,7 @@ def build_official_move(move_data):
 
         # potential catch
         res_catch = '-'
-        if move_data['target_piece'] != '-':
+        if move_data['target_piece'] != '-' or move_data['ep']:
             res_catch = 'x'
 
         # target coordinates
@@ -43,7 +43,10 @@ def build_official_move(move_data):
         # potential check
         res_check = ''
         if move_data['check']:
-            res_check = move_data['check']   # ''/'+'/'#'
+            if move_data['check'] == 'check':
+                res_check = '+'
+            elif move_data['check'] == 'checkmate':
+                res_check = '#'
 
         res = '{piece_name}{source_coords}{catch}{target_coords}{ep}{promo}{check}'.format(
                 piece_name=res_piece_name, source_coords=res_source_coords, catch=res_catch,

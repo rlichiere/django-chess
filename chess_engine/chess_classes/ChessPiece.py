@@ -75,14 +75,34 @@ class Piece(object):
         # implementation must check path according to Piece capacities
         pass
 
+    """ public """
+
+    def is_in_danger(self, src_c, src_l):
+        # print 'Piece.is_in_danger(src_c:%s, src_l:%s) begins.' % (src_c, src_l)
+        ennemy_side = 'black' if self.side.name == 'white' else 'white'
+        ennemy_pieces = self.board.get_side_pieces(ennemy_side)
+        # print 'Piece.is_in_danger: ennemy_side:%s' % ennemy_side
+        for ennemy_piece in ennemy_pieces:
+            # print 'Piece.is_in_danger: ennemy_piece:%s' % ennemy_piece
+            ennemy_piece_c, ennemy_piece_l = self.board.get_piece_coords(ennemy_piece)
+            if ennemy_piece_c and ennemy_piece_l:
+                # print 'Piece.is_in_danger: ennemy %s (c:%s, l:%s)' % (ennemy_piece, ennemy_piece_c, ennemy_piece_l)
+                if ennemy_piece.is_move_valid(ennemy_piece_c, ennemy_piece_l, src_c, src_l):
+                    # print 'Piece.is_in_danger: %s is targeted by %s' % (self, ennemy_piece)
+                    return True
+        # print 'Piece.is_in_danger(src_c:%s, src_l:%s) False.' % (src_c, src_l)
+        return False
+
     """ private """
 
     def _is_move_valid_generic(self, src_x, src_y, dest_x, dest_y):
         if self.board.target_is_friendly(self, dest_x, dest_y):
             return False
         if not self._check_direction_coherence(src_x, src_y, dest_x, dest_y):
+            # print 'Piece._is_move_valid_generic: direction incoherent'
             return False
         if not self._check_path_disponibility(src_x, src_y, dest_x, dest_y):
+            # print 'Piece._is_move_valid_generic: path indisponible'
             return False
         return True
 
@@ -110,7 +130,7 @@ class Piece(object):
 
     def _check_path_disponibility_horizontal(self, source_x, source_y, target_x, target_y):
         if not self._check_direction_coherence_horizontal(source_x, source_y, target_x, target_y):
-            print 'Piece._check_path_disponibility_horizontal: *** warning *** way is not coherent'
+            # print 'Piece._check_path_disponibility_horizontal: *** warning *** way is not coherent'
             return False
 
         src_x = ord(source_x) - 97
@@ -128,14 +148,14 @@ class Piece(object):
                 # move left
                 test_x = src_x - num_step
             if not self.board.is_cell_free(test_x, src_y):
-                print 'Piece._check_path_disponibility_horizontal: cell on way is not free : %s, %s' % (test_x, src_y)
+                # print 'Piece._check_path_disponibility_horizontal: cell on way is not free : %s, %s' % (test_x, src_y)
                 return False
             num_step += 1
         return True
 
     def _check_path_disponibility_vertical(self, source_x, source_y, target_x, target_y):
         if not self._check_direction_coherence_vertical(source_x, source_y, target_x, target_y):
-            print 'Piece._check_path_disponibility_vertical: *** warning *** way is not coherent'
+            # print 'Piece._check_path_disponibility_vertical: *** warning *** way is not coherent'
             return False
 
         src_x = ord(source_x) - 97
@@ -226,7 +246,7 @@ class PiecePawn(Piece):
     """ private specific implementations """
 
     def _is_move_valid_specific(self, src_x, src_y, dest_x, dest_y):
-        print 'PiecePawn.is_move_valid: begins'
+        # print 'PiecePawn.is_move_valid: begins'
 
         if self.board.target_is_friendly(self, dest_x, dest_y):
             return False
@@ -281,31 +301,19 @@ class PiecePawn(Piece):
             # special cases
             # check enpassant case
             if enpassant_data:
-                print 'todo : treat move enpassant : dest_x:%s, dest_y:%s' % (dest_x, dest_y)
                 if (dest_y == enpassant_data['y']) and (dest_x == enpassant_data['x']):
-                    print 'enpassable :D'
+                    print 'PiecePawn._is_move_valid_specific: enpassable :D'
                     return True
                 else:
-                    print 'no enpassable :('
-                    return False
+                    # print 'PiecePawn._is_move_valid_specific: no enpassable :('
+                    pass
 
             # normal cases
             # check if move in good way
             if self.side.name == 'white':
-                # ep case
-                print 'enpassant_data : %s' % enpassant_data
-                if enpassant_data:
-                    decay = 1
-                    print 'todo : treat move enpassant'
-
-                # normal case
                 if not dest_y > src_y:
                     return False
             else:
-                # ep case
-                print 'enpassant_data : %s' % enpassant_data
-
-                # normal case
                 if not dest_y < src_y:
                     return False
 
@@ -313,7 +321,7 @@ class PiecePawn(Piece):
                 return False
             return True
 
-        print 'default False'
+        # print 'default False'
         return False
 
 

@@ -116,6 +116,15 @@ class ChessGame:
             self.game_data.set_data('token/step/name', 'waitCellSource')
             return False
 
+        # prepare owncheck analyze :
+        # save board
+        # play move
+        # check own king troubles
+        # if troubles found,
+        #   restore backuped board
+        # else
+        #   continue
+
         # - faire le deplacement dans la grille (dropper, popper)
 
         # preparation des informations additionnelles de deplacement
@@ -124,25 +133,33 @@ class ChessGame:
         if source_piece.role.name == 'P':
             enpassant_set = self._prepare_enpassant_vulnerability(source_column, source_line, source_piece, x, y)
             if enpassant_set:
-                print 'ChessGame.move_piece_select_target: enpassant vulnerability set.'
+                # print 'ChessGame.move_piece_select_target: enpassant vulnerability set.'
+                pass
 
         target_piece = self.game_data.get_data('board/{line}/{column}'.format(line=y, column=x))
 
         # etablir le contexte apres deplacement :
         #   - ep case
         ep = False
+        enpassed_piece = None
         enpassant_data = self.game_data.get_data('token/step/enpassant')
         if source_piece.role.name == 'P' and enpassant_data:
             src_x = ord(x) - 97
             src_y = int(y)
             if (src_x == enpassant_data['x']) and (src_y == enpassant_data['y']):
-                print 'ChessGame.move_piece_select_target: En passant done.'
                 ep = True
+                enpassed_x = x
+                if source_piece.side.name == 'white':
+                    enpassed_y = str(int(y)-1)
+                else:
+                    enpassed_y = str(int(y) + 1)
+                print 'ChessGame.move_piece_select_target: En passant done for y:%s, x:%s.' % (y, x)
+                enpassed_piece = self.game_data.get_data('board/{line}/{column}'.format(line=enpassed_y, column=enpassed_x))
+                self.game_data.set_data('token/step/data/eaten', enpassed_piece)
+                self.game_data.set_data('board/{line}/{column}'.format(line=enpassed_y, column=x), '-')
 
         #   - rook case
         rook = None
-        #   - check case
-        check = None
 
         # positionner la piece deplacee sur la cible
         self.game_data.set_data('board/{line}/{column}'.format(line=y, column=x), source_piece)
@@ -158,7 +175,7 @@ class ChessGame:
         # purge enpassant vulnerability
         if not enpassant_set:
             self.board.game_data.pop_data('token/step', 'enpassant')
-            print 'ChessGame.move_piece_select_target: enpassant popped'
+            # print 'ChessGame.move_piece_select_target: enpassant popped'
 
         # - mettre a jour le data context
         data = {
@@ -182,9 +199,13 @@ class ChessGame:
                 'target_piece': target_piece,
                 'rook': rook,
                 'ep': ep,
-                'check': check,
-                'promo': None,
+                'promo': None,                  # impossible to promo outside promote_piece case
+                'check': None,  # will be set in _finalize
             }
+            if ep:
+                move_data['target_piece'] = enpassed_piece
+            else:
+                move_data['target_piece'] = target_piece
 
             # passer la main
             self._finalize_turn(move_data)
@@ -214,7 +235,7 @@ class ChessGame:
         source_line = self.game_data.get_data('token/step/data/sourceCell/line')
         source_column = self.game_data.get_data('token/step/data/sourceCell/column')
         source_piece = self.board.get_piece_at(target_line, target_column)  # piece has still move to target
-        print 'ChessGame.promote_piece: source_piece (l:%s, c:%s) : %s' % (source_line, source_column, source_piece)
+        # print 'ChessGame.promote_piece: source_piece (l:%s, c:%s) : %s' % (source_line, source_column, source_piece)
         move_data = {
             'source_piece': source_piece,
             'src_x': source_column,
@@ -222,10 +243,10 @@ class ChessGame:
             'target_piece': target_piece_data,
             'dest_x': target_column,
             'dest_y': target_line,
-            'rook': None,
-            'ep': None,     # todo
-            'check': None,  # todo
-            'promo': target_piece_data,  # todo
+            'promo': target_piece_data,
+            'rook': None,                   # impossible to promote with rook
+            'ep': None,                     # impossible to promote with enpassant
+            'check': None,                  # will be set in _finalize
         }
 
         # passer la main
@@ -282,80 +303,62 @@ class ChessGame:
 
         if abs(dest_y - src_y) == 2:
             # memorize enpassant
-            print 'ChessLogic._prepare_enpassant_vulnerability: enpassant set.'
+            # print 'ChessGame._prepare_enpassant_vulnerability: enpassant set.'
             self.game_data.set_data('token/step/enpassant', enpassant_cell)
             return enpassant_cell
         return False
 
-    def _check_king_troubles_temp(self, side):
-        # temporary solution to implement checkmate (done manually by player)
-        # print 'ChessGame._check_king_troubles_temp: test checkmate...'
+    def _if_eaten_piece_was(self, piece_role):
         eaten_piece = self.game_data.get_data('token/step/data/eaten')
         if eaten_piece:
-            # print 'ChessGame._check_king_troubles_temp: eaten piece found : %s' % eaten_piece
-            if eaten_piece['r'] == 'K':
-                # the guy died, checkmate
-                # print 'ChessGame._check_king_troubles_temp: check mate found.'
-                return 'checkmate', []
-        return False, ''
+            if eaten_piece['r'] == piece_role:
+                return True
+        return False
 
     def _check_king_troubles(self, side):
-        # checks if king is in trouble.
-        # - returns 'checkmate' when it's the case, and list of attacking pieces
-        # - returns 'check' when it's the case, and list of attacking pieces
-        # - returns False if no trouble, and empty list
-        print 'GameLogic._check_kingchecks: TODO'
-        king_possible_cells = list()    # liste du roi (= la ou il peut se deplacer sans etre attaque)
-        king_forbidden_cells = list()   # liste des interdits du roi
-        target_cells = list()           # liste de cellules cibles
-        attackingPieces = dict()        # dictionnaire des attaquants
+
+        # temporary easy solution to detect checkmate (works only in _finalize_turn)
+        if self._if_eaten_piece_was('K'):
+            return True, 'checkmate'
 
         # find king in board
-
-        # memoriser la position du roi
-        # construire la liste des deplacements possibles du roi
-
-        # parcourir la liste des pieces opposees au roi
-        #   pour chaque piece:
-        #       construire la liste des cellules que la piece attaque
-        #       pour chaque cellule que la piece attaque:
-        #           si la cellule est dans la liste du roi:
-        #               ajouter la piece dans la liste des attaquants (si elle n'y est pas deja)
-        #               ajouter la cellule dans la liste d'interdits du roi (si elle n'y est pas deja)
-        king_forbidden_cells.append('e7')
-        king_possible_cells.append('e7')
-        # si le roi est attaque:
-        if len(king_forbidden_cells) > 0:
-            if len(king_possible_cells) == len(king_forbidden_cells):
-                # le roi ne peut pas bouger
-                result = 'check'    # 'checkmate'
-            else:
-                result = 'check'
-            # sauver la liste des attaquants
-            self.game_data.set_data('token/step/attackers', attackingPieces)
-            return result, attackingPieces
-        else:
-            self.game_data.set_data('token/step/attackers', {})
-        return False, []
+        king = self.board.get_piece_from_role('K', side)
+        king_c, king_l = self.board.get_piece_coords_from_role('K', side)
+        if not king:
+            print 'No %s king found !' % side
+            return False, None
+        # print 'ChessGame._check_king_troubles: king found : %s (x:%s, y:%s)' % (king, king_c, king_l)
+        if king.is_in_danger(king_c, king_l):
+            print 'ChessGame._check_king_troubles: king is in danger. True.'
+            return True, 'check'
+        # print 'ChessGame._check_king_troubles: False.'
+        return False, None
 
     def _finalize_turn(self, move_data):
 
         # - king-checks
         side = self.game_data.get_data('token/step/side')
 
-        # ecrire le log
-        self.game_data.add_log(move_data)
+        # reload grid
+        self.board.load_grid(self.game_data)
 
-        king_checks = self._check_king_troubles_temp(side)                           # todo : remake properly
+        ennemy_side = 'black' if side == 'white' else 'white'
+        king_checks = self._check_king_troubles(ennemy_side)
         # print ('ChessGame._finalize_turn: king_checks : %s' % king_checks.__str__())
-        # if king_checks[0] == 'checkmate':
 
-        if king_checks[0] == 'checkmate':
+        if king_checks[1] == 'checkmate':
+            move_data['check'] = 'checkmate'
             self.game_data.set_data('token/step/name', 'checkmate')
             print 'ChessGame._finalize_turn: checkmate set.'
         else:
             # no trouble or simple check
+            if king_checks[1] == 'check':
+                move_data['check'] = 'check'
             self.game_data.set_data('token/step/name', 'waitCellSource')
+
+        # ecrire le log
+        self.game_data.add_log(move_data)
+
         if side == 'white':
             self.game_data.set_data('token/step/side', 'black')
         else:

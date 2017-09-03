@@ -71,7 +71,6 @@
 - implement remaining moves :
     - O-O           King and Rook
     - O-O-O         King and Rook
-    - en passant    Pawn and Pawn
 
 ### token change automations
 - king checking :
