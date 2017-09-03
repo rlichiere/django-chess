@@ -1,4 +1,5 @@
 import json
+from json2html import *
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import View, TemplateView
@@ -28,6 +29,8 @@ class GameView(TemplateView):
         if game_logic:
             html_board = game_logic.board.render()
             context['html_board'] = html_board
+            context['json_data'] = json2html.convert(json=game_logic.game_data.data)
+
             return {'context': context}
         else:
             context['html_board'] = 'Game not found.'

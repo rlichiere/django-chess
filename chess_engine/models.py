@@ -1,8 +1,10 @@
 from __future__ import unicode_literals
 import json
+
 from django.db import models
-from utils import utils
+
 from chess_engine.chess_classes import ChessUtils
+from utils import utils
 
 # Create your models here.
 

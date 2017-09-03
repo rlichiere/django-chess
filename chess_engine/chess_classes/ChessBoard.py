@@ -1,4 +1,6 @@
+
 from django.template import loader
+
 from chess_engine.chess_classes import ChessPiece
 from chess_engine.models import GamePersistentData
 from utils import utils
@@ -163,6 +165,7 @@ class Board:
         context['board'] = self
         context['game'] = self.game_data
         context['game_data'] = self.game_data.get_data(None)
+
         html_board = template.render(context)
         return html_board
 
