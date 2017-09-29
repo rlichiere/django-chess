@@ -1,6 +1,9 @@
 from __future__ import unicode_literals
 import json
+
 from django.db import models
+
+from chess_engine.chess_classes import ChessUtils
 from utils import utils
 
 # Create your models here.
@@ -45,12 +48,46 @@ class PersistentObject (models.Model):
         self.save()
         return True
 
-    def pop_data(self, path):
+    def pop_data(self, path, key):
         """ pops item designed by path """
         item = self.get_data(path)
-        # todo : delete path leaf
-        return item
+        if item:
+            result = dict()
+            for k, v in item.items():
+                if k != key:
+                    result[k] = v
+            self.set_data(path, result)
+            return True
+        return False
+
+    def add_item(self, path, key, data, rule='%02d'):
+        items = self.get_data('%s/%s' % (path, key))
+        if not items:
+            items = dict()
+        new_key = rule % (len(items) + 1)
+        items[new_key] = data
+        self.set_data('%s/%s' % (path, key), items)
+        return True
 
 
 class GamePersistentData (PersistentObject):
-    pass
+
+    def add_log(self, move_data):
+        side = move_data['source_piece'].side.name[0:1]
+        official = ChessUtils.build_official_move(move_data)
+        log_data = {
+            'side': side,
+            'official': official,
+            'source': {
+                'piece': move_data['source_piece'],
+                'x': move_data['src_x'],
+                'y': move_data['src_y']
+            },
+            'target': {
+                'x': move_data['dest_x'],
+                'y': move_data['dest_y']
+            }
+        }
+        if 'target_piece' in move_data:
+            log_data['target']['piece'] = move_data['target_piece']
+        self.add_item('token', 'logs', log_data, '%03d.')

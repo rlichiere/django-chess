@@ -1,4 +1,6 @@
+
 from django.template import loader
+
 from chess_engine.chess_classes import ChessPiece
 from chess_engine.models import GamePersistentData
 from utils import utils
@@ -13,19 +15,26 @@ class Side:
 class BoardColorSet:
     def __init__(self, checkerboard):
         self.checkerboard = checkerboard
+        self.source_piece = '#559'
+        self.target_piece = '#595'
 
 
 class Board:
     template_name = 'chess_engine/board.html'
 
-    def __init__(self, color_set):
+    def __init__(self):
         print 'ChessBoard.__init__'
-        self.color_set = color_set
         self.grid = dict()
         self.game_data = None
         self.sides = dict()
         self.sides['white'] = Side('white')
         self.sides['black'] = Side('black')
+
+        self.default_color_set = BoardColorSet(checkerboard={'white': '#bbb', 'black': '#888'})
+        self.color_set = self.default_color_set
+
+    def set_color_set(self, color_set):
+        self.color_set = color_set
 
     def load_grid(self, game_data):
         self.game_data = game_data
@@ -153,23 +162,82 @@ class Board:
     def render(self):
         template = loader.get_template(self.template_name)
         context = dict()
-        context['grid'] = self.grid
+        context['board'] = self
         context['game'] = self.game_data
         context['game_data'] = self.game_data.get_data(None)
+
         html_board = template.render(context)
         return html_board
 
     def is_cell_free(self, x, y):
         x = chr(x + 97)
         target_path = 'board/%s/%s' % (y, x)
-        print 'Board.is_cell_free: target_path : %s' % target_path
         target_data = self.game_data.get_data(target_path)
-        print 'Board.is_cell_free: target_data : %s' % target_data
 
         if target_data != '-':
             return False
         return True
 
     def get_piece_at(self, x, y):
-        # return self.game_data.get_data('board/%s/%s' % (x, y))
         return utils.access(self.grid, '%s/%s' % (x, y))
+
+    def target_is_friendly(self, piece, target_x, target_y):
+        target_piece = self.get_piece_at(target_y, target_x)
+        if target_piece != '-':
+            if target_piece.side.name == piece.side.name:
+                print 'you cannot kill your own pieces (%s, %s) dude ! (%s == %s)' % (target_x, target_y, target_piece.side.name, piece.side.name)
+                return True
+        return False
+
+    def target_is_enemy(self, piece, target_x, target_y):
+        target_piece = self.get_piece_at(target_y, target_x)
+        if target_piece != "-":
+            if target_piece.side.name != piece.side.name:
+                print 'this is an enemy'
+                return True
+        return False
+
+    def get_side_pieces(self, side):
+        # print 'ChessBoard.get_side_pieces: side : %s' % side
+        pieces = list()
+        for line_coord, line in self.grid.items():
+            for column_coord, cell in line.items():
+                if cell != '-':
+                    piece = cell
+                    if piece.side.name == side:
+                        pieces.append(piece)
+        return pieces
+
+    def get_piece_coords(self, searched_piece):
+        # for line_coord, line in self.grid.items():
+
+        for line_coord, line in self.game_data.get_data('board').items():
+            # print 'ChessBoard.get_piece_coords: line_coord:%s\nline:%s' % (line_coord, line)
+            for column_coord, cell in line.items():
+                # print 'ChessBoard.get_piece_coords: column_coord:%s\ncell:%s' % (column_coord, cell)
+                if cell != '-':
+                    piece = cell
+                    if cell['n'] == searched_piece.name and cell['s'] == searched_piece.side.name[0:1]:
+                        return column_coord, line_coord
+        print 'ChessBoard.get_piece_coords: *** warning *** piece not found : %s' % searched_piece
+        return False, False
+
+    def get_piece_from_role(self, role_name, side):
+        for line_coord, line in self.grid.items():
+            for column_coord, cell in line.items():
+                if cell != '-':
+                    piece = cell
+                    if piece.role.name == role_name and piece.side.name == side:
+                        # print 'ChessBoard.get_piece_from_role: piece.role.name:%s, piece.side.name:%s' \
+                        #       % (piece.role.name, piece.side.name)
+                        return piece
+        return False
+
+    def get_piece_coords_from_role(self, role_name, side):
+        for line_coord, line in self.grid.items():
+            for column_coord, cell in line.items():
+                if cell != '-':
+                    piece = cell
+                    if piece.role.name == role_name and piece.side.name == side:
+                        return column_coord, line_coord
+        return False, False

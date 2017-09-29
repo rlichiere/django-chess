@@ -1,10 +1,100 @@
-<table border="1">
-    {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=grid.8 line_key=8 even='#ccc' odd='#999' %}
-    {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=grid.7 line_key=7 even='#999' odd='#ccc' %}
-    {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=grid.6 line_key=6 even='#ccc' odd='#999' %}
-    {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=grid.5 line_key=5 even='#999' odd='#ccc' %}
-    {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=grid.4 line_key=4 even='#ccc' odd='#999' %}
-    {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=grid.3 line_key=3 even='#999' odd='#ccc' %}
-    {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=grid.2 line_key=2 even='#ccc' odd='#999' %}
-    {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=grid.1 line_key=1 even='#999' odd='#ccc' %}
+
+<table>
+    <tr>
+        <td>
+            <table border="1">
+                {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.8 line_key=8 even='#ccc' odd='#999' %}
+                {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.7 line_key=7 even='#999' odd='#ccc' %}
+                {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.6 line_key=6 even='#ccc' odd='#999' %}
+                {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.5 line_key=5 even='#999' odd='#ccc' %}
+                {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.4 line_key=4 even='#ccc' odd='#999' %}
+                {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.3 line_key=3 even='#999' odd='#ccc' %}
+                {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.2 line_key=2 even='#ccc' odd='#999' %}
+                {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.1 line_key=1 even='#999' odd='#ccc' %}
+                <tr>
+                    <td></td><td>a</td><td>b</td><td>c</td><td>d</td><td>e</td><td>f</td><td>g</td><td>h</td>
+                </tr>
+            </table>
+            <br/>
+            Turn : {{ game_data.token.step.side }}
+            <div id="panel_promotion" style="display: none;">
+                <table border="1">
+                    <tr>
+                        <td>
+                            <a id="{{ l_key }}_{{ c_key }}" href="{% url 'piece-promote' pk=game.id role_name='Q' %}">
+                                <img src="/static/chess_engine/pieces/{{ game_data.token.step.side|slice:'0:1' }}_queen.png" />
+                            </a>
+                        </td>
+                        <td>
+                            <a id="{{ l_key }}_{{ c_key }}" href="{% url 'piece-promote' pk=game.id role_name='R' %}">
+                                <img src="/static/chess_engine/pieces/{{ game_data.token.step.side|slice:'0:1' }}_rook.png" />
+                            </a>
+                        </td>
+                        <td>
+                            <a id="{{ l_key }}_{{ c_key }}" href="{% url 'piece-promote' pk=game.id role_name='B' %}">
+                                <img src="/static/chess_engine/pieces/{{ game_data.token.step.side|slice:'0:1' }}_bishop.png" />
+                            </a>
+                        </td>
+                        <td>
+                            <a id="{{ l_key }}_{{ c_key }}" href="{% url 'piece-promote' pk=game.id role_name='H' %}">
+                                <img src="/static/chess_engine/pieces/{{ game_data.token.step.side|slice:'0:1' }}_horse.png" />
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </td>
+        <td>
+         <div id="panel_log">
+            <table border="1">
+                <tr><td><b>Step</b></td>
+                    <td><b>Offic.</b></td>
+                    <td><b>Piece</b></td>
+                    <td><b>Source</b></td>
+                    <td><b>Target</b></td>
+                    <td><b>Eat</b></td>
+                </tr>
+                {% for log_key, log in game_data.token.logs.items|dictsort:"0.lower" %}
+                <tr>
+                    <td>{{ log_key }}</td>
+                    <td>{{ log.official }}</td>
+                    <td>{{ log.source.piece.r }}</td>
+                    <td>{{ log.source.x }}{{ log.source.y }}</td>
+                    <td>{{ log.target.x }}{{ log.target.y }}</td>
+                    <td>{{ log.target.piece.r }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div id="panel_buttons">
+                <table border="1">
+                    <tr>
+                        <td>
+                            <a id="button_abandon" href="{% url 'menu-action' pk=game.id action='abandon' value=game_data.token.step.side %}">Abandon</a>
+                        </td>
+                        <td>
+                            <a id="button_abandon" href="{% url 'menu-action' pk=game.id action='reset_game' value=game_data.token.step.side %}">Reset Game</a>
+                        </td>
+                        <td>
+                            <a id="button_abandon" href="{% url 'menu-action' pk=game.id action='reset_all' value=game_data.token.step.side %}">Reset All</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </td>
+    </tr>
 </table>
+
+<script>
+    $(document).ready(function() {
+        console.log('document ready');
+        {% if game_data.token.step.name == 'promote' %}
+            $('#panel_promotion').show();
+        {% endif %}
+
+    });
+</script>
