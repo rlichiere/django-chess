@@ -11,7 +11,7 @@
 
 <ul>List of games :
 {% for game in context.games %}
-    <li><a href="{% url 'game' game.id %}">{{ game.id }}</a></li>
+    <li><a href="{% url 'chess-game' pk=game.id %}">{{ game.id }}</a></li>
 {% empty %}
     <li>No games.</li>
 {% endfor %}
