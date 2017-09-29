@@ -4,42 +4,66 @@
 
 ```python
 {
-   'board': {[board.json]},
    'token': {
-      'side': '[white/black]'
       'step': {
-         'name': '[waitReadyToStart/waitCellSource/waitCellTarget/pieceMoved]'
-         'data': {[step_data.json]
+         'side': '[white/black]'
+         'name': '[waitReadyToStart/waitCellSource/waitCellTarget/pieceMoved/checkmate]'
+         'data': {
+            'targetCell": {
+               'column': 'f',
+               'line": '4'
+            },
+            'sourceCell': {
+               'column': 'f',
+               'line': '2'
+            },
+            ['eaten': {
+					's': 'w',
+					'r': 'P',
+					'n': 'p6'
+			}]
+         }
+         ['enpassant': {
+            'y': 3,
+            'x': 5
+         }]
+      },
+      'logs': {
+         '001.': {
+            'official': 'e2-e4',
+            'side': 'w',
+            'source': {
+               'x': 'e',
+               'y': '2',
+               'piece': {
+                  's': 'w',
+                  'r': 'P',
+                  'n': 'P5'
+               }
+            },
+            'target': {
+               'x': 'e',
+               'y': '4',
+               'piece': '-'
+            }
+         },
+         [...]
       }
-   }
-}
-```
-
-#### waitCellTarget model
-
-```python
-'waitCellTarget': {
-   'sourceCell': {
-      'line': '2',
-      'column': 'e'
-   }
-}
-```
-
-#### pieceMoved model
-
-```python
-'pieceMoved': {
-   'sourceCell': {
-      'line': '2',
-      'column': 'e'
-   }
-   'targetCell': {
-      'line': '4',
-      'column': 'e'
+   },
+   'board': {
+      '1': {
+        'a': {
+           's': 'w',
+           'r': 'R',
+           'n': 'r2'
+        },
+        [...]
+      },
+      [...]
    },
 }
 ```
+
 
 
 
@@ -74,7 +98,8 @@
 
 ### token change automations
 - king checking :
-    - check
+    - check when taking hand
+    - avoid move if ends up with check
     - checkmate (sinon killed, mais c pas top)
 
 ### gamelogic
