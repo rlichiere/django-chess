@@ -1,5 +1,84 @@
 # django-chess
 
+
+### Release Note
+
+# 0.0.1
+* basic ui
+ * grid
+ * pieces
+
+# 0.0.2
+* gamelogic
+ * implementation of all pieces standard moves
+ * added special moves : Pawn+2, Enpassant, Promotion
+* ui
+ * colors on selected/moved pieces
+ * logs
+ * turn side information
+ * debug details
+
+# 0.0.3
+* gamelogic
+ * avoid move when inducing check on own king
+* ui
+ * lifter in logs panel
+ * own king check information
+
+
+
+
+
+
+### Incoming
+
+
+### Todo
+
+# Urgent
+* gamelogic
+ * rook
+* ui
+ * surrender button (required to finish a game when checkmate)
+ * information for all avoid move cases
+
+# MidTerm
+* gamelogic
+* ui
+
+# LongTerm
+* gamelogic
+ * user lobby
+ * give user capacity to :
+   - create games
+   - edit/delete its own games
+   - select a side in an opened game
+   - start the game when all sides have a player
+ * lock game (and refresh) when user do not plays current side turn
+* ui
+ * bootstrap
+ * nice colors (button)
+
+
+### Refactoring
+
+Shield :
+* x,y/c,l coordinates
+
+Layerize :
+* think about a kind of BoardDataAccessor to facilite/centralize access to board data :
+    - standard format to pass request parameters (by-coords/by-piece, etc)
+    -
+* think about a real game_data object to improve access to sql data :
+    - get : return cache data, otherwise sql data (and store in cache)
+    - set : stores data in sql and cache
+
+
+
+
+
+
+
 ### PersistentData Game Model :
 
 ```python
