@@ -113,23 +113,13 @@ class ChessGame:
         # prepare own king check verifications
         backup_before_move = self._backup_context_data_before_move()
 
+        # verify if move if valid
         if not source_piece.is_move_valid(source_column, source_line, x, y):
             print 'ChessGame.move_piece_select_target: move is not valid.'
             # return to source selection
             self.game_data.set_data('token/step/data', '.')
             self.game_data.set_data('token/step/name', 'waitCellSource')
             return False
-
-        # prepare owncheck analyze :
-        # save board
-        # play move
-        # check own king troubles
-        # if troubles found,
-        #   restore backuped board
-        # else
-        #   continue
-
-        # - faire le deplacement dans la grille (dropper, popper)
 
         # preparation des informations additionnelles de deplacement
         #   - si pawn move + 2 : memorize en-passant (on him on or on his trace-cell ?)
