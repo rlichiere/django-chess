@@ -1,24 +1,24 @@
 # django-chess
 
 
-### Release Note
+## Release Note
 
-# 0.0.1
+### 0.0.1
 * basic ui
- * grid
- * pieces
+** grid
+** pieces
 
-# 0.0.2
+### 0.0.2
 * gamelogic
- * implementation of all pieces standard moves
- * added special moves : Pawn+2, Enpassant, Promotion
+** implementation of all pieces standard moves
+** added special moves : Pawn+2, Enpassant, Promotion
 * ui
- * colors on selected/moved pieces
- * logs
- * turn side information
- * debug details
+** colors on selected/moved pieces
+** logs
+** turn side information
+** debug details
 
-# 0.0.3
+### 0.0.3
 * gamelogic
  * avoid move when inducing check on own king
 * ui
@@ -30,23 +30,23 @@
 
 
 
-### Incoming
+## Incoming
 
 
-### Todo
+## Todo
 
-# Urgent
+### Urgent
 * gamelogic
  * rook
 * ui
  * surrender button (required to finish a game when checkmate)
  * information for all avoid move cases
 
-# MidTerm
+### MidTerm
 * gamelogic
 * ui
 
-# LongTerm
+### LongTerm
 * gamelogic
  * user lobby
  * give user capacity to :
@@ -60,12 +60,12 @@
  * nice colors (button)
 
 
-### Refactoring
+## Refactoring
 
-Shield :
+### Shield :
 * x,y/c,l coordinates
 
-Layerize :
+### Layerize :
 * think about a kind of BoardDataAccessor to facilite/centralize access to board data :
     - standard format to pass request parameters (by-coords/by-piece, etc)
     -
@@ -79,7 +79,7 @@ Layerize :
 
 
 
-### PersistentData Game Model :
+## PersistentData Game Model :
 
 ```python
 {
@@ -146,11 +146,11 @@ Layerize :
 
 
 
-###### limitations
-- no rook
-- no check/checkmate arbitration (checkmate must be manually played to be appliyed)
+## Limitations
+* no rook
+* no check/checkmate arbitration (checkmate must be manually played to be appliyed)
 
-###### known bugs
+## known bugs
 # GRAVE (not contournable)
 
 # MAJOR (contournable manually)
@@ -159,11 +159,11 @@ Layerize :
 - promotion available when checkmate
 
 
-###### todo
+## fast ideas
 
 
 ### finish implementing properly class DataPieceMove
-# must manage all data produced (by a move) and required (by interfaces)
+* must manage all data produced (by a move) and required (by interfaces)
 - source_piece (real Piece object)
 - target_piece (real Piece object)
 - promotion
@@ -171,13 +171,13 @@ Layerize :
 - en_passant
 
 ### moves
-- implement remaining moves :
-    - O-O           King and Rook
-    - O-O-O         King and Rook
+* implement remaining moves :
+- O-O           King and Rook
+- O-O-O         King and Rook
 
 ### button
-    - surrender to give the win
-        (actually necessary to finalize a game when checkmate, while waiting its automated detection)
+- surrender to give the win
+    (actually necessary to finalize a game when checkmate, while waiting its automated detection)
 
 ### token change automations
 - king checking :
