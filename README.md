@@ -96,10 +96,12 @@
     - O-O           King and Rook
     - O-O-O         King and Rook
 
+### button
+    - surrender to give the win
+        (actually necessary to finalize a game when checkmate, while waiting its automated detection)
+
 ### token change automations
 - king checking :
-    - check when taking hand
-    - avoid move if ends up with check
     - checkmate (sinon killed, mais c pas top)
 
 ### gamelogic
