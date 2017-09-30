@@ -70,6 +70,18 @@
     </tr>
     <tr>
         <td>
+            <div id="panel_message">
+                {% if game_data.token.step.data.impossible_move %}
+                <span class="message">
+                    <b>Impossible move !</b><br />
+                    Reason : {{ game_data.token.step.data.impossible_move }}
+                </span>
+                {% endif %}
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
             <div id="panel_buttons">
                 <table border="1">
                     <tr>

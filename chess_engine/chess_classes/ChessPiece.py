@@ -88,7 +88,7 @@ class Piece(object):
             if ennemy_piece_c and ennemy_piece_l:
                 # print 'Piece.is_in_danger: ennemy %s (c:%s, l:%s)' % (ennemy_piece, ennemy_piece_c, ennemy_piece_l)
                 if ennemy_piece.is_move_valid(ennemy_piece_c, ennemy_piece_l, src_c, src_l):
-                    # print 'Piece.is_in_danger: %s is targeted by %s' % (self, ennemy_piece)
+                    print 'Piece.is_in_danger: %s is targeted by %s' % (self, ennemy_piece)
                     return True
         # print 'Piece.is_in_danger(src_c:%s, src_l:%s) False.' % (src_c, src_l)
         return False
