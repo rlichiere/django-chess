@@ -12,6 +12,7 @@
 [gamelogic]
 * implementation of all pieces standard moves
 * added special moves : Pawn+2, Enpassant, Promotion
+
 [ui]
 * colors on selected/moved pieces
 * logs
@@ -21,6 +22,7 @@
 ### 0.0.3
 [gamelogic]
 * avoid move when inducing check on own king
+
 [ui]
 * lifter in logs panel
 * own king check information
@@ -38,12 +40,14 @@
 ### Urgent
 [gamelogic]
 * rook
+
 [ui]
 * surrender button (required to finish a game when checkmate)
 * information for all avoid move cases
 
 ### MidTerm
 [gamelogic]
+
 [ui]
 
 ### LongTerm
@@ -55,6 +59,7 @@
   1. select a side in an opened game
   1. start the game when all sides have a player
 * lock game (and refresh) when user do not plays current side turn
+
 [ui]
 * bootstrap
 * nice colors (button)
