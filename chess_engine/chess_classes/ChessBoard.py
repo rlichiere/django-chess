@@ -181,6 +181,9 @@ class Board:
     def get_piece_at(self, x, y):
         return utils.access(self.grid, '%s/%s' % (x, y))
 
+    def set_piece_at(self, x, y, piece):
+        return utils.access(self.grid, '%s/%s' % (x, y), piece)
+
     def target_is_friendly(self, piece, target_x, target_y):
         target_piece = self.get_piece_at(target_y, target_x)
         if target_piece != '-':
@@ -209,7 +212,6 @@ class Board:
         return pieces
 
     def get_piece_coords(self, searched_piece):
-        # for line_coord, line in self.grid.items():
 
         for line_coord, line in self.game_data.get_data('board').items():
             # print 'ChessBoard.get_piece_coords: line_coord:%s\nline:%s' % (line_coord, line)
@@ -233,11 +235,13 @@ class Board:
                         return piece
         return False
 
-    def get_piece_coords_from_role(self, role_name, side):
+    def get_piece_coords_from_role(self, role_name, side_name):
         for line_coord, line in self.grid.items():
             for column_coord, cell in line.items():
                 if cell != '-':
                     piece = cell
-                    if piece.role.name == role_name and piece.side.name == side:
+                    if piece.role.name == role_name and piece.side.name == side_name:
+                        # print 'ChessBoard.get_piece_coords_from_role: %s found at c:%s, l:%s'\
+                        #       % (role_name, column_coord, line_coord)
                         return column_coord, line_coord
         return False, False

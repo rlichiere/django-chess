@@ -15,7 +15,33 @@
                     <td></td><td>a</td><td>b</td><td>c</td><td>d</td><td>e</td><td>f</td><td>g</td><td>h</td>
                 </tr>
             </table>
-            <br/>
+        </td>
+        <td>
+            <div id="panel_log" style="overflow-y:auto; height: 620px;">
+            <table border="1">
+                <tr><td><b>Step</b></td>
+                    <td><b>Offic.</b></td>
+                    <td><b>Piece</b></td>
+                    <td><b>Source</b></td>
+                    <td><b>Target</b></td>
+                    <td><b>Eat</b></td>
+                </tr>
+                {% for log_key, log in game_data.token.logs.items|dictsort:"0.lower" %}
+                <tr>
+                    <td>{{ log_key }}</td>
+                    <td>{{ log.official }}</td>
+                    <td>{{ log.source.piece.r }}</td>
+                    <td>{{ log.source.x }}{{ log.source.y }}</td>
+                    <td>{{ log.target.x }}{{ log.target.y }}</td>
+                    <td>{{ log.target.piece.r }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
             Turn : {{ game_data.token.step.side }}
             <div id="panel_promotion" style="display: none;">
                 <table border="1">
@@ -44,28 +70,17 @@
                 </table>
             </div>
         </td>
+    </tr>
+    <tr>
         <td>
-         <div id="panel_log">
-            <table border="1">
-                <tr><td><b>Step</b></td>
-                    <td><b>Offic.</b></td>
-                    <td><b>Piece</b></td>
-                    <td><b>Source</b></td>
-                    <td><b>Target</b></td>
-                    <td><b>Eat</b></td>
-                </tr>
-                {% for log_key, log in game_data.token.logs.items|dictsort:"0.lower" %}
-                <tr>
-                    <td>{{ log_key }}</td>
-                    <td>{{ log.official }}</td>
-                    <td>{{ log.source.piece.r }}</td>
-                    <td>{{ log.source.x }}{{ log.source.y }}</td>
-                    <td>{{ log.target.x }}{{ log.target.y }}</td>
-                    <td>{{ log.target.piece.r }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-        </div>
+            <div id="panel_message">
+                {% if game_data.token.step.data.impossible_move %}
+                <span class="message">
+                    <b>Impossible move !</b><br />
+                    Reason : {{ game_data.token.step.data.impossible_move }}
+                </span>
+                {% endif %}
+            </div>
         </td>
     </tr>
     <tr>
@@ -74,13 +89,13 @@
                 <table border="1">
                     <tr>
                         <td>
-                            <a id="button_abandon" href="{% url 'menu-action' pk=game.id action='abandon' value=game_data.token.step.side %}">Abandon</a>
+                            <a id="button_surrender_checkmate" href="{% url 'menu-action' pk=game.id action='surrender_checkmate' value=game_data.token.step.side %}">Surrender (checkmate)</a>
                         </td>
                         <td>
-                            <a id="button_abandon" href="{% url 'menu-action' pk=game.id action='reset_game' value=game_data.token.step.side %}">Reset Game</a>
+                            <a id="button_reset_game" href="{% url 'menu-action' pk=game.id action='reset_game' value=game_data.token.step.side %}">Reset Game</a>
                         </td>
                         <td>
-                            <a id="button_abandon" href="{% url 'menu-action' pk=game.id action='reset_all' value=game_data.token.step.side %}">Reset All</a>
+                            <a id="button_abandon_game" href="{% url 'menu-action' pk=game.id action='reset_all' value=game_data.token.step.side %}">Reset All</a>
                         </td>
                     </tr>
                 </table>
