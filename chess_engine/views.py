@@ -88,23 +88,10 @@ class MenuView(View):
         if not game_logic:
             print ('PieceActionView.get ERROR : game not found : %s' % game_id)
             return HttpResponseRedirect(reverse('home'))
+
         action = kwargs['action']
-        if action == 'abandon':
-            game_logic.game_data.set_data('token/step/name', 'abandon')
-
-            history = game_logic.game_data.get_data('history')
-            history_game = dict()
-            history_game['token'] = game_logic.game_data.get_data('token')
-            history_game['board'] = game_logic.game_data.get_data('board')
-
-            if history:
-                new_game_key = 'game_%02d' % (len(history) + 1)
-            else:
-                history = dict()
-                new_game_key = 'game_01'
-            history[new_game_key] = history_game
-            game_logic.game_data.set_data(None, {})
-            game_logic.game_data.set_data('history', history)
+        if action == 'surrender_checkmate':
+            game_logic.accept_checkmate()
         elif action == 'reset_game':
             history = game_logic.game_data.get_data('history')
             game_logic.game_data.set_data(None, {})

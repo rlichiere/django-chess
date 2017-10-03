@@ -5,22 +5,22 @@ from chess_engine.models import *
 
 
 class ChessGame:
-    def __init__(self, game_data=None):
+    def __init__(self, game_id=None):
         self.board = ChessBoard.Board()
 
-        if game_data:
-            self.game_data = game_data
-            self.load_game(game_data)
+        if game_id:
+            self.game_id = game_id
+            self.load_game(game_id)
         else:
             self.game_data = self.initialize()
 
-    def initialize(self):
+    def initialize(self, give_hand_to='white'):
         # create GamePersistentData
         # create Board
         # store board in game
         # give token to white side
         self.game_data = GamePersistentData()
-        self.game_data.set_data('token/step/side', 'white')
+        self.game_data.set_data('token/step/side', give_hand_to)
         return self.game_data
 
     def load_game(self, game_id):
@@ -28,7 +28,8 @@ class ChessGame:
         # - position of pieces on board
         # - game state (token)
         # give token to player
-        self.game_data = GamePersistentData.objects.filter(id=game_id).first()
+        self.game_id = game_id
+        self.game_data = GamePersistentData.objects.filter(id=self.game_id).first()
         self.board.load_grid(self.game_data)
         if not self.game_data.get_data('token/step/name'):
             self.game_data.set_data('token/step/name', 'waitCellSource')
@@ -109,23 +110,16 @@ class ChessGame:
         if not self._check_color_authorization(source_piece):
             return False
 
+        # prepare own king check verifications
+        backup_before_move = self._backup_context_data_before_move()
+
+        # verify if move if valid
         if not source_piece.is_move_valid(source_column, source_line, x, y):
             print 'ChessGame.move_piece_select_target: move is not valid.'
             # return to source selection
             self.game_data.set_data('token/step/data', '.')
             self.game_data.set_data('token/step/name', 'waitCellSource')
             return False
-
-        # prepare owncheck analyze :
-        # save board
-        # play move
-        # check own king troubles
-        # if troubles found,
-        #   restore backuped board
-        # else
-        #   continue
-
-        # - faire le deplacement dans la grille (dropper, popper)
 
         # preparation des informations additionnelles de deplacement
         #   - si pawn move + 2 : memorize en-passant (on him on or on his trace-cell ?)
@@ -177,12 +171,22 @@ class ChessGame:
             self.board.game_data.pop_data('token/step', 'enpassant')
             # print 'ChessGame.move_piece_select_target: enpassant popped'
 
-        # - mettre a jour le data context
+        # - mettre a jour le data context et la grid
         data = {
             'line': y,
             'column': x
         }
         self.game_data.set_data('token/step/data/targetCell', data)
+        self.board.set_piece_at(y, x, source_piece)
+
+        # # move is done
+        # we can now check if own king is checked (then reload backuped data)
+        if self._is_kingchecked(source_piece.side.name):
+            print 'ChessGame.move_piece_select_target: own king is checked.'
+            self._restore_context_data_from_backup(backup_before_move)
+            self.game_data.set_data('token/step/data/impossible_move', 'king_checked')
+            return False
+        self.game_data.set_data('token/step/data/impossible_move', '')
 
         # check if a promotion must be purposed
         promo = self._check_promotion(source_piece, data)
@@ -253,17 +257,16 @@ class ChessGame:
         self._finalize_turn(move_data)
         return True
 
-    def abandonment(self, user):
-        pass
-
     """ end of game """
     # - accept checkmate
     # - accept revanche
     # - accept belle
     # - quit game (-> sauver)
 
-    def accept_checkmate(self, user):
+    def accept_checkmate(self):
+        self.game_data.set_data('token/step/name', 'checkmate')
         self.game_data.set_data('token/result', 'checkmate')
+        self._save_game()
 
     def accept_revanche(self, user):
         pass
@@ -276,6 +279,21 @@ class ChessGame:
 
     """ private mechanics tools """
 
+    def _save_game(self):
+        history = self.game_data.get_data('history')
+        history_game = dict()
+        history_game['token'] = self.game_data.get_data('token')
+        history_game['board'] = self.game_data.get_data('board')
+
+        if history:
+            new_game_key = 'game_%02d' % (len(history) + 1)
+        else:
+            history = dict()
+            new_game_key = 'game_01'
+        history[new_game_key] = history_game
+        self.game_data.set_data(None, {})
+        self.game_data.set_data('history', history)
+
     def _check_promotion(self, piece, data):
         if piece.role.name == 'P':
             if self.game_data.get_data('token/step/side') == 'white':
@@ -285,6 +303,26 @@ class ChessGame:
             if int(data['line']) == int(promotion_line):
                 return True
         return False
+
+    def _backup_context_data_before_move(self):
+        backup = dict()
+        backup['obj_board'] = self.board
+        backup['obj_game_data'] = self.game_data
+        backup['sql_game_data'] = self.game_data.get_data('')
+        return backup
+
+    def _is_kingchecked(self, side_name):
+        king = self.board.get_piece_from_role('K', side_name)
+        king_c, king_l = self.board.get_piece_coords(king)
+
+        if king.is_in_danger(king_c, king_l):
+                return True
+        return False
+
+    def _restore_context_data_from_backup(self, backup):
+        self.board = backup['obj_board']
+        self.game_data = backup['obj_game_data']
+        self.game_data.set_data('', backup['sql_game_data'])
 
     def _prepare_enpassant_vulnerability(self, source_x, source_y, source_piece, target_x, target_y):
         src_x = ord(source_x) - 97
@@ -315,27 +353,25 @@ class ChessGame:
                 return True
         return False
 
-    def _check_king_troubles(self, side):
-
-        # temporary easy solution to detect checkmate (works only in _finalize_turn)
+    def _check_king_troubles(self, side_name):
+        # temporary easy solution to detect checkmate (works only after a complete move)
         if self._if_eaten_piece_was('K'):
             return True, 'checkmate'
 
         # find king in board
-        king = self.board.get_piece_from_role('K', side)
-        king_c, king_l = self.board.get_piece_coords_from_role('K', side)
+        king = self.board.get_piece_from_role('K', side_name)
         if not king:
-            print 'No %s king found !' % side
+            print 'No %s king found !' % side_name
             return False, None
-        # print 'ChessGame._check_king_troubles: king found : %s (x:%s, y:%s)' % (king, king_c, king_l)
+        king_c, king_l = self.board.get_piece_coords_from_role('K', side_name)
+        print 'ChessGame._check_king_troubles: king found : %s (x:%s, y:%s)' % (king, king_c, king_l)
         if king.is_in_danger(king_c, king_l):
-            print 'ChessGame._check_king_troubles: king is in danger. True.'
+            # print 'ChessGame._check_king_troubles: king is in danger. True.'
             return True, 'check'
         # print 'ChessGame._check_king_troubles: False.'
         return False, None
 
     def _finalize_turn(self, move_data):
-
         # - king-checks
         side = self.game_data.get_data('token/step/side')
 
@@ -363,6 +399,7 @@ class ChessGame:
             self.game_data.set_data('token/step/side', 'black')
         else:
             self.game_data.set_data('token/step/side', 'white')
+        print 'TURN FINALIZED'
 
     def _check_color_authorization(self, piece):
         # check if game accepts a move of this color
