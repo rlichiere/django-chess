@@ -89,13 +89,13 @@
                 <table border="1">
                     <tr>
                         <td>
-                            <a id="button_abandon" href="{% url 'menu-action' pk=game.id action='abandon' value=game_data.token.step.side %}">Abandon</a>
+                            <a id="button_surrender_checkmate" href="{% url 'menu-action' pk=game.id action='surrender_checkmate' value=game_data.token.step.side %}">Surrender (checkmate)</a>
                         </td>
                         <td>
-                            <a id="button_abandon" href="{% url 'menu-action' pk=game.id action='reset_game' value=game_data.token.step.side %}">Reset Game</a>
+                            <a id="button_reset_game" href="{% url 'menu-action' pk=game.id action='reset_game' value=game_data.token.step.side %}">Reset Game</a>
                         </td>
                         <td>
-                            <a id="button_abandon" href="{% url 'menu-action' pk=game.id action='reset_all' value=game_data.token.step.side %}">Reset All</a>
+                            <a id="button_abandon_game" href="{% url 'menu-action' pk=game.id action='reset_all' value=game_data.token.step.side %}">Reset All</a>
                         </td>
                     </tr>
                 </table>

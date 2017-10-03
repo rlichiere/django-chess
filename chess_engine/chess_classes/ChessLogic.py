@@ -14,13 +14,13 @@ class ChessGame:
         else:
             self.game_data = self.initialize()
 
-    def initialize(self):
+    def initialize(self, give_hand_to='white'):
         # create GamePersistentData
         # create Board
         # store board in game
         # give token to white side
         self.game_data = GamePersistentData()
-        self.game_data.set_data('token/step/side', 'white')
+        self.game_data.set_data('token/step/side', give_hand_to)
         return self.game_data
 
     def load_game(self, game_id):
@@ -257,17 +257,16 @@ class ChessGame:
         self._finalize_turn(move_data)
         return True
 
-    def abandonment(self, user):
-        pass
-
     """ end of game """
     # - accept checkmate
     # - accept revanche
     # - accept belle
     # - quit game (-> sauver)
 
-    def accept_checkmate(self, user):
+    def accept_checkmate(self):
+        self.game_data.set_data('token/step/name', 'checkmate')
         self.game_data.set_data('token/result', 'checkmate')
+        self._save_game()
 
     def accept_revanche(self, user):
         pass
@@ -279,6 +278,21 @@ class ChessGame:
         pass
 
     """ private mechanics tools """
+
+    def _save_game(self):
+        history = self.game_data.get_data('history')
+        history_game = dict()
+        history_game['token'] = self.game_data.get_data('token')
+        history_game['board'] = self.game_data.get_data('board')
+
+        if history:
+            new_game_key = 'game_%02d' % (len(history) + 1)
+        else:
+            history = dict()
+            new_game_key = 'game_01'
+        history[new_game_key] = history_game
+        self.game_data.set_data(None, {})
+        self.game_data.set_data('history', history)
 
     def _check_promotion(self, piece, data):
         if piece.role.name == 'P':
