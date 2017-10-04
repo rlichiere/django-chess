@@ -480,6 +480,9 @@ class PieceKing(Piece):
         # check castle case
         castle_call_case = self.detect_castle_call(src_x, src_y, dest_x, dest_y)
         if castle_call_case:
+            # king must not be checked
+            if self.is_in_danger(src_x, src_y):
+                return False
             rookables = self.board.game_data.get_data('token/step/casting/%s' % self.side.name)
             if castle_call_case in rookables:
                 # check path disponibility

@@ -22,6 +22,8 @@
 ### 0.0.3
 [gamelogic]
 * avoid move when inducing check on own king
+* surrender button (required to finish a game when checkmate)
+* rook
 
 [ui]
 * lifter in logs panel
@@ -39,10 +41,10 @@
 
 ### Urgent
 [gamelogic]
-* rook
+* finish casting :
+ * casting should be avoid when path is in check
 
 [ui]
-* surrender button (required to finish a game when checkmate)
 * information for all avoid move cases
 
 ### MidTerm
