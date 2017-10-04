@@ -41,8 +41,6 @@
 
 ### Urgent
 [gamelogic]
-* finish casting :
- * casting should be avoid when path is in check
 
 [ui]
 * information for all avoid move cases

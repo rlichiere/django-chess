@@ -487,6 +487,9 @@ class PieceKing(Piece):
             if castle_call_case in rookables:
                 # check path disponibility
                 if self._check_path_disponibility_horizontal(src_x, src_y, dest_x, dest_y):
+                    # check if path is not checked
+                    if self._castle_path_is_targeted(castle_call_case):
+                        return False
                     print 'PieceKing.is_move_valid: castle call valid on %s' % castle_call_case
                     return True
             return False
@@ -536,3 +539,12 @@ class PieceKing(Piece):
     def _check_path_disponibility(self, source_x, source_y, target_x, target_y):
         # always True for King
         return True
+
+    """ private tools """
+
+    def _castle_path_is_targeted(self, castle_call_case):
+        target_x = 'f' if castle_call_case == 'r1' else 'd'
+        target_y = 1 if self.side.name == 'white' else 8
+        if self.is_in_danger(target_x, target_y):
+            return True
+        return False
