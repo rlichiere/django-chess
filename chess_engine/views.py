@@ -93,10 +93,8 @@ class MenuView(View):
         if action == 'surrender_checkmate':
             game_logic.accept_checkmate()
         elif action == 'reset_game':
-            history = game_logic.game_data.get_data('history')
-            game_logic.game_data.set_data(None, {})
-            game_logic.game_data.set_data('history', history)
+            game_logic.reset_game()
         elif action == 'reset_all':
-            game_logic.game_data.set_data(None, {})
+            game_logic.reset_games()
 
         return HttpResponseRedirect(reverse('chess-game', kwargs={'pk': game_id}))

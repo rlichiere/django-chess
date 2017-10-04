@@ -39,6 +39,15 @@
             </table>
             </div>
         </td>
+        <td>
+            <div id="panel_special_data" style="overflow-y:auto; height: 620px;">
+                En passant : {{ game_data.token.step.enpassant }}<br />
+                Casting :<ul>
+                    <li>White : {{ game_data.token.step.casting.white }}</li>
+                    <li>Black : {{ game_data.token.step.casting.black }}</li>
+                </ul>
+            </div>
+        </td>
     </tr>
     <tr>
         <td>

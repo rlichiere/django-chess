@@ -477,7 +477,43 @@ class PieceKing(Piece):
         Piece.__init__(self, board, name, PieceRoleKing(), 'king.png', side)
 
     def is_move_valid(self, src_x, src_y, dest_x, dest_y):
+        # check castle case
+        castle_call_case = self.detect_castle_call(src_x, src_y, dest_x, dest_y)
+        if castle_call_case:
+            rookables = self.board.game_data.get_data('token/step/casting/%s' % self.side.name)
+            if castle_call_case in rookables:
+                # check path disponibility
+                if self._check_path_disponibility_horizontal(src_x, src_y, dest_x, dest_y):
+                    print 'PieceKing.is_move_valid: castle call valid on %s' % castle_call_case
+                    return True
+            return False
+        # normal case
         return self._is_move_valid_generic(src_x, src_y, dest_x, dest_y)
+
+    def detect_castle_call(self, source_x, source_y, target_x, target_y):
+        src_x = ord(source_x) - 97
+        dest_x = ord(target_x) - 97
+        src_y = int(source_y)
+        dest_y = int(target_y)
+        if self.side.name == 'white' and src_y == 1 or self.side.name == 'black' and src_y == 8:
+            if dest_y == src_y:
+                # vertical rule ok
+                if dest_x - src_x == 2:
+                    # horizontal rule points r1
+                    return 'r1'
+                elif src_x - dest_x == 2:
+                    # horizontal rule points r2
+                    return 'r2'
+        return False
+
+    def move_rook(self, game_data, rook_name):
+        rook_x = 'h' if rook_name == 'r1' else 'a'
+        rook_y = 1 if self.side.name == 'white' else 8
+        target_x = 'f' if rook_name == 'r1' else 'd'
+        target_y = 1 if self.side.name == 'white' else 8
+        rook_piece = self.board.get_piece_at(rook_y, rook_x)
+        game_data.set_data('board/{line}/{column}'.format(line=rook_y, column=rook_x), '-')
+        game_data.set_data('board/{line}/{column}'.format(line=target_y, column=target_x), rook_piece)
 
     """ abstract implementations """
 

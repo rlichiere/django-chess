@@ -14,16 +14,22 @@ class ChessGame:
         else:
             self.game_data = self.initialize()
 
-    def initialize(self, give_hand_to='white'):
+    def initialize(self):
         # create GamePersistentData
         # create Board
         # store board in game
         # give token to white side
-        self.game_data = GamePersistentData()
-        self.game_data.set_data('token/step/side', give_hand_to)
+        self.game_data = GamePersistentData.objects.filter(id=self.game_id).first()
+        if not self.game_data:
+            self.game_data = GamePersistentData()
+            self.game_id = self.game_data.id
+
+        rookable_data = ['r1', 'r2']
+        self.game_data.set_data('token/step/casting/white', rookable_data)
+        self.game_data.set_data('token/step/casting/black', rookable_data)
         return self.game_data
 
-    def load_game(self, game_id):
+    def load_game(self, game_id, give_hand_to='white'):
         # load GamePersistentData context :
         # - position of pieces on board
         # - game state (token)
@@ -33,7 +39,7 @@ class ChessGame:
         self.board.load_grid(self.game_data)
         if not self.game_data.get_data('token/step/name'):
             self.game_data.set_data('token/step/name', 'waitCellSource')
-            self.game_data.set_data('token/step/side', 'white')
+            self.game_data.set_data('token/step/side', give_hand_to)
         return True
 
     """                                    user actions """
@@ -153,7 +159,18 @@ class ChessGame:
                 self.game_data.set_data('board/{line}/{column}'.format(line=enpassed_y, column=x), '-')
 
         #   - rook case
-        rook = None
+        rook = False
+        if source_piece.role.name == 'K':
+            check_castle_case = source_piece.detect_castle_call(source_column, source_line, x, y)
+            if check_castle_case:
+                # move target rook
+                source_piece.move_rook(self.game_data, check_castle_case)
+                if check_castle_case == 'r1':
+                    rook = 'O-O'
+                else:
+                    rook = 'O-O-O'
+
+        self._clean_casting_data(source_piece)
 
         # positionner la piece deplacee sur la cible
         self.game_data.set_data('board/{line}/{column}'.format(line=y, column=x), source_piece)
@@ -263,10 +280,22 @@ class ChessGame:
     # - accept belle
     # - quit game (-> sauver)
 
+    def reset_game(self):
+        history = self.game_data.get_data('history')
+        self.game_data.set_data(None, {})
+        self.game_data.set_data('history', history)
+        self.initialize()
+
+    def reset_games(self):
+        self.game_data.set_data(None, {})
+        self.initialize()
+
     def accept_checkmate(self):
+        print 'ChessLogic.accept_checkmate'
         self.game_data.set_data('token/step/name', 'checkmate')
         self.game_data.set_data('token/result', 'checkmate')
         self._save_game()
+        self.initialize()
 
     def accept_revanche(self, user):
         pass
@@ -408,3 +437,18 @@ class ChessGame:
             print 'ChessGame._check_color_authorization: move is not valid for this color (%s, %s)' % (piece.side.name, playable_color)
             return False
         return True
+
+    def _clean_casting_data(self, source_piece):
+        if source_piece.role.name == 'K':
+            # drop rookables when king is moved
+            self.game_data.set_data('token/step/casting/%s' % source_piece.side.name, '-')
+        elif source_piece.role.name == 'R':
+            # drop that rook from list
+            rookables = self.game_data.get_data('token/step/casting/%s' % source_piece.side.name)
+            if rookables:
+                if source_piece.name in rookables:
+                    if len(rookables) == 1:
+                        self.game_data.set_data('token/step/casting/%s' % source_piece.side.name, '-')
+                    else:
+                        rookables.remove(source_piece.name)
+                        self.game_data.set_data('token/step/casting/%s' % source_piece.side.name, rookables)
