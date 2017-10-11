@@ -22,6 +22,8 @@
 ### 0.0.3
 [gamelogic]
 * avoid move when inducing check on own king
+* surrender button (required to finish a game when checkmate)
+* rook
 
 [ui]
 * lifter in logs panel
@@ -39,10 +41,8 @@
 
 ### Urgent
 [gamelogic]
-* rook
 
 [ui]
-* surrender button (required to finish a game when checkmate)
 * information for all avoid move cases
 
 ### MidTerm
