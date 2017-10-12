@@ -44,6 +44,7 @@
  * viewer : nothing
  * player : surrender/checkmate
  * game creator : Reset current round, Reset game
+* refresh page for waiting player and viewers
 
 
 ## Todo
@@ -55,7 +56,6 @@
   1. start the game when all sides have a player
 
 [ui]
-* refresh page for viewers and waiting player
 * information for all avoid move cases
 
 

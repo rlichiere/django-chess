@@ -16,7 +16,9 @@
     </script>
 </head>
 <body>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 
+{# TITLE #}
 <h3>{{ context.game_logic.game_data.data|access:'game_options/name' }}
 -
 {% with white_user_id=context.game_logic.game_data.data|access:'participants/white/1' %}
@@ -47,6 +49,7 @@
 {% endwith %}
 </h3>
 
+{# BOARD or RESULT #}
 {% with token_step_side=context.game_logic.game_data.data|access:'token/step/side' %}
     {% if token_step_side == False %}
         <div>
@@ -68,10 +71,20 @@
             Board :<br />
             json_data[{{ context.game_logic.game_data.data|render_json2html:'board'|safe }}]
         </div>
+        user_can_play : [{{ context.user_can_play }}]
+        {% if not context.user_can_play %}
+        <script>
+            function reloadPage() {
+                window.location.reload();
+            }
+            $(document).ready(function() {
+                setInterval(reloadPage, 10000);
+            });
+        </script>
+        {% endif %}
     {% endif %}
 {% endwith %}
 
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 
 </body>
 </html>
