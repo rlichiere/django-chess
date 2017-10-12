@@ -59,19 +59,6 @@
         </div>
     {% else %}
         {{ context.html_board|safe }}
-        <div>
-            Token :<br />
-            Step :<br />
-            {{ context.game_logic.game_data.data|render_json2html:'token/step'|safe }}
-            Rounds :<br />
-            {{ context.game_logic.game_data.data|render_json2html:'rounds'|safe }}
-            Logs :<br />
-            {{ context.game_logic.game_data.data|render_json2html:'token/logs'|safe }}
-            <br />
-            Board :<br />
-            json_data[{{ context.game_logic.game_data.data|render_json2html:'board'|safe }}]
-        </div>
-        user_can_play : [{{ context.user_can_play }}]
         {% if not context.user_can_play %}
         <script>
             function reloadPage() {

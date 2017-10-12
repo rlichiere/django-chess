@@ -17,6 +17,12 @@ def render_json2html(value, path):
 
 
 @register.filter
+def render_realjson2html(value, path):
+    data = utils.access(value, path)
+    return json2html.convert(json=data)
+
+
+@register.filter
 def access(value, path):
     jdata = json.loads(value)
     data = utils.access(jdata, path)
