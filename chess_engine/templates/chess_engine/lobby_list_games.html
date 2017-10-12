@@ -1,0 +1,75 @@
+{% load static %}
+{% load chess_engine_extras %}
+
+<table border="1">
+<tr>
+    <th>Game name</th>
+    <th>Rounds</th>
+    <th>White</th>
+    <th>Black</th>
+    <th>Watch</th>
+    <th>Ranked</th>
+</tr>
+{% for game in games %}
+    {% with white_user_id=game.data|access:'participants/white/1' %}
+    {% with black_user_id=game.data|access:'participants/black/1' %}
+
+    <tr>
+        {# game name #}
+        <td align="right"><a href="{% url 'chess-game' pk=game.id %}">{{ game.data|access:'game_options/name' }}</a></td>
+
+        {# rounds #}
+        <td align="center">
+        {% with winning_games=game.data|access:'game_options/winning_games' %}
+        {% with rounds=game.data|access:'rounds' %}
+        {% with token_step_side=game.data|access:'token/step/side' %}
+        {% if token_step_side == False %}
+            {{ rounds|length }}/{{ winning_games|add:winning_games|add:'-1' }}
+        {% else %}
+            {{ rounds|length|add:"1" }}/{{ winning_games|add:winning_games|add:'-1' }}
+        {% endif %}
+        {% endwith %}
+        {% endwith %}
+        {% endwith %}
+        </td>
+
+        {# white #}
+        {% with white_user=white_user_id|get_user %}
+            {% if white_user != False %}
+            <td align="right">{{ white_user.username }}</td>
+            {% else %}
+            <td align="center"><a href="{% url 'join-game' pk=game.id side='w' %}">Play</a></td>
+            {% endif %}
+        {% endwith %}
+
+        {# black #}
+        {% with black_user=black_user_id|get_user %}
+            {% if black_user != False %}
+            <td align="right">{{ black_user.username }}</td>
+            {% else %}
+            <td align="center"><a href="{% url 'join-game' pk=game.id side='b' %}">Play</a></td>
+            {% endif %}
+        {% endwith %}
+
+        {# watch #}
+        <td align="center">
+            {% if game.data|access:'game_options/public' %}
+            <a href="{% url 'chess-game' pk=game.id %}">Watch</a>
+            {% endif %}
+        </td>
+
+        {# ranked #}
+        <td align="center">
+            {% if game.data|access:'game_options/ranked' %}
+            YES
+            {% endif %}
+        </td>
+    </tr>
+    {% endwith %}
+    {% endwith %}
+{% empty %}
+    <tr>
+        <td colspan="2">No games.</td>
+    </tr>
+{% endfor %}
+</table>

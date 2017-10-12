@@ -14,7 +14,7 @@ class ChessGame:
         else:
             self.game_data = self.initialize()
 
-    def initialize(self):
+    def initialize(self, give_hand_to='white'):
         # create GamePersistentData
         # create Board
         # store board in game
@@ -27,9 +27,12 @@ class ChessGame:
         rookable_data = ['r1', 'r2']
         self.game_data.set_data('token/step/casting/white', rookable_data)
         self.game_data.set_data('token/step/casting/black', rookable_data)
+        self.game_data.set_data('token/step/name', 'waitCellSource')
+        self.game_data.set_data('token/step/side', give_hand_to)
+
         return self.game_data
 
-    def load_game(self, game_id, give_hand_to='white'):
+    def load_game(self, game_id):
         # load GamePersistentData context :
         # - position of pieces on board
         # - game state (token)
@@ -37,9 +40,6 @@ class ChessGame:
         self.game_id = game_id
         self.game_data = GamePersistentData.objects.filter(id=self.game_id).first()
         self.board.load_grid(self.game_data)
-        if not self.game_data.get_data('token/step/name'):
-            self.game_data.set_data('token/step/name', 'waitCellSource')
-            self.game_data.set_data('token/step/side', give_hand_to)
         return True
 
     """                                    user actions """
@@ -280,22 +280,64 @@ class ChessGame:
     # - accept belle
     # - quit game (-> sauver)
 
-    def reset_game(self):
+    def reset_round(self):
         history = self.game_data.get_data('history')
+        game_options = self.game_data.get_data('game_options')
+        participants = self.game_data.get_data('participants')
+        rounds = self.game_data.get_data('rounds')
         self.game_data.set_data(None, {})
         self.game_data.set_data('history', history)
+        self.game_data.set_data('game_options', game_options)
+        self.game_data.set_data('participants', participants)
+        self.game_data.set_data('rounds', rounds)
         self.initialize()
 
-    def reset_games(self):
+    def reset_game(self):
+        game_options = self.game_data.get_data('game_options')
+        participants = self.game_data.get_data('participants')
         self.game_data.set_data(None, {})
+        self.game_data.set_data('game_options', game_options)
+        self.game_data.set_data('participants', participants)
         self.initialize()
 
     def accept_checkmate(self):
         print 'ChessLogic.accept_checkmate'
         self.game_data.set_data('token/step/name', 'checkmate')
         self.game_data.set_data('token/result', 'checkmate')
-        self._save_game()
-        self.initialize()
+        self._save_game('checkmate')
+
+        if self._winning_games_gap_reached():
+            print '_winning_games_gap_reached'
+            # nothing to do
+        else:
+            # prepare next hand
+            current_round_number = 1
+            rounds = self.game_data.get_data('rounds')
+            if rounds:
+                current_round_number += len(rounds)
+            if current_round_number % 2 == 0:
+                next_side = 'black'
+            else:
+                next_side = 'white'
+            print 'give hand to next side : %s' % next_side
+            self.initialize(give_hand_to=next_side)
+
+    def declare_withdraw(self):
+        print 'ChessLogic.declare_withdraw'
+        self.game_data.set_data('token/step/name', 'withdraw')
+        self.game_data.set_data('token/result', 'checkmate')
+
+        self._save_game('withdraw')
+        if self._winning_games_gap_reached():
+            print '_winning_games_gap_reached'
+            pass
+        else:
+            next_side = 'black' if self.game_data.get_data('token/step/side') == 'white' else 'white'
+            self.initialize(give_hand_to=next_side)
+
+    def declare_draw(self):
+        print 'ChessLogic.declare_draw'
+        # todo
 
     def accept_revanche(self, user):
         pass
@@ -308,20 +350,64 @@ class ChessGame:
 
     """ private mechanics tools """
 
-    def _save_game(self):
+    def _winning_games_gap_reached(self):
+        # check if number of required winning games is reached
+        winning_games = int(self.game_data.get_data('game_options/winning_games'))
+        rounds = self.game_data.get_data('rounds')
+        number_of_white_wins = 0
+        number_of_black_wins = 0
+        for round_k, round in rounds.items():
+            if round['winner'] == 'white':
+                number_of_white_wins += 1
+            elif round['winner'] == 'black':
+                number_of_black_wins += 1
+
+        if (number_of_white_wins >= winning_games) or (number_of_black_wins >= winning_games):
+            return True
+        return False
+
+    def _save_game_result(self, result):
+        if self.game_data.get_data('token/step/side') == 'white':
+            winner_side = 'black'
+        else:
+            winner_side = 'white'
+        rounds = self.game_data.get_data('rounds')
+        round_result = dict()
+        round_result['result'] = result
+        round_result['winner'] = winner_side
+        if rounds:
+            new_round_path = 'rounds/%d' % (len(rounds) + 1)
+        else:
+            new_round_path = 'rounds/1'
+        self.game_data.set_data(new_round_path, round_result)
+
+    def _save_game(self, result):
+        # backup data
         history = self.game_data.get_data('history')
+        game_options = self.game_data.get_data('game_options')
+        participants = self.game_data.get_data('participants')
+
+        # save round results
+        self._save_game_result(result)
+        rounds = self.game_data.get_data('rounds')
+
+        # add round to history
         history_game = dict()
         history_game['token'] = self.game_data.get_data('token')
         history_game['board'] = self.game_data.get_data('board')
-
         if history:
             new_game_key = 'game_%02d' % (len(history) + 1)
         else:
             history = dict()
             new_game_key = 'game_01'
         history[new_game_key] = history_game
+
+        # prepare game data for a new round
         self.game_data.set_data(None, {})
         self.game_data.set_data('history', history)
+        self.game_data.set_data('game_options', game_options)
+        self.game_data.set_data('participants', participants)
+        self.game_data.set_data('rounds', rounds)
 
     def _check_promotion(self, piece, data):
         if piece.role.name == 'P':

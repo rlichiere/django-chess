@@ -9,7 +9,7 @@
 * pieces
 
 ### 0.0.2
-[gamelogic]
+[game logic]
 * implementation of all pieces standard moves
 * added special moves : Pawn+2, Enpassant, Promotion
 
@@ -20,50 +20,68 @@
 * debug details
 
 ### 0.0.3
-[gamelogic]
+[game logic]
 * avoid move when inducing check on own king
-* surrender button (required to finish a game when checkmate)
-* rook
+* added checkmate/surrender button (required to finish a game when checkmate)
+* added complete rook move
 
 [ui]
 * lifter in logs panel
 * own king check information
 
 
-
-
-
-
 ## Incoming
+
+### feature_user_management
+[game logic]
+* authentication form and views filtering
+* user participation management
+* winning_games management
+
+[ui]
+* lobby : opened, running and closed games, game creation
+* filter menu buttons depending on user profile :
+ * viewer : nothing
+ * player : surrender/checkmate
+ * game creator : Reset current round, Reset game
 
 
 ## Todo
 
 ### Urgent
-[gamelogic]
+[game logic]
+* give user capacity to :
+  1. edit/delete its own games
+  1. start the game when all sides have a player
 
 [ui]
+* refresh page for viewers and waiting player
 * information for all avoid move cases
 
-### MidTerm
-[gamelogic]
 
-[ui]
+### MidTerm
+[game logic]
+* for viewers : add capacity to move in history and log
+* for players : add capacity to move in log
+ * add 'rewrite log' option to enable move-in-log (and find a better label)
+ * forbidden for ranked games
 
 ### LongTerm
-[gamelogic]
-* user lobby
-* give user capacity to :
-  1. create games
-  1. edit/delete its own games
-  1. select a side in an opened game
-  1. start the game when all sides have a player
-* lock game (and refresh) when user do not plays current side turn
+[game logic]
+* refactor lobby mechanics to a Lobby class :
+ * game management : generic status to retrieve opened/running/finished/archived specific status
+ * game creation : generic form to manage game specific creation process)
+ * user management : generic user participation (1v1, NvN, etc)
+* user ranking :
+ * Elo calculation
+ * player Elo initialization
+ * find ranked game (based on Elo)
+ * find unranked game (based on Elo, or not)
 
 [ui]
 * bootstrap
 * nice colors (button)
-
+* Elo statistic pages
 
 ## Refactoring
 
@@ -73,7 +91,7 @@
 ### Layerize :
 * think about a kind of BoardDataAccessor to facilite/centralize access to board data :
     - standard format to pass request parameters (by-coords/by-piece, etc)
-    -
+
 * think about a real game_data object to improve access to sql data :
     - get : return cache data, otherwise sql data (and store in cache)
     - set : stores data in sql and cache
@@ -136,15 +154,52 @@
    },
    'board': {
       '1': {
-        'a': {
-           's': 'w',
-           'r': 'R',
-           'n': 'r2'
-        },
-        [...]
-      },
+         'a': {
+            's': 'w',
+            'r': 'R',
+            'n': 'r2'
+         },
+         [...]
+       },
       [...]
    },
+   'logs': {
+      'nnn': {
+         'side': 'white/black',
+         'official': 'xxx/e2-e4',
+         'source': {
+            'piece': 'p',
+            'x': 'e',
+            'y': '2'
+         },
+         'target': {
+            'x': 'e',
+            'y': '4'
+         }
+      }
+   },
+   'game_options': {
+      'name': 'xxx',
+      'winning_games': 1/2/n,
+      'creator': user_id,
+      'ranked': true/false
+      'public': true/false
+   },
+   'participants': {
+        'white': {
+            '1': user_id,
+        },
+        'black': {
+            '1': user_id,
+            '2': user_id,
+        }
+   },
+   'rounds': {
+        '1': {
+            'result': 'checkmate/draw/withdraw',
+            'winner': 'white/black'
+        }
+   }
 }
 ```
 
@@ -152,8 +207,7 @@
 
 
 ## Limitations
-* no rook
-* no check/checkmate arbitration (checkmate must be manually played to be appliyed)
+* no check/checkmate arbitration (checkmate must be manually played to be applied)
 
 ## known bugs
 ### GRAVE (not contournable)
@@ -161,35 +215,16 @@
 ### MAJOR (contournable manually)
 
 ### MINOR
-* promotion available when checkmate
+* promotion available when checkmate                    todo : a verifier
 
 
 ## fast ideas
 
 
-### finish implementing properly class DataPieceMove
-* must manage all data produced (by a move) and required (by interfaces)
-1. source_piece (real Piece object)
-1. target_piece (real Piece object)
-1. promotion
-1. eat
-1. en_passant
-
-### moves
-* implement remaining moves :
-1. O-O           King and Rook
-1. O-O-O         King and Rook
-
-### button
-* surrender to give the win
-    (actually necessary to finalize a game when checkmate, while waiting its automated detection)
-
 ### token change automations
 * king checking :
-   - checkmate (sinon killed, mais c pas top)
+   - checkmate should be automatically detected
 
 ### gamelogic
-* ending of game (abandon, king-killed, checkmate, draw)
-* checkmate ends game
-
+* ending of game (withdraw, draw)
 

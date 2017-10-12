@@ -1,4 +1,3 @@
-
 <table>
     <tr>
         <td>
@@ -92,6 +91,7 @@
             </div>
         </td>
     </tr>
+    {% if user_can_play %}
     <tr>
         <td>
             <div id="panel_buttons">
@@ -100,17 +100,20 @@
                         <td>
                             <a id="button_surrender_checkmate" href="{% url 'menu-action' pk=game.id action='surrender_checkmate' value=game_data.token.step.side %}">Surrender (checkmate)</a>
                         </td>
+                        {% if user_is_creator %}
                         <td>
-                            <a id="button_reset_game" href="{% url 'menu-action' pk=game.id action='reset_game' value=game_data.token.step.side %}">Reset Game</a>
+                            <a id="button_reset_round" href="{% url 'menu-action' pk=game.id action='reset_round' value=game_data.token.step.side %}">Reset current round</a>
                         </td>
                         <td>
-                            <a id="button_abandon_game" href="{% url 'menu-action' pk=game.id action='reset_all' value=game_data.token.step.side %}">Reset All</a>
+                            <a id="button_reset_game" href="{% url 'menu-action' pk=game.id action='reset_game' value=game_data.token.step.side %}">Reset game</a>
                         </td>
+                        {% endif %}
                     </tr>
                 </table>
             </div>
         </td>
     </tr>
+    {% endif %}
 </table>
 
 <script>

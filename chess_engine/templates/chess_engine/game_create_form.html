@@ -1,0 +1,54 @@
+{% load widget_tweaks %}
+
+<form role="form" id="game-create-form" method="post" action="{% url 'create-game' %}">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <h4 class="modal-title">Create new game</h4>
+  </div>
+  <div class="modal-body">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="form-group">
+                <label class="control-label" for="{{ form.name.id_for_label }}">Game name</label>
+                {% render_field form.name class+="form-control" placeholder="Game name" %}
+                <p id="id_name_example" class="help-block">Example: my game</p>
+                <p id="id_name_err_span"  class="help-block" style="display:none"> Invalid value - Game name should only contains characters and numbers</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="control-label" class="form-group">
+                <label for="{{ form.winning_games.id_for_label }}">Winning games</label>
+                {% render_field form.winning_games class+="form-control" %}
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="control-label" class="form-group">
+                <label for="{{ form.play_as.id_for_label }}">Play as</label>
+                {% render_field form.play_as class+="form-control" %}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="control-label" class="form-group">
+                <label for="{{ form.public.id_for_label }}">Public game</label>
+                {% render_field form.public %}
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="control-label" class="form-group">
+                <label for="{{ form.ranked.id_for_label }}">Ranked game</label>
+                {% render_field form.ranked %}
+            </div>
+        </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+    <button type="submit" class="btn btn-primary" value="deploy" >Submit</button>
+  </div>
+</form>
