@@ -483,10 +483,14 @@ class PieceKing(Piece):
             # king must not be checked
             if self.is_in_danger(src_x, src_y):
                 return False
-            rookables = self.board.game_data.get_data('token/step/casting/%s' % self.side.name)
+            rookables = self.board.game_data.get_data('token/step/castle/%s' % self.side.name)
             if castle_call_case in rookables:
                 # check path disponibility
                 if self._check_path_disponibility_horizontal(src_x, src_y, dest_x, dest_y):
+                    if self.board.get_piece_at(dest_y, dest_x) != '-':
+                        # target cell must be free
+                        return False
+
                     # check if path is not checked
                     if self._castle_path_is_targeted(castle_call_case):
                         return False

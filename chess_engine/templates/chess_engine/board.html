@@ -1,3 +1,4 @@
+{% load chess_engine_extras %}
 
 <table>
     <tr>
@@ -18,6 +19,7 @@
         </td>
         <td>
             <div id="panel_log" style="overflow-y:auto; height: 620px;">
+            <h4>Log</h4>
             <table border="1">
                 <tr><td><b>Step</b></td>
                     <td><b>Offic.</b></td>
@@ -40,12 +42,21 @@
             </div>
         </td>
         <td>
-            <div id="panel_special_data" style="overflow-y:auto; height: 620px;">
-                En passant : {{ game_data.token.step.enpassant }}<br />
-                Casting :<ul>
-                    <li>White : {{ game_data.token.step.casting.white }}</li>
-                    <li>Black : {{ game_data.token.step.casting.black }}</li>
-                </ul>
+            <div id="panel_special_data" style="overflow-y:auto; height: 620px; width: 300px;">
+                <h4>Debug</h4>
+                En passant : {{ game_data.token.step.enpassant }}<br /><br />
+                Castling :<ul>
+                    <li>White : {{ game_data.token.step.castle.white }}</li>
+                    <li>Black : {{ game_data.token.step.castle.black }}</li>
+                </ul><br />
+                Step : <button onclick="toggle_panel('debug_step');">Toggle</button><br/>
+                <div id="debug_step">{{ game_data|render_realjson2html:'token/step'|safe }}</div>
+                Rounds : <button onclick="toggle_panel('debug_rounds');">Toggle</button><br />
+                <div id="debug_rounds">{{ game_data|render_realjson2html:'rounds'|safe }}</div>
+                Board : <button onclick="toggle_panel('debug_board');">Toggle</button><br />
+                <div id="debug_board" style="display: none">{{ game_data|render_realjson2html:'board'|safe }}</div>
+                Logs : <button onclick="toggle_panel('debug_logs');">Toggle</button><br />
+                <div id="debug_logs" style="display: none">{{ game_data|render_realjson2html:'token/logs'|safe }}</div>
             </div>
         </td>
     </tr>
@@ -92,6 +103,7 @@
             </div>
         </td>
     </tr>
+    {% if user_can_play %}
     <tr>
         <td>
             <div id="panel_buttons">
@@ -100,17 +112,20 @@
                         <td>
                             <a id="button_surrender_checkmate" href="{% url 'menu-action' pk=game.id action='surrender_checkmate' value=game_data.token.step.side %}">Surrender (checkmate)</a>
                         </td>
+                        {% if user_is_creator %}
                         <td>
-                            <a id="button_reset_game" href="{% url 'menu-action' pk=game.id action='reset_game' value=game_data.token.step.side %}">Reset Game</a>
+                            <a id="button_reset_round" href="{% url 'menu-action' pk=game.id action='reset_round' value=game_data.token.step.side %}">Reset current round</a>
                         </td>
                         <td>
-                            <a id="button_abandon_game" href="{% url 'menu-action' pk=game.id action='reset_all' value=game_data.token.step.side %}">Reset All</a>
+                            <a id="button_reset_game" href="{% url 'menu-action' pk=game.id action='reset_game' value=game_data.token.step.side %}">Reset game</a>
                         </td>
+                        {% endif %}
                     </tr>
                 </table>
             </div>
         </td>
     </tr>
+    {% endif %}
 </table>
 
 <script>
@@ -121,4 +136,8 @@
         {% endif %}
 
     });
+
+    function toggle_panel(div_to_toggle) {
+        $('#' + div_to_toggle).toggle();
+    }
 </script>

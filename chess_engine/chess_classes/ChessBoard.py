@@ -159,9 +159,8 @@ class Board:
             '1': {'a': wr2, 'b': wh2, 'c': wb2, 'd': wq,  'e': wk,  'f': wb1, 'g': wh1, 'h': wr1},
         }
 
-    def render(self):
+    def render(self, context):
         template = loader.get_template(self.template_name)
-        context = dict()
         context['board'] = self
         context['game'] = self.game_data
         context['game_data'] = self.game_data.get_data(None)

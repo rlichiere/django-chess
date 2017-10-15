@@ -16,21 +16,62 @@
     </script>
 </head>
 <body>
-
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 
-{{ context.html_board|safe }}
+{# TITLE #}
+<h3>{{ context.game_logic.game_data.data|access:'game_options/name' }}
+-
+{% with white_user_id=context.game_logic.game_data.data|access:'participants/white/1' %}
+{% with black_user_id=context.game_logic.game_data.data|access:'participants/black/1' %}
+{% if white_user_id %}
+    {% with white_user=white_user_id|get_user %}
+    <i>{{ white_user.username }}</i>
+    {% endwith %}
+{% else %}
+    <a href="{% url 'join-game' pk=context.game_logic.game_data.id side='w' %}">Play</a>
+{% endif %}
+    (White) versus
+{% if black_user_id %}
+    {% with black_user=black_user_id|get_user %}
+    <i>{{ black_user.username }}</i>
+    {% endwith %}
+{% else %}
+    <a href="{% url 'join-game' pk=context.game_logic.game_data.id side='b' %}">Play</a>
+{% endif %}
+    (Black)
+{% endwith %}
+{% endwith %}
+-
+{% with rounds=context.game_logic.game_data.data|access:'rounds' %}
+{% with winning_games=context.game_logic.game_data.data|access:'game_options/winning_games' %}
+    {{ rounds|length }} / {{ winning_games|add:winning_games|add:"-1" }}
+{% endwith %}
+{% endwith %}
+</h3>
 
-<div>
-    Token :<br />
-    Step :<br />
-    {{ context.game_logic.game_data.data|render_json2html:'token/step'|safe }}
-    Logs :<br />
-    {{ context.game_logic.game_data.data|render_json2html:'token/logs'|safe }}
-    <br />
-    Board :<br />
-    json_data[{{ context.game_logic.game_data.data|render_json2html:'board'|safe }}]
-</div>
+{# BOARD or RESULT #}
+{% with token_step_side=context.game_logic.game_data.data|access:'token/step/side' %}
+    {% if token_step_side == False %}
+        <div>
+            Game ended.<br />
+            White wins : {{ context.game_results.white_wins }}<br />
+            Black wins : {{ context.game_results.black_wins }}<br />
+        </div>
+    {% else %}
+        {{ context.html_board|safe }}
+        {% if not context.user_can_play %}
+        <script>
+            function reloadPage() {
+                window.location.reload();
+            }
+            $(document).ready(function() {
+                setInterval(reloadPage, 10000);
+            });
+        </script>
+        {% endif %}
+    {% endif %}
+{% endwith %}
+
 
 </body>
 </html>
