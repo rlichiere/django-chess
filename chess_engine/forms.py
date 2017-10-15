@@ -1,6 +1,7 @@
 from django import forms
 from django.core.validators import RegexValidator
 from .models import GamePersistentData
+from chess_engine.chess_classes import ChessLogic
 
 
 class CreateChessGameForm(forms.Form):
@@ -27,6 +28,7 @@ class CreateChessGameForm(forms.Form):
             ranked = self.cleaned_data['ranked']
 
             game = GamePersistentData()
+
             game.set_data('game_options/name', name)
             game.set_data('game_options/winning_games', winning_games)
             game.set_data('game_options/public', public)
@@ -35,10 +37,11 @@ class CreateChessGameForm(forms.Form):
             if play_as != 'do_not_play':
                 game.set_data('participants/%s/1' % play_as, self.request.user.id)
 
-            game.set_data('token/step/name', 'waitCellSource')
-            game.set_data('token/step/side', 'white')
-
             game.save()
+
+            game_logic = ChessLogic.ChessGame(game.id)
+            game_logic.initialize(give_hand_to='white')
+
         except Exception as e:
             return False, 'Game creation error : %s' % e.message
         return True, 'Game created'

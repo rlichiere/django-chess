@@ -89,11 +89,12 @@ class GameView(LoginRequiredMixin, TemplateView):
                 rounds = game_logic.game_data.get_data('rounds')
                 white_wins = 0
                 black_wins = 0
-                for round_k, round in rounds.items():
-                    if round['winner'] == 'white':
-                        white_wins += 1
-                    elif round['winner'] == 'black':
-                        black_wins += 1
+                if rounds:
+                    for round_k, round in rounds.items():
+                        if round['winner'] == 'white':
+                            white_wins += 1
+                        elif round['winner'] == 'black':
+                            black_wins += 1
                 context['game_results'] = {
                     'white_wins': white_wins,
                     'black_wins': black_wins

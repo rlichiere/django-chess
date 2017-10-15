@@ -24,9 +24,7 @@ class ChessGame:
             self.game_data = GamePersistentData()
             self.game_id = self.game_data.id
 
-        rookable_data = ['r1', 'r2']
-        self.game_data.set_data('token/step/castle/white', rookable_data)
-        self.game_data.set_data('token/step/castle/black', rookable_data)
+        self._initialize_castle_data()
         self.game_data.set_data('token/step/name', 'waitCellSource')
         self.game_data.set_data('token/step/side', give_hand_to)
 
@@ -111,7 +109,7 @@ class ChessGame:
         source_line = self.game_data.get_data('token/step/data/sourceCell/line')
         source_column = self.game_data.get_data('token/step/data/sourceCell/column')
         source_piece = self.board.get_piece_at(source_line, source_column)
-        print 'ChessGame.move_piece_select_target: source_piece : %s' % source_piece
+        print 'ChessGame.move_piece_select_target: source_piece : %s (%s, %s)' % (source_piece, source_line, source_column)
 
         if not self._check_color_authorization(source_piece):
             return False
@@ -349,6 +347,11 @@ class ChessGame:
         pass
 
     """ private mechanics tools """
+
+    def _initialize_castle_data(self):
+        rookable_data = ['r1', 'r2']
+        self.game_data.set_data('token/step/castle/white', rookable_data)
+        self.game_data.set_data('token/step/castle/black', rookable_data)
 
     def _winning_games_gap_reached(self):
         # check if number of required winning games is reached

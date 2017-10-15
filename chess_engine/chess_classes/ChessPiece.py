@@ -487,6 +487,10 @@ class PieceKing(Piece):
             if castle_call_case in rookables:
                 # check path disponibility
                 if self._check_path_disponibility_horizontal(src_x, src_y, dest_x, dest_y):
+                    if self.board.get_piece_at(dest_y, dest_x) != '-':
+                        # target cell must be free
+                        return False
+
                     # check if path is not checked
                     if self._castle_path_is_targeted(castle_call_case):
                         return False
