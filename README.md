@@ -211,7 +211,6 @@
 
 ## known bugs
 ### GRAVE (not contournable)
-* rook error (seems no more initialized since user management)
 
 ### MAJOR (contournable manually)
 

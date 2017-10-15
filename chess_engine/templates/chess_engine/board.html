@@ -42,12 +42,12 @@
             </div>
         </td>
         <td>
-            <div id="panel_special_data" style="overflow-y:auto; height: 620px;">
+            <div id="panel_special_data" style="overflow-y:auto; height: 620px; width: 300px;">
                 <h4>Debug</h4>
                 En passant : {{ game_data.token.step.enpassant }}<br /><br />
                 Castling :<ul>
-                    <li>White : {{ game_data.token.step.casting.white }}</li>
-                    <li>Black : {{ game_data.token.step.casting.black }}</li>
+                    <li>White : {{ game_data.token.step.castle.white }}</li>
+                    <li>Black : {{ game_data.token.step.castle.black }}</li>
                 </ul><br />
                 Step : <button onclick="toggle_panel('debug_step');">Toggle</button><br/>
                 <div id="debug_step">{{ game_data|render_realjson2html:'token/step'|safe }}</div>

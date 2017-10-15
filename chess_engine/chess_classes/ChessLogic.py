@@ -25,8 +25,8 @@ class ChessGame:
             self.game_id = self.game_data.id
 
         rookable_data = ['r1', 'r2']
-        self.game_data.set_data('token/step/casting/white', rookable_data)
-        self.game_data.set_data('token/step/casting/black', rookable_data)
+        self.game_data.set_data('token/step/castle/white', rookable_data)
+        self.game_data.set_data('token/step/castle/black', rookable_data)
         self.game_data.set_data('token/step/name', 'waitCellSource')
         self.game_data.set_data('token/step/side', give_hand_to)
 
@@ -170,7 +170,7 @@ class ChessGame:
                 else:
                     rook = 'O-O-O'
 
-        self._clean_casting_data(source_piece)
+        self._clean_castle_data(source_piece)
 
         # positionner la piece deplacee sur la cible
         self.game_data.set_data('board/{line}/{column}'.format(line=y, column=x), source_piece)
@@ -524,17 +524,17 @@ class ChessGame:
             return False
         return True
 
-    def _clean_casting_data(self, source_piece):
+    def _clean_castle_data(self, source_piece):
         if source_piece.role.name == 'K':
             # drop rookables when king is moved
-            self.game_data.set_data('token/step/casting/%s' % source_piece.side.name, '-')
+            self.game_data.set_data('token/step/castle/%s' % source_piece.side.name, '-')
         elif source_piece.role.name == 'R':
             # drop that rook from list
-            rookables = self.game_data.get_data('token/step/casting/%s' % source_piece.side.name)
+            rookables = self.game_data.get_data('token/step/castle/%s' % source_piece.side.name)
             if rookables:
                 if source_piece.name in rookables:
                     if len(rookables) == 1:
-                        self.game_data.set_data('token/step/casting/%s' % source_piece.side.name, '-')
+                        self.game_data.set_data('token/step/castle/%s' % source_piece.side.name, '-')
                     else:
                         rookables.remove(source_piece.name)
-                        self.game_data.set_data('token/step/casting/%s' % source_piece.side.name, rookables)
+                        self.game_data.set_data('token/step/castle/%s' % source_piece.side.name, rookables)
