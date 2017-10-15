@@ -21,7 +21,7 @@
 
 ### 0.0.3
 [game logic]
-* avoid move when inducing check on own king
+* avoid move inducing check on own king
 * added checkmate/surrender button (required to finish a game when checkmate)
 * added complete rook move
 * user management
