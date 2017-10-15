@@ -24,27 +24,27 @@
 * avoid move when inducing check on own king
 * added checkmate/surrender button (required to finish a game when checkmate)
 * added complete rook move
+* user management
+ * authentication form and views filtering
+ * user participation management
+ * winning_games management
 
 [ui]
 * lifter in logs panel
 * own king check information
-
-
-## Incoming
-
-### feature_user_management
-[game logic]
-* authentication form and views filtering
-* user participation management
-* winning_games management
-
-[ui]
 * lobby : opened, running and closed games, game creation
 * filter menu buttons depending on user profile :
  * viewer : nothing
  * player : surrender/checkmate
  * game creator : Reset current round, Reset game
 * refresh page for waiting player and viewers
+
+
+## Incoming
+
+[game logic]
+
+[ui]
 
 
 ## Todo
