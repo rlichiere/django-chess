@@ -199,6 +199,10 @@
             'result': 'checkmate/draw/withdraw',
             'winner': 'white/black'
         }
+   },
+   'result': {
+        'winner': 'white/black',
+        'round_list': 'wbw',
    }
 }
 ```

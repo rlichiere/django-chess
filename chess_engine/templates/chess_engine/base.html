@@ -1,0 +1,62 @@
+{% load static %}
+{% load chess_engine_extras %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chess - Game</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <script>
+        function toggle_panel(div_to_toggle) {
+            $('#' + div_to_toggle).toggle();
+        }
+
+        var onDocumentReadyCallbacks = [];
+        function registerOnDocumentReady(functionName) {
+            onDocumentReadyCallbacks[onDocumentReadyCallbacks.length] = functionName;
+            //onDocumentReadyCallbacks.append(functionName);
+        }
+    </script>
+    <nav class="navbar navbar-toggleable-md navbar-inverse navbar-fixed-top">
+        <div class="navbar-header navbar-text">
+            <h2>{% block title %}{% endblock %}</h2>
+        </div>
+        <div class="navbar-nav navbar-right">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            {% if request.user.id %}
+            <a class="nav-item nav-link" href="/">Lobby</a>
+            <a class="nav-item nav-link" href="{% url "profile" pk=request.user.id %}">Profile</a>
+            <a class="nav-item nav-link" href="/logout">Logout</a>
+            {% else %}
+            <a class="nav-item nav-link" href="/login">Login</a>
+            {% endif %}
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        </div>
+    </nav>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    {% block body %}{% endblock %}
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    {% block extra_script %}{% endblock %}
+
+    <script>
+        $(document).ready(function() {
+           for (f in onDocumentReadyCallbacks) {
+               console.log("f:" + f);
+               onDocumentReadyCallbacks[f]();
+        }
+        });
+    </script>
+</body>
+</html>

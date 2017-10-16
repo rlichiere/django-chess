@@ -128,16 +128,12 @@
     {% endif %}
 </table>
 
+{% if game_data.token.step.name == 'promote' and user_can_play %}
 <script>
-    $(document).ready(function() {
-        console.log('document ready');
-        {% if game_data.token.step.name == 'promote' %}
-            $('#panel_promotion').show();
-        {% endif %}
-
-    });
-
-    function toggle_panel(div_to_toggle) {
-        $('#' + div_to_toggle).toggle();
+    function showPanelPromotion() {
+        $('#panel_promotion').show();
     }
+    registerOnDocumentReady(showPanelPromotion);
+
 </script>
+{% endif %}

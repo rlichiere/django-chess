@@ -1,0 +1,97 @@
+{% extends 'chess_engine/base.html' %}
+{% load static %}
+{% load chess_engine_extras %}
+
+{% block title %}{{ context.target_user }} Profile{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-6">
+            <h3>General information</h3>
+            <table>
+                <tr>
+                    <td>Name</td>
+                    <td><input type="text" class="text-muted"    value="{{ context.target_user.username }}" readonly="readonly"></td>
+                </tr>
+                <tr>
+                    <td>Email</td>
+                    <td><input type="text" class="text-muted" value="{{ context.target_user.email }}" readonly="readonly"></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><a href="#">Change password</a></td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-lg-6">
+            <h3>Performances</h3>
+            <table>
+                <tr>
+                    <td>Elo</td>
+                    <td><input type="text" class="text-muted"    value="{{ context.target_user.username }}" readonly="readonly"></td>
+                </tr>
+                <tr>
+                    <td>Ratio</td>
+                    <td><input type="text" class="text-muted" value="{{ context.target_user.email }}" readonly="readonly"></td>
+                </tr>
+                <tr>
+                    <td>Wins</td>
+                    <td><input type="text" class="text-muted" value="{{ context.target_user.email }}" readonly="readonly"></td>
+                </tr>
+                <tr>
+                    <td>Loss</td>
+                    <td><input type="text" class="text-muted" value="{{ context.target_user.email }}" readonly="readonly"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <h3>History</h3>
+            <div style="overflow-y:auto; height: 400px;">
+                <table border="1">
+                    <tr>
+                        <th>Game name</th>
+                        <th>Rounds</th>
+                        <th>Opponent</th>
+                        <th>Win/Lost</th>
+                        <th>Results</th>
+                        <th>Elo delta</th>
+                    </tr>
+                    {% for history in context.player_history %}
+                        {% if history.data.data|access:"result" %}
+                        <tr>
+                            <td><a href="{% url "chess-game" pk=history.data.id %}">{{ history.data.data|access:"game_options/name" }}</a></td>
+                            <td>{{ history.data.data|access:"rounds"|length }}</td>
+                            <td><a href="{% url "profile" pk=history.player_opponent.id %}">{{ history.player_opponent.username }}</a></td>
+
+                            {# Win/Lost #}
+                            {% if history.player_result == 'win' %}
+                                <td align="center" style="background-color: darkgreen" align="center">{{ history.player_result }}</td>
+                            {% elif history.player_result == 'lost' %}
+                                <td align="center" style="background-color: darkred">{{ history.player_result }}</td>
+                            {% else %}
+                                <td align="center" style="background-color: darkgrey">{{ history.player_result }}</td>
+                            {% endif %}
+
+                            <td>
+                                {% for c in history.player_round_list %}
+                                    {% if c == 'W' %}
+                                        <span style="color: darkgreen">{{ c }}</span>
+                                    {% elif c == 'L' %}
+                                        <span style="color: darkred">{{ c }}</span>
+                                    {% else %}
+                                        <span style="color: darkgrey">{{ c }}</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>elo</td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
