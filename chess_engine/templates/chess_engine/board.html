@@ -1,26 +1,34 @@
 {% load chess_engine_extras %}
 
 <style>
-    .chess-board TD:first-child {
+    .chess-board TD:first-child, .chess_board_bottom_line {
+        background-color: #{{ board.color_set.board_edge_cells_background_color }};
+        color: #{{ board.color_set.board_edge_cells_text_color }};
+        font-family: '{{ board.color_set.board_font_family }}';
+        font-size: {{ board.color_set.board_font_size }}px;
         padding-left: 3px;
         padding-right: 3px;
     }
 </style>
 <div class="row">
     <div class="panel col-lg-6 col-md-8 col-sm-12 col-xs-12">
+        {% with even_color=board.color_set.board_cell_light_color %}
+        {% with odd_color=board.color_set.board_cell_dark_color %}
         <table border="1" class="chess-board">
-            {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.8 line_key=8 even='#ccc' odd='#999' %}
-            {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.7 line_key=7 even='#999' odd='#ccc' %}
-            {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.6 line_key=6 even='#ccc' odd='#999' %}
-            {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.5 line_key=5 even='#999' odd='#ccc' %}
-            {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.4 line_key=4 even='#ccc' odd='#999' %}
-            {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.3 line_key=3 even='#999' odd='#ccc' %}
-            {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.2 line_key=2 even='#ccc' odd='#999' %}
-            {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.1 line_key=1 even='#999' odd='#ccc' %}
+            {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.8 line_key=8 even=even_color odd=odd_color %}
+            {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.7 line_key=7 even=odd_color odd=even_color %}
+            {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.6 line_key=6 even=even_color odd=odd_color %}
+            {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.5 line_key=5 even=odd_color odd=even_color %}
+            {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.4 line_key=4 even=even_color odd=odd_color %}
+            {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.3 line_key=3 even=odd_color odd=even_color %}
+            {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.2 line_key=2 even=even_color odd=odd_color %}
+            {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.1 line_key=1 even=odd_color odd=even_color %}
             <tr align="center" class="chess_board_bottom_line">
                 <td></td><td>a</td><td>b</td><td>c</td><td>d</td><td>e</td><td>f</td><td>g</td><td>h</td>
             </tr>
         </table>
+        {% endwith %}
+        {% endwith %}
         <div id="panel_promotion" style="display: none;">
             <div class="col-lg-3">Pawn promotion :</div>
             <div class="col-lg-7">

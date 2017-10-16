@@ -5,8 +5,8 @@ from chess_engine.models import *
 
 
 class ChessGame:
-    def __init__(self, game_id=None):
-        self.board = ChessBoard.Board()
+    def __init__(self, user_id, game_id=None):
+        self.board = ChessBoard.Board(user_id=user_id)
 
         if game_id:
             self.game_id = game_id
@@ -49,9 +49,6 @@ class ChessGame:
 
     def create_game(self):
         pass
-
-    def set_game_colorset(self, color_set):
-        self.board.set_color_set(color_set)
 
     def delete_game(self):
         pass

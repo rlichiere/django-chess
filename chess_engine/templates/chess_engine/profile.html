@@ -5,6 +5,16 @@
 {% block title %}Player {{ context.target_user }}{% endblock %}
 
 {% block body %}
+    <script>
+    function update_colorset(input_id) {
+        input_value = $('#' + input_id).val();
+        console.log('input_id:' + input_id + ', ' + $('#' + input_id).val() );
+        url = '/profile/{{ context.target_user.id }}/chess/' + input_id + '/' + input_value;
+        console.log('url:' + url);
+
+        window.location.href = url;
+    }
+    </script>
 <div class="container">
     <div class="row">
         <div class="col-lg-6">
@@ -50,7 +60,7 @@
     <div class="row">
         <div class="col-lg-12">
             <h3>History</h3>
-            <div style="overflow-y:auto; height: 400px;">
+            <div style="overflow-y:auto; min-height: 60px; max-height: 400px;">
                 <table border="1">
                     <tr>
                         <th>Game name</th>
@@ -97,6 +107,101 @@
                     {% endfor %}
                 </table>
             </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <h3>Colorset</h3>
+            <form class="form">
+                <h4>Cells</h4>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="form-group form-inline">
+                            <label for="board_cell_light_color">Light :</label>
+                            <input type="text" class="form-control" id="board_cell_light_color" title="Light cells" value="{{ context.color_set.board_cell_light_color }}" maxlength="7">
+                            <img style="background-color: #{{ context.color_set.board_cell_light_color }};" src="/static/chess_engine/pieces/w_pawn.png" width="32" height="32">
+                            <a href="#" onclick="update_colorset('board_cell_light_color');">save</a>
+                        </div>
+                        <div class="form-group form-inline">
+                            <label for="board_cell_dark_color">Dark :</label>
+                            <input type="text" class="form-control" id="board_cell_dark_color" title="Dark cells" value="{{ context.color_set.board_cell_dark_color }}" maxlength="7">
+                            <img style="background-color: #{{ context.color_set.board_cell_dark_color }};" src="/static/chess_engine/pieces/w_pawn.png" width="32" height="32">
+                            <a href="#" onclick="update_colorset('board_cell_dark_color');">save</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group form-inline">
+                            <label for="source_piece">Selected :</label>
+                            <input type="text" class="form-control" id="source_piece" title="Selected cell" value="{{ context.color_set.source_piece }}" maxlength="7">
+                            <img style="background-color: #{{ context.color_set.source_piece }};" src="/static/chess_engine/pieces/w_pawn.png" width="32" height="32">
+                            <a href="#" onclick="update_colorset('source_piece');">save</a>
+                        </div>
+                        <div class="form-group form-inline">
+                            <label for="target_piece">Target :</label>
+                            <input type="text" class="form-control" id="target_piece" title="Target cell" value="{{ context.color_set.target_piece }}" maxlength="7">
+                            <img style="background-color: #{{ context.color_set.target_piece }};" src="/static/chess_engine/pieces/w_pawn.png" width="32" height="32">
+                            <a href="#" onclick="update_colorset('target_piece');">save</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group form-inline">
+                            <label for="king_checked">Check :</label>
+                            <input type="text" class="form-control" id="king_checked" title="King checked" value="{{ context.color_set.king_checked }}" maxlength="7">
+                            <img style="background-color: #{{ context.color_set.king_checked }};" src="/static/chess_engine/pieces/w_king.png" width="32" height="32">
+                            <a href="#" onclick="update_colorset('king_checked');">save</a>
+                        </div>
+                    </div>
+                </div>
+                <h4>Edge cells</h4>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="form-group form-inline">
+                            <label for="board_edge_cells_background_color">Background color :</label>
+                            <input type="text" class="form-control" id="board_edge_cells_background_color" title="Edge cell background color" value="{{ context.color_set.board_edge_cells_background_color }}" maxlength="7">
+                            <a href="#" onclick="update_colorset('board_edge_cells_background_color');">save</a>
+                        </div>
+                        <div class="form-group form-inline">
+                            <label for="board_edge_cells_text_color">Font color :</label>
+                            <input type="text" class="form-control" id="board_edge_cells_text_color" title="Edge cell font color" value="{{ context.color_set.board_edge_cells_text_color }}" maxlength="7">
+                            <a href="#" onclick="update_colorset('board_edge_cells_text_color');">save</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group form-inline">
+                            <label for="board_font_family">Font family :</label>
+                            <input type="text" class="form-control" id="board_font_family" title="Edge cell font family" value="{{ context.color_set.board_font_family }}">
+                            <a href="#" onclick="update_colorset('board_font_family');">save</a>
+                        </div>
+                        <div class="form-group form-inline">
+                            <label for="board_font_size">Font size :</label>
+                            <input type="text" class="form-control" id="board_font_size" title="Edge cell font size" value="{{ context.color_set.board_font_size }}" maxlength="3">
+                            <a href="#" onclick="update_colorset('board_font_size');">save</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <style>
+                            .edge_cell {
+                                background-color: #{{ context.color_set.board_edge_cells_background_color }};
+                                color: #{{ context.color_set.board_edge_cells_text_color }};
+                                font-family: '{{ context.color_set.board_font_family }}';
+                                font-size: {{ context.color_set.board_font_size }}px;
+                                padding-left: 3px;
+                                padding-right: 3px;
+                            }
+                        </style>
+                        <table border="1">
+                            <tr>
+                                <td class="edge_cell" align="center">1</td>
+                                <td><img style="background-color: #{{ context.color_set.board_cell_light_color }};" src="/static/chess_engine/pieces/w_pawn.png" width="64" height="64"></td>
+                            </tr>
+                            <tr>
+                                <td class="edge_cell"></td>
+                                <td class="edge_cell" align="center">a</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>

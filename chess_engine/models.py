@@ -92,3 +92,7 @@ class GamePersistentData (PersistentObject):
         if 'target_piece' in move_data:
             log_data['target']['piece'] = move_data['target_piece']
         self.add_item('token', 'logs', log_data, '%03d.')
+
+
+class UserColorSet(PersistentObject):
+    user = models.ForeignKey(User)
