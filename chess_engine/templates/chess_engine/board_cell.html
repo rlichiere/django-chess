@@ -1,13 +1,12 @@
 {% load static %}
-
 {% if cell.role.name == 'K' and cell.side.name == game_data.token.step.side and game_data.token.step.attackers %}
-<td bgColor="#FF2222">
+<td bgColor="#{{ board.color_set.king_checked }}">
 {% elif game_data.token.step.data.sourceCell.column == c_key and game_data.token.step.data.sourceCell.line|add:"0" == l_key %}
-<td bgColor="{{ board.color_set.source_piece }}">
+<td bgColor="#{{ board.color_set.source_piece }}">
 {% elif game_data.token.step.data.targetCell.column == c_key and game_data.token.step.data.targetCell.line|add:"0" == l_key %}
-<td bgColor="{{ board.color_set.target_piece }}">
+<td bgColor="#{{ board.color_set.target_piece }}">
 {% else %}
-<td bgColor="{{ even }}">
+<td bgColor="#{{ bgcolor }}">
 {% endif %}
     {% if cell == '-' %}
     {% if game_data.token.step.name == 'waitCellTarget' or game_data.token.step.name == 'check' %}
@@ -19,13 +18,13 @@
     {% endif %}
 {% else %}
     {% if game_data.token.step.name == 'waitCellSource' and game_data.token.step.side == cell.side.name  or game_data.token.step.name == 'check' %}
-    <a id="{{ l_key }}_{{ c_key }}" href="{% url 'piece-action' pk=game.id action='select' line=l_key column=c_key %}">
+        {% if user_can_play %}<a id="{{ l_key }}_{{ c_key }}" href="{% url 'piece-action' pk=game.id action='select' line=l_key column=c_key %}">{% endif %}
         <img src="/static/chess_engine/pieces/{{ cell.side.name|slice:'0:1' }}_{{ cell.picture }}" />
-    </a>
+        {% if user_can_play %}</a>{% endif %}
     {% elif game_data.token.step.name == 'waitCellTarget' or game_data.token.step.name == 'check' %}
-    <a id="{{ l_key }}_{{ c_key }}" href="{% url 'piece-action' pk=game.id action='move' line=l_key column=c_key %}">
+    {% if user_can_play %}<a id="{{ l_key }}_{{ c_key }}" href="{% url 'piece-action' pk=game.id action='move' line=l_key column=c_key %}">{% endif %}
         <img src="/static/chess_engine/pieces/{{ cell.side.name|slice:'0:1' }}_{{ cell.picture }}" />
-    </a>
+    {% if user_can_play %}</a>{% endif %}
     {% else %}
         <img src="/static/chess_engine/pieces/{{ cell.side.name|slice:'0:1' }}_{{ cell.picture }}" />
     {% endif %}
