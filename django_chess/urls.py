@@ -27,7 +27,7 @@ urlpatterns = [
     url(r'^login/$', views.login, {'template_name': 'chess_engine/login.html', 'authentication_form': AuthForm},
         name="login"),
     url(r'^profile/(?P<pk>[0-9]+)$', ProfileView.as_view(), name='profile'),
-    url(r'^profile/(?P<pk>[0-9]+)/(?P<game_type>[a-z]+)/(?P<key>[a-zA-Z0-9_]+)/(?P<value>[a-zA-Z0-9- ]+)$',
+    url(r'^profile/(?P<pk>[0-9]+)/(?P<game_type>[a-z]+)/(?P<key>[a-zA-Z0-9_]+)/(?P<value>[a-zA-Z0-9_ -]+)$',
         ProfileUpdateKeyView.as_view(), name='profile-update-key'),
     url(r'^logout/$', views.logout, {'next_page': '/login'}, name='logout')
 ]

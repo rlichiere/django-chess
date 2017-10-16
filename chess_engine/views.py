@@ -104,9 +104,13 @@ class ProfileUpdateKeyView(LoginRequiredMixin, View):
         game_type = kwargs['game_type']
         key = kwargs['key']
         value = kwargs['value']
-        print 'ProfileUpdateKeyView for user : %s' % user_id
+
         user_colorset = UserColorSet.objects.filter(user=user_id).first()
-        user_colorset.set_data('%s/%s' % (game_type, key), value)
+        if key == 'reset':
+            if value == 'color_set':
+                user_colorset.set_data('%s' % game_type, ChessBoard.BoardColorSet().get_default_colorset())
+        else:
+            user_colorset.set_data('%s/%s' % (game_type, key), value)
         return HttpResponseRedirect(reverse('profile', kwargs={'pk': self.kwargs['pk']}))
 
 
