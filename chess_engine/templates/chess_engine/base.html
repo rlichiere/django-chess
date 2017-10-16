@@ -14,6 +14,12 @@
     <script>
         function toggle_panel(div_to_toggle) {
             $('#' + div_to_toggle).toggle();
+            prev_html = $('#button_toggle_' + div_to_toggle).html();
+            if (prev_html == '&lt;') {
+                $('#button_toggle_' + div_to_toggle).html('&gt;');
+            } else {
+                $('#button_toggle_' + div_to_toggle).html('&lt;');
+            }
         }
 
         var onDocumentReadyCallbacks = [];
@@ -26,16 +32,15 @@
         <div class="navbar-header navbar-text">
             <h2>{% block title %}{% endblock %}</h2>
         </div>
-        <div class="navbar-nav navbar-right">
+        <div class="navbar-nav navbar-right btn-group navbar-text">
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             {% if request.user.id %}
-            <a class="nav-item nav-link" href="/">Lobby</a>
-            <a class="nav-item nav-link" href="{% url "profile" pk=request.user.id %}">Profile</a>
-            <a class="nav-item nav-link" href="/logout">Logout</a>
+            <a class="nav-item nav-link btn" href="/">Lobby</a>
+            <a class="nav-item nav-link btn" href="{% url "profile" pk=request.user.id %}">Profile</a>
+            <a class="nav-item nav-link btn" href="/logout">Logout</a>
             {% else %}
-            <a class="nav-item nav-link" href="/login">Login</a>
+            <a class="nav-item nav-link btn" href="/login">Login</a>
             {% endif %}
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         </div>
     </nav>
     <br/>

@@ -2,7 +2,7 @@
 {% load static %}
 {% load chess_engine_extras %}
 
-{% block title %}{{ context.target_user }} Profile{% endblock %}
+{% block title %}Player {{ context.target_user }}{% endblock %}
 
 {% block body %}
 <div class="container">
@@ -12,11 +12,11 @@
             <table>
                 <tr>
                     <td>Name</td>
-                    <td><input type="text" class="text-muted"    value="{{ context.target_user.username }}" readonly="readonly"></td>
+                    <td><input type="text" class="text-muted" title="name" value="{{ context.target_user.username }}" readonly="readonly"></td>
                 </tr>
                 <tr>
                     <td>Email</td>
-                    <td><input type="text" class="text-muted" value="{{ context.target_user.email }}" readonly="readonly"></td>
+                    <td><input type="text" class="text-muted" title="name" value="{{ context.target_user.email }}" readonly="readonly"></td>
                 </tr>
                 <tr>
                     <td colspan="2"><a href="#">Change password</a></td>
