@@ -28,6 +28,7 @@
  * authentication form and views filtering
  * user participation management
  * winning_games management
+* color_set customization
 
 [ui]
 * lifter in logs panel
@@ -199,6 +200,10 @@
             'result': 'checkmate/draw/withdraw',
             'winner': 'white/black'
         }
+   },
+   'result': {
+        'winner': 'white/black',
+        'round_list': 'wbw',
    }
 }
 ```

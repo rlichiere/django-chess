@@ -1,0 +1,95 @@
+{% load static %}
+{% load chess_engine_extras %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chess - Game</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <style>
+        body { padding-top: 55px; }
+
+        .cell-green {
+            background-color: lightgreen;
+        }
+        .cell-red {
+            background-color: #ff5555;
+        }
+        .cell-neutral {
+            background-color: lightgray;
+        }
+        .cell-green .cell-text {
+            color: darkgreen;
+        }
+        .cell-red .cell-text {
+            color: darkred;
+        }
+        .cell-neutral .cell-text {
+            color: darkgrey;
+        }
+    </style>
+    <script>
+        function toggle_panel(div_to_toggle) {
+            $('#' + div_to_toggle).toggle();
+            var button_toggle = $('#button_toggle_' + div_to_toggle);
+            prev_html = button_toggle.html();
+            if (prev_html == '&lt;') {
+                button_toggle.html('&gt;');
+            } else {
+                button_toggle.html('&lt;');
+            }
+        }
+
+        var onDocumentReadyCallbacks = [];
+        function registerOnDocumentReady(functionName) {
+            onDocumentReadyCallbacks[onDocumentReadyCallbacks.length] = functionName;
+        }
+    </script>
+    <div class="container">
+        <nav class="navbar navbar-default navbar-inverse navbar-fixed-top">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <span class="navbar-brand"><strong>Chess</strong> {% block title %}{% endblock %}</span>
+                </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        {% if request.user.id %}
+                            <li><a href="/">Lobby</a></li>
+                            <li><a href="{% url "profile" pk=request.user.id %}">Profile</a></li>
+                            <li><a href="{% url "logout" %}">Logout</a></li>
+                        {% else %}
+                            <li><a href="{% url "login" %}">Login</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        {% block body %}{% endblock %}
+    </div>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    {% block extra_script %}{% endblock %}
+
+    <script>
+        $(document).ready(function() {
+           for (f in onDocumentReadyCallbacks) {
+               console.log("f:" + f);
+               onDocumentReadyCallbacks[f]();
+        }
+        });
+    </script>
+</body>
+</html>

@@ -1,11 +1,11 @@
 <tr>
     <td>{{ line_key }}</td>
-    {% include 'chess_engine/board_cell.html' with game=game game_data=game_data cell=line.a l_key=line_key c_key='a' even=even %}
-    {% include 'chess_engine/board_cell.html' with game=game game_data=game_data cell=line.b l_key=line_key c_key='b' even=odd %}
-    {% include 'chess_engine/board_cell.html' with game=game game_data=game_data cell=line.c l_key=line_key c_key='c' even=even %}
-    {% include 'chess_engine/board_cell.html' with game=game game_data=game_data cell=line.d l_key=line_key c_key='d' even=odd %}
-    {% include 'chess_engine/board_cell.html' with game=game game_data=game_data cell=line.e l_key=line_key c_key='e' even=even %}
-    {% include 'chess_engine/board_cell.html' with game=game game_data=game_data cell=line.f l_key=line_key c_key='f' even=odd %}
-    {% include 'chess_engine/board_cell.html' with game=game game_data=game_data cell=line.g l_key=line_key c_key='g' even=even %}
-    {% include 'chess_engine/board_cell.html' with game=game game_data=game_data cell=line.h l_key=line_key c_key='h' even=odd %}
+    {% include 'chess_engine/board_cell.html' with game=game game_data=game_data cell=line.a l_key=line_key c_key='a' bgcolor=even %}
+    {% include 'chess_engine/board_cell.html' with game=game game_data=game_data cell=line.b l_key=line_key c_key='b' bgcolor=odd %}
+    {% include 'chess_engine/board_cell.html' with game=game game_data=game_data cell=line.c l_key=line_key c_key='c' bgcolor=even %}
+    {% include 'chess_engine/board_cell.html' with game=game game_data=game_data cell=line.d l_key=line_key c_key='d' bgcolor=odd %}
+    {% include 'chess_engine/board_cell.html' with game=game game_data=game_data cell=line.e l_key=line_key c_key='e' bgcolor=even %}
+    {% include 'chess_engine/board_cell.html' with game=game game_data=game_data cell=line.f l_key=line_key c_key='f' bgcolor=odd %}
+    {% include 'chess_engine/board_cell.html' with game=game game_data=game_data cell=line.g l_key=line_key c_key='g' bgcolor=even %}
+    {% include 'chess_engine/board_cell.html' with game=game game_data=game_data cell=line.h l_key=line_key c_key='h' bgcolor=odd %}
 </tr>

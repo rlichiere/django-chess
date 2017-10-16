@@ -1,14 +1,120 @@
 from json2html import *
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import View, TemplateView, FormView
 
-from chess_classes import ChessLogic
+from chess_classes import ChessLogic, ChessBoard
 from .forms import *
+from .models import *
 
 
-class HomeView(TemplateView):
+class ProfileView(LoginRequiredMixin, TemplateView):
+    template_name = 'chess_engine/profile.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(ProfileView, self).get_context_data(**kwargs)
+        target_user_id = kwargs['pk']
+        target_user = User.objects.filter(id=target_user_id).first()
+        if not target_user:
+            return False
+        context['target_user'] = target_user
+
+        # search user games
+        history = list()
+        games = GamePersistentData.objects.all()
+        for game in games:
+            user_side = False
+            whites = game.get_data('participants/white')
+            if whites:
+                for white_k, white in whites.items():
+                    if int(white) == int(target_user_id):
+                        user_side = 'white'
+            blacks = game.get_data('participants/black')
+            if blacks:
+                for black_k, black in blacks.items():
+                    if int(black) == int(target_user_id):
+                        if user_side:
+                            user_side = 'both'
+                        else:
+                            user_side = 'black'
+            if user_side:
+                game_result = dict()
+                game_result['data'] = game
+                game_result['player_side'] = user_side
+
+                winner = game.get_data('result/winner')
+                if not winner:
+                    continue
+
+                # retrieve opponent
+                if user_side == 'white':
+                    opponent_id = game.get_data('participants/black/1')
+                elif user_side == 'black':
+                    opponent_id = game.get_data('participants/white/1')
+                else:
+                    print 'warning: unknown opponent for user_side %s' % user_side
+                    opponent_id = 1
+
+                opponent = User.objects.get(id=opponent_id)
+                game_result['player_opponent'] = opponent
+
+                if user_side == 'both':
+                    game_result['player_result'] = '-'
+                elif winner == user_side:
+                    game_result['player_result'] = 'win'
+                else:
+                    game_result['player_result'] = 'lost'
+
+                round_list = game.get_data('result/round_list')
+                if round_list:
+                    game_result['round_list'] = round_list
+                    player_round_list = ''
+                    for c in round_list:
+                        if c == user_side[:1]:
+                            player_round_list += 'W'
+                        else:
+                            player_round_list += 'L'
+                    game_result['player_round_list'] = player_round_list
+
+                history.append(game_result)
+        context['player_history'] = history
+
+        user_colorset = UserColorSet.objects.filter(user=target_user).first()
+        if not user_colorset:
+            user_colorset = UserColorSet(user=target_user)
+            default_colorset = ChessBoard.BoardColorSet().get_default_colorset()
+            user_colorset.set_data('chess', default_colorset)
+        context['color_set'] = user_colorset.get_data('chess')
+
+        return {'context': context}
+
+    def get(self, *args, **kwargs):
+        context = self.get_context_data(*args, **kwargs)
+        if not context:
+            return HttpResponseRedirect(reverse('login'))
+        return super(ProfileView, self).get(*args, **kwargs)
+
+
+class ProfileUpdateKeyView(LoginRequiredMixin, View):
+
+    def get(self, *args, **kwargs):
+        user_id = kwargs['pk']
+        game_type = kwargs['game_type']
+        key = kwargs['key']
+        value = kwargs['value']
+
+        user_colorset = UserColorSet.objects.filter(user=user_id).first()
+        if key == 'reset':
+            if value == 'color_set':
+                user_colorset.set_data('%s' % game_type, ChessBoard.BoardColorSet().get_default_colorset())
+        else:
+            user_colorset.set_data('%s/%s' % (game_type, key), value)
+        return HttpResponseRedirect(reverse('profile', kwargs={'pk': self.kwargs['pk']}))
+
+
+class HomeView(LoginRequiredMixin, TemplateView):
     template_name = 'chess_engine/home.html'
 
     def get_context_data(self, *args, **kwargs):
@@ -68,9 +174,12 @@ class GameView(LoginRequiredMixin, TemplateView):
         context = super(GameView, self).get_context_data(**kwargs)
 
         game_id = kwargs['pk']
-        game_logic = ChessLogic.ChessGame(game_id)
-        if game_logic:
-
+        game_logic = ChessLogic.ChessGame(user_id=self.request.user, game_id=game_id)
+        if not game_logic:
+            context['html_board'] = 'Game not found.'
+            return {'context': context}
+        else:
+            context['user'] = self.request.user
             context['user_is_creator'] = False
             creator_id = int(game_logic.game_data.get_data('game_options/creator'))
             if creator_id == self.request.user.id:
@@ -102,9 +211,6 @@ class GameView(LoginRequiredMixin, TemplateView):
             context['json_data'] = json2html.convert(json=game_logic.game_data.data)
             context['game_logic'] = game_logic
             return {'context': context}
-        else:
-            context['html_board'] = 'Game not found.'
-            return {'context': context}
 
 
 class PieceActionView(View):
@@ -116,7 +222,7 @@ class PieceActionView(View):
         column_k = kwargs['column']
         print 'PieceAction.get : game_id : %s, action : %s, line : %s, column : %s' % (game_id, action, line_k, column_k)
 
-        game_logic = ChessLogic.ChessGame(game_id)
+        game_logic = ChessLogic.ChessGame(user_id=self.request.user.id, game_id=game_id)
         if not game_logic:
             print ('PieceActionView.get ERROR : game not found : %s' % game_id)
             return HttpResponseRedirect(reverse('home'))
@@ -139,7 +245,7 @@ class PiecePromoteView(View):
     def get(self, request, *args, **kwargs):
         game_id = self.kwargs['pk']
 
-        game_logic = ChessLogic.ChessGame(game_id)
+        game_logic = ChessLogic.ChessGame(user_id=self.request.user.id, game_id=game_id)
         if not game_logic:
             print ('PieceActionView.get ERROR : game not found : %s' % game_id)
             return HttpResponseRedirect(reverse('home'))
@@ -153,7 +259,7 @@ class MenuView(View):
 
     def get(self, request, *args, **kwargs):
         game_id = self.kwargs['pk']
-        game_logic = ChessLogic.ChessGame(game_id)
+        game_logic = ChessLogic.ChessGame(user_id=self.request.user.id, game_id=game_id)
         if not game_logic:
             print ('PieceActionView.get ERROR : game not found : %s' % game_id)
             return HttpResponseRedirect(reverse('home'))

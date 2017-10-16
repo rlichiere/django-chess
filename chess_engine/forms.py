@@ -39,7 +39,7 @@ class CreateChessGameForm(forms.Form):
 
             game.save()
 
-            game_logic = ChessLogic.ChessGame(game.id)
+            game_logic = ChessLogic.ChessGame(user_id=self.request.user.id, game_id=game.id)
             game_logic.initialize(give_hand_to='white')
 
         except Exception as e:

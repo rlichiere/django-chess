@@ -1,47 +1,38 @@
+{% extends 'chess_engine/base.html' %}
 {% load static %}
 {% load chess_engine_extras %}
 
+{% block title %}Lobby{% endblock %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Chess - Lobby</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-
-<h2>Lobby</h2>
-
-<h3>Opened games</h3>
-{% include 'chess_engine/lobby_list_games.html' with games=context.opened_games %}
-<h3>Running games</h3>
-{% include 'chess_engine/lobby_list_games.html' with games=context.running_games %}
-<h3>Finished games</h3>
-{% include 'chess_engine/lobby_list_games.html' with games=context.finished_games %}
-
-{% if context.view.request.user.id %}
-<h3>Create Game</h3>
-<div class="pull">
-    <a class="btn btn-primary" data-toggle="modal" data-target="#CreateGameModal" data-keyboard="false" href="{% url 'create-game' %}" >Create new game</a>
-    <div id="CreateGameModal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
+{% block body %}
+    <div class="row">
+        <div class="col-lg-10 col-md-8 col-sm-8">
+            <div class="panel col-lg-4 col-md-6">
+                <h3>Opened games</h3>
+                {% include 'chess_engine/lobby_list_games.html' with games=context.opened_games %}
+            </div>
+            <div class="panel col-lg-4 col-md-6">
+                <h3>Running games</h3>
+                {% include 'chess_engine/lobby_list_games.html' with games=context.running_games %}
+            </div>
+            <div class="panel col-lg-4 col-md-6">
+                <h3>Finished games</h3>
+                {% include 'chess_engine/lobby_list_games.html' with games=context.finished_games %}
             </div>
         </div>
+        <div class="col-lg-2 col-md-4 col-sm-4">
+            {% if context.view.request.user.id %}
+                <div class="panel col-12">
+                    <h3>Create Game</h3>
+                    <a class="btn btn-primary" data-toggle="modal" data-target="#CreateGameModal" data-keyboard="false" href="{% url 'create-game' %}" >Create new game</a>
+                    <div id="CreateGameModal" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
     </div>
-</div>
-{% endif %}
-
-
-<!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"
-			  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-			  crossorigin="anonymous"></script>
-
-<!-- Bootstrap Core JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
-
-</body>
-</html>
+{% endblock %}

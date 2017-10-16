@@ -5,8 +5,8 @@ from chess_engine.models import *
 
 
 class ChessGame:
-    def __init__(self, game_id=None):
-        self.board = ChessBoard.Board()
+    def __init__(self, user_id, game_id=None):
+        self.board = ChessBoard.Board(user_id=user_id)
 
         if game_id:
             self.game_id = game_id
@@ -49,9 +49,6 @@ class ChessGame:
 
     def create_game(self):
         pass
-
-    def set_game_colorset(self, color_set):
-        self.board.set_color_set(color_set)
 
     def delete_game(self):
         pass
@@ -305,8 +302,8 @@ class ChessGame:
         self._save_game('checkmate')
 
         if self._winning_games_gap_reached():
-            print '_winning_games_gap_reached'
             # nothing to do
+            pass
         else:
             # prepare next hand
             current_round_number = 1
@@ -370,7 +367,8 @@ class ChessGame:
         return False
 
     def _save_game_result(self, result):
-        if self.game_data.get_data('token/step/side') == 'white':
+        side = self.game_data.get_data('token/step/side')
+        if side == 'white':
             winner_side = 'black'
         else:
             winner_side = 'white'
@@ -384,6 +382,24 @@ class ChessGame:
             new_round_path = 'rounds/1'
         self.game_data.set_data(new_round_path, round_result)
 
+        if self._winning_games_gap_reached():
+            print '_winning_games_gap_reached'
+            self.game_data.set_data('result/winner', winner_side)
+            round_list = ''
+            rounds = self.game_data.get_data('rounds')
+            round_count = 1
+            while round_count <= len(rounds):
+                round_path = 'rounds/%d/winner' % round_count
+                round_winner = self.game_data.get_data(round_path)
+                if round_winner == 'white':
+                    round_list += 'w'
+                elif round_winner == 'black':
+                    round_list += 'b'
+                else:
+                    print 'warning : unknown side : %s' % round_winner
+                round_count += 1
+            self.game_data.set_data('result/round_list', round_list)
+
     def _save_game(self, result):
         # backup data
         history = self.game_data.get_data('history')
@@ -393,6 +409,7 @@ class ChessGame:
         # save round results
         self._save_game_result(result)
         rounds = self.game_data.get_data('rounds')
+        results = self.game_data.get_data('result')
 
         # add round to history
         history_game = dict()
@@ -411,6 +428,7 @@ class ChessGame:
         self.game_data.set_data('game_options', game_options)
         self.game_data.set_data('participants', participants)
         self.game_data.set_data('rounds', rounds)
+        self.game_data.set_data('result', results)
 
     def _check_promotion(self, piece, data):
         if piece.role.name == 'P':
