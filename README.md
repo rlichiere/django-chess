@@ -28,6 +28,7 @@
  * authentication form and views filtering
  * user participation management
  * winning_games management
+* color_set customization
 
 [ui]
 * lifter in logs panel
