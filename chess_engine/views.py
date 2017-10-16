@@ -44,6 +44,8 @@ class ProfileView(LoginRequiredMixin, TemplateView):
                 game_result['player_side'] = user_side
 
                 winner = game.get_data('result/winner')
+                if not winner:
+                    continue
 
                 # retrieve opponent
                 if user_side == 'white':
@@ -57,13 +59,12 @@ class ProfileView(LoginRequiredMixin, TemplateView):
                 opponent = User.objects.get(id=opponent_id)
                 game_result['player_opponent'] = opponent
 
-                if winner:
-                    if user_side == 'both':
-                        game_result['player_result'] = '-'
-                    elif winner == user_side:
-                        game_result['player_result'] = 'win'
-                    else:
-                        game_result['player_result'] = 'lost'
+                if user_side == 'both':
+                    game_result['player_result'] = '-'
+                elif winner == user_side:
+                    game_result['player_result'] = 'win'
+                else:
+                    game_result['player_result'] = 'lost'
 
                 round_list = game.get_data('result/round_list')
                 if round_list:
@@ -148,8 +149,11 @@ class GameView(LoginRequiredMixin, TemplateView):
 
         game_id = kwargs['pk']
         game_logic = ChessLogic.ChessGame(game_id)
-        if game_logic:
-
+        if not game_logic:
+            context['html_board'] = 'Game not found.'
+            return {'context': context}
+        else:
+            context['user'] = self.request.user
             context['user_is_creator'] = False
             creator_id = int(game_logic.game_data.get_data('game_options/creator'))
             if creator_id == self.request.user.id:
@@ -180,9 +184,6 @@ class GameView(LoginRequiredMixin, TemplateView):
                 }
             context['json_data'] = json2html.convert(json=game_logic.game_data.data)
             context['game_logic'] = game_logic
-            return {'context': context}
-        else:
-            context['html_board'] = 'Game not found.'
             return {'context': context}
 
 

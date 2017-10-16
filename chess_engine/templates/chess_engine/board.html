@@ -1,8 +1,14 @@
 {% load chess_engine_extras %}
 
+<style>
+    .chess-board TD:first-child {
+        padding-left: 3px;
+        padding-right: 3px;
+    }
+</style>
 <div class="row">
-    <div class="panel col-lg-6 col-md-6">
-        <table border="1">
+    <div class="panel col-lg-6 col-md-8 col-sm-12 col-xs-12">
+        <table border="1" class="chess-board">
             {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.8 line_key=8 even='#ccc' odd='#999' %}
             {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.7 line_key=7 even='#999' odd='#ccc' %}
             {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.6 line_key=6 even='#ccc' odd='#999' %}
@@ -11,14 +17,12 @@
             {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.3 line_key=3 even='#999' odd='#ccc' %}
             {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.2 line_key=2 even='#ccc' odd='#999' %}
             {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.1 line_key=1 even='#999' odd='#ccc' %}
-            <tr>
+            <tr align="center" class="chess_board_bottom_line">
                 <td></td><td>a</td><td>b</td><td>c</td><td>d</td><td>e</td><td>f</td><td>g</td><td>h</td>
             </tr>
         </table>
         <div id="panel_promotion" style="display: none;">
-            <div class="col-lg-3">
-            Pawn promotion :
-            </div>
+            <div class="col-lg-3">Pawn promotion :</div>
             <div class="col-lg-7">
                 <table border="1">
                     <tr>
@@ -47,84 +51,97 @@
             </div>
         </div>
 
-        {% if user_can_play %}
-        <br />
-        <div id="panel_buttons">
+        {% if user_can_play or user_is_creator %}
+        <div id="panel_buttons" style="margin-top: 7px;">
             <ul class="list-inline">
+                {% if user_can_play %}
                 <li><a id="button_surrender_checkmate" class="btn btn-danger" href="{% url 'menu-action' pk=game.id action='surrender_checkmate' value=game_data.token.step.side %}">Surrender (checkmate)</a></li>
+                {% endif %}
+                {% if user_is_creator %}
                 <li><a id="button_reset_round" class="btn btn-warning" href="{% url 'menu-action' pk=game.id action='reset_round' value=game_data.token.step.side %}">Reset current round</a></li>
                 <li><a id="button_reset_game" class="btn btn-warning" href="{% url 'menu-action' pk=game.id action='reset_game' value=game_data.token.step.side %}">Reset game</a></li>
+                {% endif %}
             </ul>
         </div>
         {% endif %}
-
-    </div>
-    <div class="panel col-lg-3 col-md-3" id="panel_log" style="overflow-y:auto; overflow-x:hidden;  height: 546px;">
-        <table border="1">
-            <tr><td><b>Step</b></td>
-                <td><b>Offic.</b></td>
-                <td><b>Piece</b></td>
-                <td><b>Source</b></td>
-                <td><b>Target</b></td>
-                <td><b>Eat</b></td>
-            </tr>
-            {% for log_key, log in game_data.token.logs.items|dictsort:"0.lower" %}
-            <tr>
-                <td>{{ log_key }}</td>
-                <td>{{ log.official }}</td>
-                <td>{{ log.source.piece.r }}</td>
-                <td>{{ log.source.x }}{{ log.source.y }}</td>
-                <td>{{ log.target.x }}{{ log.target.y }}</td>
-                <td>{{ log.target.piece.r }}</td>
-            </tr>
-            {% endfor %}
-        </table>
     </div>
 
-    <div class="panel col-lg-3 col-md-3" id="panel_special_data" style="overflow-y:auto; height: 620px;">
-        <label class="alert">Turn :
-        {% if user_can_play and game_data.token.step.side == 'white' %}
-            <span class="alert label-success">White</span>
-            <span class="alert alert alert-info">Black</span>
-        {% elif user_can_play and game_data.token.step.side == 'black' %}
-            <span class="alert alert-info">White</span>
-            <span class="alert label-success">Black</span>
-        {% elif not user_can_play and game_data.token.step.side == 'white' %}
-            <span class="alert label-primary">White</span>
-            <span class="alert alert-info">Black</span>
-        {% elif not user_can_play and game_data.token.step.side == 'black' %}
-            <span class="alert alert-info">White</span>
-            <span class="alert label-primary">Black</span>
-        {% endif %}
-        </label>
+    <div class="panel col-lg-3 col-md-4 col-sm-6 col-xs-12" id="panel_special_data">
+        <div>
+            <label class="alert">Turn :
+            {% if user_can_play and game_data.token.step.side == 'white' %}
+                <span class="alert label-success">White</span>
+                <span class="alert alert alert-info">Black</span>
+            {% elif user_can_play and game_data.token.step.side == 'black' %}
+                <span class="alert alert-info">White</span>
+                <span class="alert label-success">Black</span>
+            {% elif not user_can_play and game_data.token.step.side == 'white' %}
+                <span class="alert label-primary">White</span>
+                <span class="alert alert-info">Black</span>
+            {% elif not user_can_play and game_data.token.step.side == 'black' %}
+                <span class="alert alert-info">White</span>
+                <span class="alert label-primary">Black</span>
+            {% endif %}
+            </label>
 
-        {% if game_data.token.step.data.impossible_move %}
-            <div class="alert alert-warning" id="panel_message">
-                <strong>Impossible move !</strong><br />
-                Reason : {{ game_data.token.step.data.impossible_move }}
+            {% if game_data.token.step.data.impossible_move %}
+                <div class="alert alert-warning" id="panel_message">
+                    <strong>Impossible move !</strong><br />
+                    Reason : {{ game_data.token.step.data.impossible_move }}
+                </div>
+            {% endif %}
+        </div>
+
+        {% if user.is_superuser %}
+        <div>
+            <h4 onclick="toggle_panel('panel_debug');">Debug <span id="button_toggle_panel_debug">&gt;</span></h4>
+            <div id="panel_debug" style="display: none; overflow-y:auto; height: 490px;">
+                En passant : {{ game_data.token.step.enpassant }}<br /><br />
+                Castling :<ul>
+                    <li>White : {{ game_data.token.step.castle.white }}</li>
+                    <li>Black : {{ game_data.token.step.castle.black }}</li>
+                </ul><br />
+                <span onclick="toggle_panel('debug_step');">Step <span id="button_toggle_debug_step">&gt;</span></span><br/>
+                <div id="debug_step" style="display: none;">{{ game_data|render_realjson2html:'token/step'|safe }}</div>
+
+                <span onclick="toggle_panel('debug_rounds');">Rounds <span id="button_toggle_debug_rounds">&gt;</span></span><br />
+                <div id="debug_rounds" style="display: none;">{{ game_data|render_realjson2html:'rounds'|safe }}</div>
+
+                <span onclick="toggle_panel('debug_board');">Board <span id="button_toggle_debug_board">&gt;</span></span><br />
+                <div id="debug_board" style="display: none">{{ game_data|render_realjson2html:'board'|safe }}</div>
+
+                <span onclick="toggle_panel('debug_logs');">Logs <span id="button_toggle_debug_logs">&gt;</span></span><br />
+                <div id="debug_logs" style="display: none">{{ game_data|render_realjson2html:'token/logs'|safe }}</div>
             </div>
+        </div>
         {% endif %}
+    </div>
 
-        <h4 onclick="toggle_panel('panel_debug');">Debug <span id="button_toggle_panel_debug">&gt;</span></h4>
-        <div id="panel_debug" style="display: none;">
-            En passant : {{ game_data.token.step.enpassant }}<br /><br />
-            Castling :<ul>
-                <li>White : {{ game_data.token.step.castle.white }}</li>
-                <li>Black : {{ game_data.token.step.castle.black }}</li>
-            </ul><br />
-            <span onclick="toggle_panel('debug_step');">Step <span id="button_toggle_debug_step">&gt;</span></span><br/>
-            <div id="debug_step" style="display: none;">{{ game_data|render_realjson2html:'token/step'|safe }}</div>
-
-            <span onclick="toggle_panel('debug_rounds');">Rounds <span id="button_toggle_debug_rounds">&gt;</span></span><br />
-            <div id="debug_rounds" style="display: none;">{{ game_data|render_realjson2html:'rounds'|safe }}</div>
-
-            <span onclick="toggle_panel('debug_board');">Board <span id="button_toggle_debug_board">&gt;</span></span><br />
-            <div id="debug_board" style="display: none">{{ game_data|render_realjson2html:'board'|safe }}</div>
-
-            <span onclick="toggle_panel('debug_logs');">Logs <span id="button_toggle_debug_logs">&gt;</span></span><br />
-            <div id="debug_logs" style="display: none">{{ game_data|render_realjson2html:'token/logs'|safe }}</div>
+    <div class="panel col-lg-3 col-md-4 col-sm-6 col-xs-12">
+        <h4 onclick="toggle_panel('panel_log');">Log <span id="button_toggle_panel_log">&gt;</span></h4><br/>
+        <div id="panel_log" style="display: none; overflow-y:auto; overflow-x:hidden; height: 546px;">
+            <table border="1">
+                <tr><td><b>Step</b></td>
+                    <td><b>Offic.</b></td>
+                    <td><b>Piece</b></td>
+                    <td><b>Source</b></td>
+                    <td><b>Target</b></td>
+                    <td><b>Eat</b></td>
+                </tr>
+                {% for log_key, log in game_data.token.logs.items|dictsort:"0.lower" %}
+                <tr>
+                    <td>{{ log_key }}</td>
+                    <td>{{ log.official }}</td>
+                    <td>{{ log.source.piece.r }}</td>
+                    <td>{{ log.source.x }}{{ log.source.y }}</td>
+                    <td>{{ log.target.x }}{{ log.target.y }}</td>
+                    <td>{{ log.target.piece.r }}</td>
+                </tr>
+                {% endfor %}
+            </table>
         </div>
     </div>
+
 </div>
 
 {% if game_data.token.step.name == 'promote' and user_can_play %}

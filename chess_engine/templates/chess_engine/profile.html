@@ -12,15 +12,17 @@
             <table>
                 <tr>
                     <td>Name</td>
-                    <td><input type="text" class="text-muted" title="name" value="{{ context.target_user.username }}" readonly="readonly"></td>
+                    <td><input type="text" class="text-muted" title="Name" value="{{ context.target_user.username }}" readonly="readonly"></td>
                 </tr>
                 <tr>
                     <td>Email</td>
-                    <td><input type="text" class="text-muted" title="name" value="{{ context.target_user.email }}" readonly="readonly"></td>
+                    <td><input type="text" class="text-muted" title="Email" value="{{ context.target_user.email }}" readonly="readonly"></td>
                 </tr>
+                {% if context.target_user == request.user %}
                 <tr>
                     <td colspan="2"><a href="#">Change password</a></td>
                 </tr>
+                {% endif %}
             </table>
         </div>
         <div class="col-lg-6">
@@ -28,19 +30,19 @@
             <table>
                 <tr>
                     <td>Elo</td>
-                    <td><input type="text" class="text-muted"    value="{{ context.target_user.username }}" readonly="readonly"></td>
+                    <td><input type="text" class="text-muted" title="Elo" value="{{ context.target_user.username }}" readonly="readonly"></td>
                 </tr>
                 <tr>
                     <td>Ratio</td>
-                    <td><input type="text" class="text-muted" value="{{ context.target_user.email }}" readonly="readonly"></td>
+                    <td><input type="text" class="text-muted" title="Ratio" value="{{ context.target_user.email }}" readonly="readonly"></td>
                 </tr>
                 <tr>
-                    <td>Wins</td>
-                    <td><input type="text" class="text-muted" value="{{ context.target_user.email }}" readonly="readonly"></td>
+                    <td>Victories</td>
+                    <td><input type="text" class="text-muted" title="Number of victories" value="{{ context.target_user.email }}" readonly="readonly"></td>
                 </tr>
                 <tr>
-                    <td>Loss</td>
-                    <td><input type="text" class="text-muted" value="{{ context.target_user.email }}" readonly="readonly"></td>
+                    <td>Defeats</td>
+                    <td><input type="text" class="text-muted" title="Number of defeats" value="{{ context.target_user.email }}" readonly="readonly"></td>
                 </tr>
             </table>
         </div>
@@ -67,23 +69,27 @@
 
                             {# Win/Lost #}
                             {% if history.player_result == 'win' %}
-                                <td align="center" style="background-color: darkgreen" align="center">{{ history.player_result }}</td>
+                                <td align="center" class="cell-green" align="center">{{ history.player_result }}</td>
                             {% elif history.player_result == 'lost' %}
-                                <td align="center" style="background-color: darkred">{{ history.player_result }}</td>
+                                <td align="center" class="cell-red">{{ history.player_result }}</td>
                             {% else %}
-                                <td align="center" style="background-color: darkgrey">{{ history.player_result }}</td>
+                                <td align="center" class="cell-neutral">{{ history.player_result }}</td>
                             {% endif %}
 
                             <td>
-                                {% for c in history.player_round_list %}
-                                    {% if c == 'W' %}
-                                        <span style="color: darkgreen">{{ c }}</span>
-                                    {% elif c == 'L' %}
-                                        <span style="color: darkred">{{ c }}</span>
-                                    {% else %}
-                                        <span style="color: darkgrey">{{ c }}</span>
-                                    {% endif %}
-                                {% endfor %}
+                                <table>
+                                    <tr>
+                                        {% for c in history.player_round_list %}
+                                            {% if c == 'W' %}
+                                                <td class="cell-green"><span class="cell-text">{{ c }}</span></td>
+                                            {% elif c == 'L' %}
+                                                <td class="cell-red"><span class="cell-text">{{ c }}</span></td>
+                                            {% else %}
+                                                <td class="cell-neutral"><span class="cell-text">{{ c }}</span></td>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </tr>
+                                </table>
                             </td>
                             <td>elo</td>
                         </tr>
