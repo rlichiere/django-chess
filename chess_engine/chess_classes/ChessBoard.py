@@ -2,7 +2,7 @@
 from django.template import loader
 
 from chess_engine.chess_classes import ChessPiece
-from chess_engine.models import GamePersistentData
+from chess_engine.models import GamePersistentData, UserColorSet
 from utils import utils
 
 
@@ -13,16 +13,46 @@ class Side:
 
 
 class BoardColorSet:
-    def __init__(self, checkerboard):
-        self.checkerboard = checkerboard
-        self.source_piece = '#559'
-        self.target_piece = '#595'
+    def __init__(self, user_id=None):
+        colorset = dict()
+        if user_id:
+            user_colorset = UserColorSet.objects.filter(user=user_id).first()
+            if not user_colorset:
+                colorset = self.get_default_colorset()
+            else:
+                colorset = user_colorset.get_data('chess')
+                if not colorset:
+                    colorset = self.get_default_colorset()
+        else:
+            colorset = self.get_default_colorset()
+        self.board_cell_dark_color = colorset['board_cell_dark_color']
+        self.board_cell_light_color = colorset['board_cell_light_color']
+        self.source_piece = colorset['source_piece']
+        self.target_piece = colorset['target_piece']
+        self.king_checked = colorset['king_checked']
+        self.board_edge_cells_background_color = colorset['board_edge_cells_background_color']
+        self.board_edge_cells_text_color = colorset['board_edge_cells_text_color']
+        self.board_font_family = colorset['board_font_family']
+        self.board_font_size = colorset['board_font_size']
+
+    def get_default_colorset(self):
+        res = dict()
+        res['board_cell_dark_color'] = '999'
+        res['board_cell_light_color'] = 'ccc'
+        res['source_piece'] = '559'
+        res['target_piece'] = '595'
+        res['king_checked'] = 'f22'
+        res['board_edge_cells_background_color'] = 'ccc'
+        res['board_edge_cells_text_color'] = '444'
+        res['board_font_family'] = 'Verdana'
+        res['board_font_size'] = '16'
+        return res
 
 
 class Board:
     template_name = 'chess_engine/board.html'
 
-    def __init__(self):
+    def __init__(self, user_id):
         print 'ChessBoard.__init__'
         self.grid = dict()
         self.game_data = None
@@ -30,11 +60,7 @@ class Board:
         self.sides['white'] = Side('white')
         self.sides['black'] = Side('black')
 
-        self.default_color_set = BoardColorSet(checkerboard={'white': '#bbb', 'black': '#888'})
-        self.color_set = self.default_color_set
-
-    def set_color_set(self, color_set):
-        self.color_set = color_set
+        self.color_set = BoardColorSet(user_id=user_id)
 
     def load_grid(self, game_data):
         self.game_data = game_data
@@ -159,9 +185,8 @@ class Board:
             '1': {'a': wr2, 'b': wh2, 'c': wb2, 'd': wq,  'e': wk,  'f': wb1, 'g': wh1, 'h': wr1},
         }
 
-    def render(self):
+    def render(self, context):
         template = loader.get_template(self.template_name)
-        context = dict()
         context['board'] = self
         context['game'] = self.game_data
         context['game_data'] = self.game_data.get_data(None)
@@ -180,6 +205,9 @@ class Board:
 
     def get_piece_at(self, x, y):
         return utils.access(self.grid, '%s/%s' % (x, y))
+
+    def set_piece_at(self, x, y, piece):
+        return utils.access(self.grid, '%s/%s' % (x, y), piece)
 
     def target_is_friendly(self, piece, target_x, target_y):
         target_piece = self.get_piece_at(target_y, target_x)
@@ -209,7 +237,6 @@ class Board:
         return pieces
 
     def get_piece_coords(self, searched_piece):
-        # for line_coord, line in self.grid.items():
 
         for line_coord, line in self.game_data.get_data('board').items():
             # print 'ChessBoard.get_piece_coords: line_coord:%s\nline:%s' % (line_coord, line)
@@ -233,11 +260,13 @@ class Board:
                         return piece
         return False
 
-    def get_piece_coords_from_role(self, role_name, side):
+    def get_piece_coords_from_role(self, role_name, side_name):
         for line_coord, line in self.grid.items():
             for column_coord, cell in line.items():
                 if cell != '-':
                     piece = cell
-                    if piece.role.name == role_name and piece.side.name == side:
+                    if piece.role.name == role_name and piece.side.name == side_name:
+                        # print 'ChessBoard.get_piece_coords_from_role: %s found at c:%s, l:%s'\
+                        #       % (role_name, column_coord, line_coord)
                         return column_coord, line_coord
         return False, False

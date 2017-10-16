@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 import json
 
 from django.db import models
+from django.contrib.auth.models import User
 
 from chess_engine.chess_classes import ChessUtils
 from utils import utils
@@ -91,3 +92,7 @@ class GamePersistentData (PersistentObject):
         if 'target_piece' in move_data:
             log_data['target']['piece'] = move_data['target_piece']
         self.add_item('token', 'logs', log_data, '%03d.')
+
+
+class UserColorSet(PersistentObject):
+    user = models.ForeignKey(User)

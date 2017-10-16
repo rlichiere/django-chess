@@ -4,13 +4,7 @@ def build_official_move(move_data):
     # print 'build_official_move: target_piece : %s' % target_piece
 
     if move_data['rook']:
-        # treat rook cases
-        if abs(move_data['dest_x'] - move_data['src_x']) == 2:
-            res = 'O-O'
-        elif abs(move_data['dest_x'] - move_data['src_x']) == 3:
-            res = 'O-O-O'
-        else:
-            res = '***warning rook: %s***' % move_data['rook']
+        res = move_data['rook']
     else:
         # normal move
 
