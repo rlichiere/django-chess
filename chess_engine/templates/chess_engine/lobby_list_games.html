@@ -1,7 +1,7 @@
 {% load static %}
 {% load chess_engine_extras %}
 
-<table border="1">
+<table border="1" class="table">
 <tr>
     <th>Game name</th>
     <th>Rounds</th>
@@ -16,7 +16,15 @@
 
     <tr>
         {# game name #}
-        <td align="right"><a href="{% url 'chess-game' pk=game.id %}">{{ game.data|access:'game_options/name' }}</a></td>
+        <td align="right">
+            {% if request.user.is_superuser %}
+            <a href="{% url 'chess-game' pk=game.id %}">
+            {% endif %}
+                <strong>{{ game.data|access:'game_options/name' }}</strong>
+            {% if request.user.is_superuser %}
+            </a>
+            {% endif %}
+        </td>
 
         {# rounds #}
         <td align="center">
@@ -38,7 +46,7 @@
             {% if white_user != False %}
             <td align="right">{{ white_user.username }}</td>
             {% else %}
-            <td align="center"><a href="{% url 'join-game' pk=game.id side='w' %}">Play</a></td>
+            <td align="center"><a href="{% url 'join-game' pk=game.id side='w' %}" class="btn-sm btn-primary">Join</a></td>
             {% endif %}
         {% endwith %}
 
@@ -47,21 +55,21 @@
             {% if black_user != False %}
             <td align="right">{{ black_user.username }}</td>
             {% else %}
-            <td align="center"><a href="{% url 'join-game' pk=game.id side='b' %}">Play</a></td>
+            <td align="center"><a href="{% url 'join-game' pk=game.id side='b' %}" class="btn-sm btn-primary">Join</a></td>
             {% endif %}
         {% endwith %}
 
         {# watch #}
         <td align="center">
             {% if game.data|access:'game_options/public' %}
-            <a href="{% url 'chess-game' pk=game.id %}">Watch</a>
+            <a href="{% url 'chess-game' pk=game.id %}" class="btn-sm btn-primary"><span class="glyphicon glyphicon-eye-open"></span></a>
             {% endif %}
         </td>
 
         {# ranked #}
         <td align="center">
             {% if game.data|access:'game_options/ranked' %}
-            YES
+            <span class="glyphicon glyphicon-star"></span>
             {% endif %}
         </td>
     </tr>

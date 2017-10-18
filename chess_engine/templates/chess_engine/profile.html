@@ -18,9 +18,9 @@
 <div class="container">
     <div class="row">
         <div class="col-lg-6">
-            <div class="login-panel panel panel-default">
+            <div class="panel panel-default">
                 <div class="panel-heading">
-                    <div class="panel-title"><h3>General information</h3></div>
+                    <div class="panel-title">General information</div>
                 </div>
                 <div class="panel-body">
                     <div class="row">
@@ -41,9 +41,6 @@
                     </div>
                     {% if context.target_user == request.user %}
                     <div class="row">
-                        <div class="col-lg-4">
-                            <a class="btn btn-primary" data-toggle="modal" data-target="#UpdatePasswordModal" data-keyboard="false" href="{% url "update-password" pk=context.target_user.id %}">Change password</a>
-                        </div>
                         <div id="UpdatePasswordModal" class="modal fade" role="dialog">
                             <div class="modal-dialog">
                                 <div class="modal-content">
@@ -53,12 +50,15 @@
                     </div>
                     {% endif %}
                 </div>
+                <div class="panel-footer align-right">
+                    <a class="btn btn-primary" data-toggle="modal" data-target="#UpdatePasswordModal" data-keyboard="false" href="{% url "update-password" pk=context.target_user.id %}">Change password</a>
+                </div>
             </div>
         </div>
         <div class="col-lg-6">
-            <div class="login-panel panel panel-default">
+            <div class="panel panel-default">
                 <div class="panel-heading">
-                    <div class="panel-title"><h3>Performances</h3></div>
+                    <div class="panel-title">Performances</div>
                 </div>
                 <div class="panel-body">
                     <div class="row">
@@ -66,7 +66,7 @@
                             <label>Elo</label>
                         </div>
                         <div class="col-lg-4">
-                            <input type="text" class="text-muted" title="Elo" value="{{ context.target_user.username }}" readonly="readonly">
+                            <input type="text" class="text-muted" title="Elo" value="-" readonly="readonly">
                         </div>
                     </div>
                     <div class="row">
@@ -74,7 +74,7 @@
                             <label>Ratio</label>
                         </div>
                         <div class="col-lg-4">
-                            <input type="text" class="text-muted" title="Ratio" value="{{ context.target_user.email }}" readonly="readonly">
+                            <input type="text" class="text-muted" title="Ratio" value="-" readonly="readonly">
                         </div>
                     </div>
                     <div class="row">
@@ -82,7 +82,7 @@
                             <label>Victories</label>
                         </div>
                         <div class="col-lg-4">
-                            <input type="text" class="text-muted" title="Number of victories" value="{{ context.target_user.email }}" readonly="readonly">
+                            <input type="text" class="text-muted" title="Number of victories" value="-" readonly="readonly">
                         </div>
                     </div>
                     <div class="row">
@@ -90,7 +90,7 @@
                             <label>Defeats</label>
                         </div>
                         <div class="col-lg-4">
-                            <input type="text" class="text-muted" title="Number of defeats" value="{{ context.target_user.email }}" readonly="readonly">
+                            <input type="text" class="text-muted" title="Number of defeats" value="-" readonly="readonly">
                         </div>
                     </div>
                 </div>
@@ -99,13 +99,13 @@
     </div>
     <div class="row">
         <div class="col-lg-12">
-            <div class="login-panel panel panel-default">
+            <div class="panel panel-default">
                 <div class="panel-heading">
-                    <div class="panel-title"><h3>History</h3></div>
+                    <div class="panel-title">History</div>
                 </div>
                 <div class="panel-body">
                     <div style="overflow-y:auto; min-height: 60px; max-height: 400px;">
-                        <table border="1">
+                        <table border="1" class="table">
                             <tr>
                                 <th>Game name</th>
                                 <th>Rounds</th>
@@ -157,9 +157,9 @@
     </div>
     <div class="row">
         <div class="col-lg-12">
-        <div class="login-panel panel panel-default">
+        <div class="panel panel-default">
                 <div class="panel-heading">
-                    <div class="panel-title"><h3>Colorset</h3></div>
+                    <div class="panel-title">Color set</div>
                 </div>
                 <div class="panel-body">
                     <form class="form">
@@ -206,7 +206,7 @@
                         <div class="row">
                             <div class="col-lg-4">
                                 <div class="form-group form-inline">
-                                    <label for="board_edge_cells_background_color">Background color :</label>
+                                    <label for="board_edge_cells_background_color">Background :</label>
                                     <input type="text" class="form-control" id="board_edge_cells_background_color" title="Edge cell background color" value="{{ context.color_set.board_edge_cells_background_color }}" maxlength="6">
                                     <a href="#" onclick="update_colorset('board_edge_cells_background_color');">save</a>
                                 </div>
@@ -268,11 +268,11 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-lg-12">
-                                <a href="/profile/{{ request.user.id }}/chess/reset/color_set" class="btn btn-warning">Set default color set</a>
-                            </div>
                         </div>
                     </form>
+                </div>
+                <div class="panel-footer align-right">
+                    <a href="/profile/{{ request.user.id }}/chess/reset/color_set" class="btn btn-warning">Restore default colors</a>
                 </div>
             </div>
         </div>
