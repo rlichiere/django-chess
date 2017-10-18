@@ -40,19 +40,27 @@
  * game creator : Reset current round, Reset game
 * refresh page for waiting player and viewers
 
+### 0.0.4
+
 
 ## Incoming
 
+### feature_user_registration
+
 [game logic]
+* give user capacity to :
+  1. register
 
 [ui]
-
+  1. registration form
 
 ## Todo
 
 ### Urgent
 [game logic]
 * give user capacity to :
+  1. register
+  1. change password
   1. edit/delete its own games
   1. start the game when all sides have a player
 

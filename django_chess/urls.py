@@ -20,12 +20,14 @@ from django.contrib.auth import views
 from django.conf.urls.static import static
 from forms import AuthForm
 from chess_engine.views import ProfileView, ProfileUpdateKeyView
+from views import RegisterView
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'', include('chess_engine.urls')),
     url(r'^login/$', views.login, {'template_name': 'chess_engine/login.html', 'authentication_form': AuthForm},
         name="login"),
+    url(r'^register/$', RegisterView.as_view(), name="register"),
     url(r'^profile/(?P<pk>[0-9]+)$', ProfileView.as_view(), name='profile'),
     url(r'^profile/(?P<pk>[0-9]+)/(?P<game_type>[a-z]+)/(?P<key>[a-zA-Z0-9_]+)/(?P<value>[a-zA-Z0-9_ -]+)$',
         ProfileUpdateKeyView.as_view(), name='profile-update-key'),
