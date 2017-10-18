@@ -50,17 +50,19 @@
 [game logic]
 * give user capacity to :
   1. register
+  1. change password
 
 [ui]
-  1. registration form
+
 
 ## Todo
 
 ### Urgent
+
+
+### ShortTerm
 [game logic]
 * give user capacity to :
-  1. register
-  1. change password
   1. edit/delete its own games
   1. start the game when all sides have a player
 

@@ -19,7 +19,7 @@ from django.contrib import admin
 from django.contrib.auth import views
 from django.conf.urls.static import static
 from forms import AuthForm
-from chess_engine.views import ProfileView, ProfileUpdateKeyView
+from chess_engine.views import ProfileView, ProfileUpdateKeyView, ProfileUpdatePasswordView
 from views import RegisterView
 
 urlpatterns = [
@@ -29,6 +29,7 @@ urlpatterns = [
         name="login"),
     url(r'^register/$', RegisterView.as_view(), name="register"),
     url(r'^profile/(?P<pk>[0-9]+)$', ProfileView.as_view(), name='profile'),
+    url(r'^profile/(?P<pk>[0-9]+)/update_password$', ProfileUpdatePasswordView.as_view(), name='update-password'),
     url(r'^profile/(?P<pk>[0-9]+)/(?P<game_type>[a-z]+)/(?P<key>[a-zA-Z0-9_]+)/(?P<value>[a-zA-Z0-9_ -]+)$',
         ProfileUpdateKeyView.as_view(), name='profile-update-key'),
     url(r'^logout/$', views.logout, {'next_page': '/login'}, name='logout')

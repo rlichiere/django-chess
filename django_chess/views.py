@@ -22,6 +22,8 @@ class RegisterView(TemplateView):
 
         if 'creation_error' in kwargs:
             context['creation_error'] = kwargs['creation_error']
+        if 'creation_success' in kwargs:
+            context['creation_success'] = kwargs['creation_success']
 
         template = loader.get_template(self.template_name)
         content = template.render(context, request=request)
@@ -42,7 +44,8 @@ class RegisterView(TemplateView):
             if not success:
                 kwargs['creation_error'] = details
                 return self.get(request, *args, **kwargs)
-            return HttpResponseRedirect(reverse('login'))
+            kwargs['creation_success'] = 'Account created.'
+            return self.get(request, *args, **kwargs)
 
         kwargs['creation_error'] = form.errors
         return self.get(request, *args, **kwargs)
