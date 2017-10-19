@@ -51,13 +51,17 @@
 * improvements in lobby, game and profile pages
 * show kingcheck
 
+### 0.0.5
+
 ## Incoming
 
-### feature_user_registration
+### feature_ranked_games
 [game logic]
+* elo management (https://fr.wikipedia.org/wiki/Classement_Elo)
 
 [ui]
-
+* history of ranked games
+* minor improvements
 
 ## Todo
 
@@ -229,6 +233,7 @@
 
 ## known bugs
 ### GRAVE (not contournable)
+* avoid player to join a ranked game on both sides
 
 ### MAJOR (contournable manually)
 

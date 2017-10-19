@@ -16,7 +16,7 @@
     <th>Public</th>
     <th>Ranked</th>
 </tr>
-{% for game in games %}
+{% for game in games reversed %}
     {% with white_user_id=game.data|access:'participants/white/1' %}
     {% with black_user_id=game.data|access:'participants/black/1' %}
     {% with white_user=white_user_id|get_user %}
@@ -25,7 +25,7 @@
 
     <tr>
         {# game name #}
-        <td align="right">
+        <td align="left">
             {% if request.user.is_superuser %}
             <a href="{% url 'chess-game' pk=game.id %}">
             {% endif %}
@@ -55,7 +55,7 @@
             {% if white_user.username == user.username %}
                 <td align="center"><a href="{% url "chess-game" pk=game.id %}" class="btn-sm btn-success">Play</a></td>
             {% else %}
-                <td align="right">{{ white_user.username }}</td>
+                <td align="left">{{ white_user.username }}</td>
             {% endif %}
         {% else %}
         <td align="center"><a href="{% url 'join-game' pk=game.id side='w' %}" class="btn-sm btn-primary">Join</a></td>
@@ -66,7 +66,7 @@
             {% if black_user.username == user.username %}
                 <td align="center"><a href="{% url "chess-game" pk=game.id %}" class="btn-sm btn-success">Play</a></td>
             {% else %}
-                <td align="right">{{ black_user.username }}</td>
+                <td align="left">{{ black_user.username }}</td>
             {% endif %}
         {% else %}
         <td align="center"><a href="{% url 'join-game' pk=game.id side='b' %}" class="btn-sm btn-primary">Join</a></td>

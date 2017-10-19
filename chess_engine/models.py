@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 import json
+import math
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -96,3 +97,109 @@ class GamePersistentData (PersistentObject):
 
 class UserColorSet(PersistentObject):
     user = models.ForeignKey(User)
+
+
+class UserRanking(PersistentObject):
+    user = models.ForeignKey(User)
+
+    def get_elo(self, game_type):
+        return self.get_data('%s/elo' % game_type)
+
+    def get_history(self, game_type):
+        return self.get_data('%s/history' % game_type)
+
+    def update_elo(self, game_type, w, d, game_id, opponent_id, opponent_elo):
+
+        old_elo = self.get_elo(game_type)
+        if not old_elo:
+            old_elo = 0
+        else:
+            old_elo = int(old_elo)
+        user_history = self.get_history(game_type)
+        if not user_history:
+            user_history = dict()
+        if len(user_history) <= 30:
+            k = 40
+        elif old_elo < 2400:
+            k = 30
+        else:
+            k = 10
+        pd = RankingUtils().get_elo_pd(d)
+        new_elo = int(old_elo + k * (w - pd))
+        elo_delta = int(new_elo) - old_elo
+        if new_elo < 0:
+            new_elo = '0'
+        self.set_data('%s/elo' % game_type, new_elo)
+
+        history_data = {
+            'old_elo': old_elo,
+            'new_elo': new_elo,
+            'elo_delta': elo_delta,
+            'k': k,
+            'w': w,
+            'pd': pd,
+            'opponent_id': opponent_id,
+            'opponent_elo': opponent_elo,
+            'game_id': game_id,
+        }
+        self.set_data('%s/history/%d' % (game_type, len(user_history)), history_data)
+        return new_elo
+
+    def get_user_level(self, game_type):
+        level_gaps = {
+            '1000': 'Beginner child',
+            '1150': 'Belgium beginner',
+            '1200': 'Beginner',
+            '1400': 'Amateur',
+            '1600': 'Good player',
+            '1800': 'Very good player',
+            '2000': 'National level',
+            '2200': 'Master',
+            '2300': 'Grandmaster',
+            '2400': 'International master',
+            '2500': 'International grandmaster',
+            # '2600': 'Top 240',
+            # '2650': 'Top 100',
+            '2700': 'Super grandmaster',
+            # '2750': 'Top 10',
+        }
+        previous_level = 1000
+        for level in level_gaps:
+            if previous_level < int(level) < int(self.get_elo(game_type)):
+                previous_level = int(level)
+        return level_gaps[str(previous_level)]
+
+
+class RankingUtils:
+    def __init__(self):
+        pass
+
+    def get_elo_pd(self, d):
+        if d > 400:
+            d = 400
+        expo = float(0 - d) / float(400)
+        quot = 1 + math.pow(10, expo)
+        return 1 / quot
+
+    def parse_history_data(self, game_type, user):
+        result = dict()
+
+        user_ranking = UserRanking.objects.filter(user=user).first()
+        victories = 0
+        defeats = 0
+        user_ranking_history = user_ranking.get_history(game_type)
+        if user_ranking_history:
+            for game_k, game in user_ranking_history.items():
+                if 'w' in game:
+                    w_value = game['w']
+                    if w_value == 1:
+                        victories += 1
+                    elif w_value == 0:
+                        defeats += 1
+        result['victories'] = victories
+        result['defeats'] = defeats
+        if defeats != 0:
+            result['ratio'] = float(victories / defeats)
+        else:
+            result['ratio'] = victories
+        return result

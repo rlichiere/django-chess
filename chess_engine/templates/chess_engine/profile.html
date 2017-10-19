@@ -20,7 +20,20 @@
         <div class="col-lg-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <div class="panel-title">General information</div>
+                    <div class="panel-title">
+                        General information
+                        {% if context.target_user == request.user %}
+                        <div id="UpdatePasswordModal" class="modal fade" role="dialog">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pull-right">
+                            <a class="btn-sm btn-primary" data-toggle="modal" data-target="#UpdatePasswordModal" data-keyboard="false" href="{% url "update-password" pk=context.target_user.id %}">Change password</a>
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
                 <div class="panel-body">
                     <div class="row">
@@ -39,42 +52,44 @@
                             <input type="text" class="text-muted" title="Email" value="{{ context.target_user.email }}" readonly="readonly">
                         </div>
                     </div>
-                    {% if context.target_user == request.user %}
-                    <div class="row">
-                        <div id="UpdatePasswordModal" class="modal fade" role="dialog">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-                <div class="panel-footer align-right">
-                    <a class="btn btn-primary" data-toggle="modal" data-target="#UpdatePasswordModal" data-keyboard="false" href="{% url "update-password" pk=context.target_user.id %}">Change password</a>
                 </div>
             </div>
         </div>
         <div class="col-lg-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <div class="panel-title">Performances</div>
+                    <div class="panel-title">
+                        Performance
+                        {% if context.performances %}
+                        <div id="ShowRankedHistoryModal" class="modal fade" role="dialog">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pull-right">
+                            <a href="https://fr.wikipedia.org/wiki/Classement_Elo" target="_blank"><span class="glyphicon glyphicon-info-sign"></span></a>
+                            &nbsp;
+                            <a class="btn-sm btn-primary" data-toggle="modal" data-target="#ShowRankedHistoryModal" data-keyboard="false" href="{% url "show-history" pk=context.target_user.id type='ranked' %}">Show history</a>
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
                 <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <label>Level</label>
+                        </div>
+                        <div class="col-lg-4">
+                            <input type="text" class="text-muted" title="Elo" value="{{ context.performances.level }}" readonly="readonly">
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-lg-4">
                             <label>Elo</label>
                         </div>
                         <div class="col-lg-4">
-                            <input type="text" class="text-muted" title="Elo" value="-" readonly="readonly">
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-4">
-                            <label>Ratio</label>
-                        </div>
-                        <div class="col-lg-4">
-                            <input type="text" class="text-muted" title="Ratio" value="-" readonly="readonly">
+                            <input type="text" class="text-muted" title="Elo" value="{{ context.performances.elo }}" readonly="readonly">
                         </div>
                     </div>
                     <div class="row">
@@ -82,7 +97,7 @@
                             <label>Victories</label>
                         </div>
                         <div class="col-lg-4">
-                            <input type="text" class="text-muted" title="Number of victories" value="-" readonly="readonly">
+                            <input type="text" class="text-muted" title="Number of victories" value="{{ context.performances_parsed.victories }}" readonly="readonly">
                         </div>
                     </div>
                     <div class="row">
@@ -90,7 +105,15 @@
                             <label>Defeats</label>
                         </div>
                         <div class="col-lg-4">
-                            <input type="text" class="text-muted" title="Number of defeats" value="-" readonly="readonly">
+                            <input type="text" class="text-muted" title="Number of defeats" value="{{ context.performances_parsed.defeats }}" readonly="readonly">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <label>Ratio</label>
+                        </div>
+                        <div class="col-lg-4">
+                            <input type="text" class="text-muted" title="Ratio" value="{{ context.performances_parsed.ratio }}" readonly="readonly">
                         </div>
                     </div>
                 </div>
@@ -101,51 +124,60 @@
         <div class="col-lg-12">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <div class="panel-title">History</div>
+                    <div class="panel-title">Unranked</div>
                 </div>
                 <div class="panel-body">
                     <div style="overflow-y:auto; min-height: 60px; max-height: 400px;">
                         <table border="1" class="table">
                             <tr>
                                 <th>Game name</th>
-                                <th>Rounds</th>
                                 <th>Opponent</th>
-                                <th>Win/Lost</th>
-                                <th>Results</th>
-                                <th>Elo delta</th>
+                                <th>Rounds</th>
+                                <th>Result</th>
+                                <th>Ranked</th>
                             </tr>
-                            {% for history in context.player_history %}
+                            {% for history in context.player_history reversed %}
                                 {% if history.data.data|access:"result" %}
                                 <tr>
                                     <td><a href="{% url "chess-game" pk=history.data.id %}">{{ history.data.data|access:"game_options/name" }}</a></td>
-                                    <td>{{ history.data.data|access:"rounds"|length }}</td>
                                     <td><a href="{% url "profile" pk=history.player_opponent.id %}">{{ history.player_opponent.username }}</a></td>
 
-                                    {# Win/Lost #}
-                                    {% if history.player_result == 'win' %}
-                                        <td align="center" class="cell-green" align="center">{{ history.player_result }}</td>
-                                    {% elif history.player_result == 'lost' %}
-                                        <td align="center" class="cell-red">{{ history.player_result }}</td>
-                                    {% else %}
-                                        <td align="center" class="cell-neutral">{{ history.player_result }}</td>
-                                    {% endif %}
-
-                                    <td>
+                                    <td align="center">
                                         <table>
                                             <tr>
                                                 {% for c in history.player_round_list %}
                                                     {% if c == 'W' %}
-                                                        <td class="cell-green"><span class="cell-text">{{ c }}</span></td>
+                                                        <td class="cell-green"><span class="glyphicon glyphicon-ok"></span></td>
                                                     {% elif c == 'L' %}
-                                                        <td class="cell-red"><span class="cell-text">{{ c }}</span></td>
+                                                        <td class="cell-red"><span class="glyphicon glyphicon-remove"></span></td>
+                                                    {% elif c == 'D' %}
+                                                        <td class="cell-neutral"><span class="glyphicon glyphicon-pause"></span></td>
                                                     {% else %}
-                                                        <td class="cell-neutral"><span class="cell-text">{{ c }}</span></td>
+                                                        <td class="cell-neutral"><span class="glyphicon glyphicon-question-sign"></span></td>
                                                     {% endif %}
                                                 {% endfor %}
                                             </tr>
                                         </table>
                                     </td>
-                                    <td>elo</td>
+
+                                    {# Win/Lost #}
+                                    {% if history.player_result == 'win' %}
+                                        <td align="center" class="cell-green" align="center"><span class="glyphicon glyphicon-ok"></span></td>
+                                    {% elif history.player_result == 'lost' %}
+                                        <td align="center" class="cell-red"><span class="glyphicon glyphicon-remove"></span></td>
+                                    {% elif history.player_result == 'draw' %}
+                                        <td align="center" class="cell-neutral"><span class="glyphicon glyphicon-pause"></span></td>
+                                    {% elif history.player_result == 'both'%}
+                                        <td align="center" class="cell-neutral"><span class="glyphicon glyphicon-duplicate"></span></td>
+                                    {% else %}
+                                        <td align="center" class="cell-neutral"><span class="glyphicon glyphicon-question-sign"></span></td>
+                                    {% endif %}
+
+                                    <td align="center">
+                                        {% if history.data.data|access:"game_options/ranked" %}
+                                            <span class="glyphicon glyphicon-star"></span>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 {% endif %}
                             {% endfor %}
