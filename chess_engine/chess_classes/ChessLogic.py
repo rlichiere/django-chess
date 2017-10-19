@@ -193,7 +193,7 @@ class ChessGame:
 
         # # move is done
         # we can now check if own king is checked (then reload backuped data)
-        if self._is_kingchecked(source_piece.side.name):
+        if self.board.is_kingchecked(source_piece.side.name):
             print 'ChessGame.move_piece_select_target: own king is checked.'
             self._restore_context_data_from_backup(backup_before_move)
             self.game_data.set_data('token/step/data/impossible_move', 'king_checked')
@@ -447,14 +447,6 @@ class ChessGame:
         backup['sql_game_data'] = self.game_data.get_data('')
         return backup
 
-    def _is_kingchecked(self, side_name):
-        king = self.board.get_piece_from_role('K', side_name)
-        king_c, king_l = self.board.get_piece_coords(king)
-
-        if king.is_in_danger(king_c, king_l):
-                return True
-        return False
-
     def _restore_context_data_from_backup(self, backup):
         self.board = backup['obj_board']
         self.game_data = backup['obj_game_data']
@@ -516,7 +508,6 @@ class ChessGame:
 
         ennemy_side = 'black' if side == 'white' else 'white'
         king_checks = self._check_king_troubles(ennemy_side)
-        # print ('ChessGame._finalize_turn: king_checks : %s' % king_checks.__str__())
 
         if king_checks[1] == 'checkmate':
             move_data['check'] = 'checkmate'

@@ -225,6 +225,14 @@ class Board:
                 return True
         return False
 
+    def is_kingchecked(self, side_name):
+        king = self.get_piece_from_role('K', side_name)
+        king_c, king_l = self.get_piece_coords(king)
+
+        if king.is_in_danger(king_c, king_l):
+                return True
+        return False
+
     def get_side_pieces(self, side):
         # print 'ChessBoard.get_side_pieces: side : %s' % side
         pieces = list()

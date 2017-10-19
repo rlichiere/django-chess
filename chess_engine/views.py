@@ -97,6 +97,38 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         return super(ProfileView, self).get(*args, **kwargs)
 
 
+class ProfileUpdatePasswordView(LoginRequiredMixin, TemplateView):
+    template_name = 'chess_engine/update_password.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ProfileUpdatePasswordView, self).get_context_data()
+        context['target_user_id'] = kwargs['pk']
+        return context
+
+    def post(self, request, *args, **kwargs):
+        user_target_id = kwargs['pk']
+        new_password = request.POST['password']
+
+        if request.user.is_superuser:
+            print 'Superuser cannot change its password here.'
+            return HttpResponseRedirect('/profile/%s' % user_target_id)
+
+        if int(user_target_id) != request.user.id and not request.user.is_superuser:
+            print 'Only superuser can change other users password.'
+            return HttpResponseRedirect('/profile/%s' % user_target_id)
+
+        try:
+            user = User.objects.filter(id=user_target_id).first()
+            if not user:
+                return HttpResponseRedirect('/profile/%s' % user_target_id)
+            else:
+                user.set_password(new_password)
+                user.save()
+        except Exception as e:
+            return HttpResponseRedirect('/profile/%s' % user_target_id)
+        return HttpResponseRedirect('/login')
+
+
 class ProfileUpdateKeyView(LoginRequiredMixin, View):
 
     def get(self, *args, **kwargs):
@@ -192,6 +224,9 @@ class GameView(LoginRequiredMixin, TemplateView):
                 if player_id and player_id == self.request.user.id:
                     context['user_can_play'] = True
 
+                # add contextual data
+                if game_logic.board.is_kingchecked(side):
+                    context['king_check'] = side
                 html_board = game_logic.board.render(context)
                 context['html_board'] = html_board
             else:
@@ -290,9 +325,8 @@ class CreateChessGameView(LoginRequiredMixin, FormView):
         return kwargs
 
     def form_valid(self, form):
-        (status, msg) = form.execute()
-
-        return HttpResponseRedirect(reverse('home'))
+        (status, game) = form.execute()
+        return HttpResponseRedirect(reverse('chess-game', kwargs={'pk': game.id}))
 
     def form_invalid(self, form):
         return HttpResponseRedirect(reverse('home'))

@@ -10,7 +10,6 @@ class CreateChessGameForm(forms.Form):
         super(CreateChessGameForm, self).__init__(*args, **kwargs)
         self.fields['winning_games'].choices = [('1', '1'), ('2', '2'), ('3', '3')]
         self.fields['play_as'].choices = [('white', 'White'), ('black', 'Black'), ('do_not_play', 'Do not play')]
-        # self.fields['public'].choices = [True, False]
 
     name = forms.CharField(label='Game name', max_length=200,
                            validators=[RegexValidator(regex='^[a-zA-Z0-9_-]*$', message='Invalid Game Name')])
@@ -44,4 +43,4 @@ class CreateChessGameForm(forms.Form):
 
         except Exception as e:
             return False, 'Game creation error : %s' % e.message
-        return True, 'Game created'
+        return True, game
