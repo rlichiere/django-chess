@@ -143,34 +143,30 @@
                                     <td><a href="{% url "profile" pk=history.player_opponent.id %}">{{ history.player_opponent.username }}</a></td>
 
                                     <td align="center">
-                                        <table>
-                                            <tr>
-                                                {% for c in history.player_round_list %}
-                                                    {% if c == 'W' %}
-                                                        <td class="cell-green"><span class="glyphicon glyphicon-ok"></span></td>
-                                                    {% elif c == 'L' %}
-                                                        <td class="cell-red"><span class="glyphicon glyphicon-remove"></span></td>
-                                                    {% elif c == 'D' %}
-                                                        <td class="cell-neutral"><span class="glyphicon glyphicon-pause"></span></td>
-                                                    {% else %}
-                                                        <td class="cell-neutral"><span class="glyphicon glyphicon-question-sign"></span></td>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </tr>
-                                        </table>
+                                    {% for c in history.player_round_list %}
+                                        {% if c == 'W' %}
+                                            <a class="btn-sm btn-success disabled"><span class="glyphicon glyphicon-ok"></span></a>
+                                        {% elif c == 'L' %}
+                                            <a class="btn-sm btn-danger disabled"><span class="glyphicon glyphicon-remove"></span></a>
+                                        {% elif c == 'D' %}
+                                            <a class="btn-sm btn-primary disabled"><span class="glyphicon glyphicon-minus"></span></a>
+                                        {% else %}
+                                            <a class="btn-sm btn-primary disabled"><span class="glyphicon glyphicon-question-sign"></span></a>
+                                        {% endif %}
+                                    {% endfor %}
                                     </td>
 
                                     {# Win/Lost #}
                                     {% if history.player_result == 'win' %}
-                                        <td align="center" class="cell-green" align="center"><span class="glyphicon glyphicon-ok"></span></td>
+                                        <td align="center" class="label-success"><span class="glyphicon glyphicon-ok"></span></td>
                                     {% elif history.player_result == 'lost' %}
-                                        <td align="center" class="cell-red"><span class="glyphicon glyphicon-remove"></span></td>
+                                        <td align="center" class="label-danger"><span class="glyphicon glyphicon-remove"></span></td>
                                     {% elif history.player_result == 'draw' %}
-                                        <td align="center" class="cell-neutral"><span class="glyphicon glyphicon-pause"></span></td>
+                                        <td align="center" class="label-primary"><span class="glyphicon glyphicon-pause"></span></td>
                                     {% elif history.player_result == 'both'%}
-                                        <td align="center" class="cell-neutral"><span class="glyphicon glyphicon-duplicate"></span></td>
+                                        <td align="center" class="label-default"><span class="glyphicon glyphicon-duplicate"></span></td>
                                     {% else %}
-                                        <td align="center" class="cell-neutral"><span class="glyphicon glyphicon-question-sign"></span></td>
+                                        <td align="center" class="label-primary"><span class="glyphicon glyphicon-question-sign"></span></td>
                                     {% endif %}
 
                                     <td align="center">

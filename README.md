@@ -66,6 +66,17 @@
 ## Todo
 
 ### Urgent
+[game logic]
+* save current game state (with a comment, and show its first letters in logs)
+* load a game state (except for ranked games)
+    * give possibility to change player sides
+* add option to activate 'save-all-moves'
+    * add ui buttons play-rewind and play-forward
+* opened games list : add ranked/unranked option
+
+[ui]
+* add elo level icons
+* show players elo level in ranked games
 
 ### ShortTerm
 [game logic]
@@ -165,7 +176,10 @@
                'x': 'e',
                'y': '4',
                'piece': '-'
-            }
+            },
+            'board': {
+                [board_data],
+            },
          },
          [...]
       }
