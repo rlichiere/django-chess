@@ -40,9 +40,20 @@
  * game creator : Reset current round, Reset game
 * refresh page for waiting player and viewers
 
+### 0.0.4
+[game logic]
+* user registration :
+ * players are able to registrate
+ * players are able to change their password
+
+[ui]
+* registration form
+* improvements in lobby, game and profile pages
+* show kingcheck
 
 ## Incoming
 
+### feature_user_registration
 [game logic]
 
 [ui]
@@ -51,6 +62,8 @@
 ## Todo
 
 ### Urgent
+
+### ShortTerm
 [game logic]
 * give user capacity to :
   1. edit/delete its own games

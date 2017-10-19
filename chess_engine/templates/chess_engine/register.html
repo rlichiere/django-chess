@@ -1,0 +1,55 @@
+{% extends 'chess_engine/base.html' %}
+
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block title %}Register{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 col-md-offset-4">
+            {% if context.creation_success %}
+                <div class="login-panel panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Please Sign In</h3>
+                    </div>
+                    <div class="panel-body">
+                        <p>Success : {{ context.creation_success }}</p>
+                        <p>Please <a href="{% url "login" %}" class="btn btn-primary">login</a> to continue.</p>
+                    </div>
+                </div>
+            {% else %}
+                <div class="login-panel panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Please Register</h3>
+                    </div>
+                    <div class="panel-body">
+                        <form role="form" method="post" action="{% url 'register' %}">
+                            {% csrf_token %}
+                            <fieldset>
+                                <div class="form-group">
+                                    {% render_field form.username class+="form-control" placeholder="UserName" %}
+                                </div>
+                                <div class="form-group">
+                                    {% render_field form.email class+="form-control" placeholder="Email" %}
+                                </div>
+                                <div class="form-group">
+                                    {% render_field form.password class+="form-control" placeholder="Password" %}
+                                </div>
+                                <button class="btn btn-lg btn-success btn-block" type="submit">Register</button>
+                            </fieldset>
+                            {% if form.errors %}
+                                <p style="color:red;">Username, password or email incorrect. Please try again.</p>
+                            {% endif %}
+                            {% if context.creation_error %}
+                                <p style="color:red;">Error : {{ context.creation_error }}</p>
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
