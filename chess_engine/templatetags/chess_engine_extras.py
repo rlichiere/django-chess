@@ -11,6 +11,17 @@ register = template.Library()
 
 
 @register.filter
+def multiply(left, right):
+    return left * right
+
+
+@register.filter
+def get_table_height(lines_number, max_height):
+    table_height = lines_number * 50
+    return table_height if table_height < max_height else max_height
+
+
+@register.filter
 def render_json2html(value, path):
     jdata = json.loads(value)
     data = utils.access(jdata, path)

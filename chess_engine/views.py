@@ -365,13 +365,10 @@ class MenuView(View):
 
         elif action == 'save_board':
             comment = kwargs['value']
-            token = game_logic.game_data.get_data('token')
-            if 'logs' in token:
-                token['logs'] = ''
             saved_game = {
                 'comment': comment,
                 'board': game_logic.game_data.get_data('board'),
-                'token': token
+                'token': game_logic.game_data.get_data('token')
             }
             saved_games = game_logic.game_data.get_data('saved_games')
             new_index = 1
@@ -401,32 +398,29 @@ class MenuView(View):
         return HttpResponseRedirect(reverse('chess-game', kwargs={'pk': game_id}))
 
     def _restore_log(self, source, log_index, game_logic):
-        # load saved game at log_index
         if source == 'saved_games':
             restored_board = game_logic.game_data.get_data('saved_games/%s/board' % log_index)
             restored_token = game_logic.game_data.get_data('saved_games/%s/token' % log_index)
-
         elif source == 'logs':
             restored_board = game_logic.game_data.get_data('token/logs/%s/board' % log_index)
             restored_token = game_logic.game_data.get_data('token/logs/%s/token' % log_index)
-        else:
-            print 'error : unknown source : %s' % source
-            return False
 
-        # backup current logs
-        token_logs = game_logic.game_data.get_data('token/logs')
-
-        if restored_board and restored_token:
+            # backup current logs
+            token_logs = game_logic.game_data.get_data('token/logs')
             if token_logs:
+                # clean inappropriate logs
                 cleaned_logs = dict()
                 for token_log_key, token_log in token_logs.items():
                     if int(token_log_key[:-1]) <= int(log_index[:-1]):
                         cleaned_logs[token_log_key] = token_log
-
-                # rewrite backuped logs
                 restored_token['logs'] = cleaned_logs
             else:
                 print 'restore_log. no token_logs restored ?'
+        else:
+            print 'error : unknown source : %s' % source
+            return False
+
+        if restored_board and restored_token:
             game_logic.game_data.set_data('board', restored_board)
             game_logic.game_data.set_data('token', restored_token)
         else:

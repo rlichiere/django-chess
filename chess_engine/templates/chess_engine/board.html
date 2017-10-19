@@ -238,7 +238,7 @@
     <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
         <div class="panel">
             <h4 onclick="toggle_panel('panel_log');">Log <span id="button_toggle_panel_log">&gt;</span></h4><br/>
-            <div id="panel_log" style="display: none; overflow-y:auto; overflow-x:hidden; height: 546px;">
+            <div id="panel_log" style="display: none; overflow-y:auto; overflow-x:hidden; height: {{ game_data.token.logs|length|get_table_height:546 }}px;">
                 <table border="1" class="table">
                     <tr><td><b>Step</b></td>
                         <td><b>Offic.</b></td>

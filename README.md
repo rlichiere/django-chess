@@ -58,6 +58,7 @@
 ### feature_ranked_games
 [game logic]
 * elo management (https://fr.wikipedia.org/wiki/Classement_Elo)
+* save/load game and logs management
 
 [ui]
 * history of ranked games
@@ -67,8 +68,7 @@
 
 ### Urgent
 [game logic]
-* save current game state (with a comment, and show its first letters in logs)
-* load a game state (except for ranked games)
+* load game (except for ranked games)
     * give possibility to change player sides
 * add option to activate 'save-all-moves'
     * add ui buttons play-rewind and play-forward
@@ -251,17 +251,11 @@
 
 ### MAJOR (contournable manually)
 * Enabled logging overloads game_data
-    * should remove logs/[n]/token/logs from render2jsondebug
-    * should clean logs from token before saving the token (and find a better way to ensure prev/next options)
-    * should disable logging option (leave only manual save option)
+    * should remove boards and logs from render2jsondebug
     * should test performance with mysql
     * should test performance with real webserver
 
 ### MINOR
-[ui]
-* waiting better performances in logging, should remove logging buttons :
- * enable/disable logging
- * load prev/next log
 
 * promotion available when checkmate                    todo : a verifier
 
