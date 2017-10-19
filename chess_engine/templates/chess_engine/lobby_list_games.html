@@ -1,6 +1,12 @@
 {% load static %}
 {% load chess_engine_extras %}
 
+{% if games|length > 15 %}
+<div style="overflow-y:auto; height: 600px;">
+{% else %}
+<div>
+{% endif %}
+
 <table border="1" class="table">
 <tr>
     <th>Game name</th>
@@ -99,3 +105,4 @@
     </tr>
 {% endfor %}
 </table>
+</div>
