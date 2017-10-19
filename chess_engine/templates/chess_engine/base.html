@@ -32,6 +32,9 @@
         .cell-neutral .cell-text {
             color: darkgrey;
         }
+        .align-right {
+            text-align: right;
+        }
     </style>
     <script>
         function toggle_panel(div_to_toggle) {
@@ -50,7 +53,7 @@
             onDocumentReadyCallbacks[onDocumentReadyCallbacks.length] = functionName;
         }
     </script>
-    <div class="container">
+    <div class="container-fluid">
         <nav class="navbar navbar-default navbar-inverse navbar-fixed-top">
             <div class="container-fluid">
                 <div class="navbar-header">
@@ -70,6 +73,7 @@
                             <li><a href="{% url "logout" %}">Logout</a></li>
                         {% else %}
                             <li><a href="{% url "login" %}">Login</a></li>
+                            <li><a href="{% url "register" %}">Register</a></li>
                         {% endif %}
                     </ul>
                 </div>
@@ -85,10 +89,9 @@
 
     <script>
         $(document).ready(function() {
-           for (f in onDocumentReadyCallbacks) {
-               console.log("f:" + f);
-               onDocumentReadyCallbacks[f]();
-        }
+            for (f in onDocumentReadyCallbacks) {
+                onDocumentReadyCallbacks[f]();
+            }
         });
     </script>
 </body>
