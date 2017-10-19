@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+import yaml
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -26,7 +27,11 @@ SECRET_KEY = 'm9wyknb(pvgc2#ua#z(9y5(b38+-_ng!q&_8n2z2v@u3i3$(tn'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+settings_path = '%s/core/config/settings.yml' % BASE_DIR
+settings = yaml.load(open(settings_path))
+if 'allowed_hosts' in settings:
+    ALLOWED_HOSTS = settings['allowed_hosts']
+print 'ALLOWED_HOSTS : %s' % ALLOWED_HOSTS
 
 # Application definition
 
