@@ -49,7 +49,7 @@
 [ui]
 * registration form
 * improvements in lobby, game and profile pages
-
+* show kingcheck
 
 ## Incoming
 
@@ -62,7 +62,6 @@
 ## Todo
 
 ### Urgent
-* shown kingcheck case
 
 ### ShortTerm
 [game logic]
@@ -232,7 +231,6 @@
 ### GRAVE (not contournable)
 
 ### MAJOR (contournable manually)
-* kingcheck is not shown
 
 ### MINOR
 * promotion available when checkmate                    todo : a verifier
