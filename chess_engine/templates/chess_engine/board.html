@@ -121,8 +121,7 @@
                     {% if game_data.game_options.logging == 'on' %}
                         <li><a href="{% url "menu-action" pk=game.id action="update_option" name="logging" value="off" %}" class="btn btn-warning"><span class="glyphicon glyphicon-copy"></span> Disable logging</a></li>
                         {% if not game_data.game_options.ranked %}
-                        <li><a href="" class="btn btn-primary"><span class="glyphicon glyphicon-step-backward"></span> Previous</a></li>
-                        <li><a href="" class="btn btn-primary"><span class="glyphicon glyphicon-step-forward"></span> Next</a></li>
+                        <li><a href="{% url "menu-action" pk=game.id action="load_previous_log" name="_" value="_" %}" class="btn btn-primary"><span class="glyphicon glyphicon-step-backward"></span> Previous</a></li>
                         {% endif %}
                     {% else %}
                         <li><a href="{% url "menu-action" pk=game.id action="update_option" name="logging" value="on" %}" class="btn btn-primary"><span class="glyphicon glyphicon-copy"></span> Enable logging</a></li>

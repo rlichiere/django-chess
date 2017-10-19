@@ -96,7 +96,10 @@ class GamePersistentData (PersistentObject):
         # auto-logging
         if self.get_data('game_options/logging') == 'on':
             log_data['board'] = self.get_data('board')
-            log_data['token'] = self.get_data('token')
+            token = self.get_data('token')
+            if 'logs' in token:
+                token['logs'] = '-'
+            log_data['token'] = token
             print 'GamePersistentData.add_log: board saved.'
 
         self.add_item('token', 'logs', log_data, '%03d.')

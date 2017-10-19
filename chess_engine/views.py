@@ -365,47 +365,74 @@ class MenuView(View):
 
         elif action == 'save_board':
             comment = kwargs['value']
+            token = game_logic.game_data.get_data('token')
+            if 'logs' in token:
+                token['logs'] = ''
             saved_game = {
                 'comment': comment,
                 'board': game_logic.game_data.get_data('board'),
-                'token': game_logic.game_data.get_data('token')
+                'token': token
             }
             saved_games = game_logic.game_data.get_data('saved_games')
             new_index = 1
             if saved_games:
                 new_index = len(saved_games) + 1
-            new_index = '%03d' % new_index
+            new_index = '%03d.' % new_index
             game_logic.game_data.set_data('saved_games/%s' % new_index, saved_game)
-        elif action == 'load_previous':
-            # get current log number (how to store it ? in a new token key ?)
-            # calculate previous log number
-            # load its board
-            print 'action(load_previous): log_index : ??'
-        elif action == 'load_next':
-            # get current log number (how to store it ? in a new token key ?)
-            # calculate next log number
-            # load its board
-            print 'action(load_next): log_index : ??'
+        elif action == 'load_previous_log':
+            token_logs = game_logic.game_data.get_data('token/logs')
+            if token_logs:
+                token_logs_len = len(token_logs)
+                if token_logs_len > 0:
+                    previous_log_index = '%03d.' % (token_logs_len - 1)
+                    kwargs['action'] = 'restore_log'
+                    kwargs['name'] = '_'
+                    kwargs['value'] = previous_log_index
+                    return HttpResponseRedirect(reverse('menu-action', kwargs=kwargs))
         elif action == 'restore_log':
             log_index = kwargs['value']
-            # load log game at log_index
-            restored_board = game_logic.game_data.get_data('logs/%s/board' % log_index)
-            restored_token = game_logic.game_data.get_data('logs/%s/token' % log_index)
-            if restored_board and restored_token:
-                game_logic.game_data.get_data('board', restored_board)
-                game_logic.game_data.get_data('token', restored_token)
+            self._restore_log(source='logs', log_index=log_index, game_logic=game_logic)
         elif action == 'restore_saved_game':
             log_index = kwargs['value']
-            # load saved game at log_index
-            restored_board = game_logic.game_data.get_data('saved_games/%s/board' % log_index)
-            restored_token = game_logic.game_data.get_data('saved_games/%s/token' % log_index)
-            if restored_board and restored_token:
-                game_logic.game_data.set_data('board', restored_board)
-                game_logic.game_data.set_data('token', restored_token)
+            self._restore_log(source='saved_games', log_index=log_index, game_logic=game_logic)
         else:
             print 'unknown action : %s' % action
 
         return HttpResponseRedirect(reverse('chess-game', kwargs={'pk': game_id}))
+
+    def _restore_log(self, source, log_index, game_logic):
+        # load saved game at log_index
+        if source == 'saved_games':
+            restored_board = game_logic.game_data.get_data('saved_games/%s/board' % log_index)
+            restored_token = game_logic.game_data.get_data('saved_games/%s/token' % log_index)
+
+        elif source == 'logs':
+            restored_board = game_logic.game_data.get_data('token/logs/%s/board' % log_index)
+            restored_token = game_logic.game_data.get_data('token/logs/%s/token' % log_index)
+        else:
+            print 'error : unknown source : %s' % source
+            return False
+
+        # backup current logs
+        token_logs = game_logic.game_data.get_data('token/logs')
+
+        if restored_board and restored_token:
+            if token_logs:
+                cleaned_logs = dict()
+                for token_log_key, token_log in token_logs.items():
+                    if int(token_log_key[:-1]) <= int(log_index[:-1]):
+                        cleaned_logs[token_log_key] = token_log
+
+                # rewrite backuped logs
+                restored_token['logs'] = cleaned_logs
+            else:
+                print 'restore_log. no token_logs restored ?'
+            game_logic.game_data.set_data('board', restored_board)
+            game_logic.game_data.set_data('token', restored_token)
+        else:
+            print '*** warning *** restore error: board:%s, token:%s' % (restored_board, restored_token)
+            return False
+        return True
 
 
 class CreateChessGameView(LoginRequiredMixin, FormView):
