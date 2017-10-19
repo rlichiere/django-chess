@@ -20,7 +20,22 @@
             <div class="col-lg-4 col-md-6">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <div class="panel-title">Running games</div>
+                            <div class="panel-title">
+                                Running games
+                                {% if context.view.request.user.id %}
+                                <div id="CreateGameModal" class="modal fade" role="dialog">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="pull-right">
+                                    <a class="btn-sm btn-primary" data-toggle="modal" data-target="#CreateGameModal" data-keyboard="false" href="{% url 'create-game' %}" >
+                                        <span class="glyphicon glyphicon-plus"></span> Create game
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
                     </div>
                     <div class="panel-body">
                         {% include 'chess_engine/lobby_list_games.html' with games=context.running_games %}
@@ -31,11 +46,6 @@
                             <div class="modal-content">
                             </div>
                         </div>
-                    </div>
-                    <div class="panel-footer align-right">
-                        <a class="btn btn-primary" data-toggle="modal" data-target="#CreateGameModal" data-keyboard="false" href="{% url 'create-game' %}" >
-                            <span class="glyphicon glyphicon-plus"></span> Create game
-                        </a>
                     </div>
                     {% endif %}
                 </div>

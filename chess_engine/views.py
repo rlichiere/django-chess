@@ -224,6 +224,9 @@ class GameView(LoginRequiredMixin, TemplateView):
                 if player_id and player_id == self.request.user.id:
                     context['user_can_play'] = True
 
+                # add contextual data
+                if game_logic.board.is_kingchecked(side):
+                    context['king_check'] = side
                 html_board = game_logic.board.render(context)
                 context['html_board'] = html_board
             else:
@@ -322,9 +325,8 @@ class CreateChessGameView(LoginRequiredMixin, FormView):
         return kwargs
 
     def form_valid(self, form):
-        (status, msg) = form.execute()
-
-        return HttpResponseRedirect(reverse('home'))
+        (status, game) = form.execute()
+        return HttpResponseRedirect(reverse('chess-game', kwargs={'pk': game.id}))
 
     def form_invalid(self, form):
         return HttpResponseRedirect(reverse('home'))
