@@ -51,17 +51,32 @@
 * improvements in lobby, game and profile pages
 * show kingcheck
 
+### 0.0.5
+
 ## Incoming
 
-### feature_user_registration
+### feature_ranked_games
 [game logic]
+* elo management (https://fr.wikipedia.org/wiki/Classement_Elo)
+* save/load game management (manual and auto)
 
 [ui]
-
+* history of ranked games
+* minor improvements
 
 ## Todo
 
 ### Urgent
+[game logic]
+* load game (except for ranked games)
+    * give possibility to change player sides
+* add option to activate 'save-all-moves'
+    * add ui buttons play-rewind and play-forward
+* opened games list : add ranked/unranked option
+
+[ui]
+* add elo level icons
+* show players elo level in ranked games
 
 ### ShortTerm
 [game logic]
@@ -161,7 +176,10 @@
                'x': 'e',
                'y': '4',
                'piece': '-'
-            }
+            },
+            'board': {
+                [board_data],
+            },
          },
          [...]
       }
@@ -196,8 +214,9 @@
       'name': 'xxx',
       'winning_games': 1/2/n,
       'creator': user_id,
-      'ranked': true/false
-      'public': true/false
+      'ranked': true/false,
+      'public': true/false,
+      'logging': true/false,
    },
    'participants': {
         'white': {
@@ -231,8 +250,13 @@
 ### GRAVE (not contournable)
 
 ### MAJOR (contournable manually)
+* Enabled logging overloads game_data
+    * should remove boards and logs from render2jsondebug
+    * should test performance with mysql
+    * should test performance with real webserver
 
 ### MINOR
+
 * promotion available when checkmate                    todo : a verifier
 
 

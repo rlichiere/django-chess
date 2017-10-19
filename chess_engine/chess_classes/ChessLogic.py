@@ -400,11 +400,37 @@ class ChessGame:
                 round_count += 1
             self.game_data.set_data('result/round_list', round_list)
 
+            # update elo if ranked game
+            ranked_game = self.game_data.get_data('game_options/ranked')
+            if ranked_game:
+                if winner_side == 'white':
+                    winner_user = User.objects.filter(id=self.game_data.get_data('participants/white/1')).first()
+                    loser_user = User.objects.filter(id=self.game_data.get_data('participants/black/1')).first()
+                else:
+                    winner_user = User.objects.filter(id=self.game_data.get_data('participants/black/1')).first()
+                    loser_user = User.objects.filter(id=self.game_data.get_data('participants/white/1')).first()
+                winner_ranking = UserRanking.objects.get_or_create(user=winner_user)[0]
+                loser_ranking = UserRanking.objects.get_or_create(user=loser_user)[0]
+                winner_old_elo = int(winner_ranking.get_elo('chess'))
+                if not winner_old_elo:
+                    winner_old_elo = 0
+                loser_old_elo = int(loser_ranking.get_elo('chess'))
+                if not loser_old_elo:
+                    loser_old_elo = 0
+                d = loser_old_elo - winner_old_elo
+                loser_ranking.update_elo('chess', w=0, d=d, game_id=self.game_data.id,
+                                         opponent_id=winner_user.id, opponent_elo=winner_old_elo)
+                winner_ranking.update_elo('chess', w=1, d=d, game_id=self.game_data.id,
+                                          opponent_id=loser_user.id, opponent_elo=loser_old_elo)
+                print 'ChessGame._save_game_results: elo updated : loser:%s, winner:%s'\
+                      % (loser_ranking.get_elo('chess'), winner_ranking.get_elo('chess'))
+
     def _save_game(self, result):
         # backup data
         history = self.game_data.get_data('history')
         game_options = self.game_data.get_data('game_options')
         participants = self.game_data.get_data('participants')
+        saved_games = self.game_data.get_data('saved_games')
 
         # save round results
         self._save_game_result(result)
@@ -429,6 +455,7 @@ class ChessGame:
         self.game_data.set_data('participants', participants)
         self.game_data.set_data('rounds', rounds)
         self.game_data.set_data('result', results)
+        self.game_data.set_data('saved_games', saved_games)
 
     def _check_promotion(self, piece, data):
         if piece.role.name == 'P':

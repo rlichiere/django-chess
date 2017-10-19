@@ -21,6 +21,18 @@ class ProfileView(LoginRequiredMixin, TemplateView):
             return False
         context['target_user'] = target_user
 
+        # performances
+        perfs = dict()
+        user_ranking = UserRanking.objects.get_or_create(user=self.request.user)[0]
+        user_elo = user_ranking.get_elo('chess')
+        if user_elo:
+            perfs['elo'] = user_elo
+            perfs['level'] = user_ranking.get_user_level('chess')
+
+        context['performances'] = perfs
+        parsed_perf_data = RankingUtils().parse_history_data('chess', target_user)
+        context['performances_parsed'] = parsed_perf_data
+
         # search user games
         history = list()
         games = GamePersistentData.objects.all()
@@ -53,15 +65,16 @@ class ProfileView(LoginRequiredMixin, TemplateView):
                     opponent_id = game.get_data('participants/black/1')
                 elif user_side == 'black':
                     opponent_id = game.get_data('participants/white/1')
+                elif user_side == 'both':
+                    opponent_id = game.get_data('participants/black/1')
                 else:
                     print 'warning: unknown opponent for user_side %s' % user_side
                     opponent_id = 1
-
                 opponent = User.objects.get(id=opponent_id)
                 game_result['player_opponent'] = opponent
 
                 if user_side == 'both':
-                    game_result['player_result'] = '-'
+                    game_result['player_result'] = 'both'
                 elif winner == user_side:
                     game_result['player_result'] = 'win'
                 else:
@@ -95,6 +108,45 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         if not context:
             return HttpResponseRedirect(reverse('login'))
         return super(ProfileView, self).get(*args, **kwargs)
+
+
+class ProfileShowHistoryView(LoginRequiredMixin, TemplateView):
+    template_name = 'chess_engine/show_history.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ProfileShowHistoryView, self).get_context_data()
+        target_user_id = kwargs['pk']
+        target_user = User.objects.filter(id=target_user_id).first()
+        if not target_user:
+            print 'unknown user : %s' % target_user_id
+            return context
+
+        history = list()
+        history_type = kwargs['type']
+        if history_type == 'ranked':
+            user_ranking = UserRanking.objects.filter(user=target_user).first()
+            user_history = user_ranking.get_history('chess')
+            if user_history:
+                for game_index, game_history in user_history.items():
+                    if 'game_id' in game_history:
+                        game = GamePersistentData.objects.filter(id=game_history['game_id']).first()
+                        game_history['game'] = game
+                    if 'elo_delta' in game_history:
+                        delta = game_history['elo_delta']
+                        if delta > 0:
+                            game_history['elo_delta'] = '+%s' % delta
+                    if 'opponent_id' in game_history:
+                        opponent = User.objects.filter(id=game_history['opponent_id']).first()
+                        game_history['opponent'] = opponent
+                        opponent_ranking = UserRanking.objects.filter(user=opponent).first()
+                        if opponent_ranking:
+                            opponent_elo = opponent_ranking.get_elo('chess')
+                            game_history['opponent_elo'] = opponent_elo
+                    history.append(game_history)
+        else:
+            print 'unknown type : %s' % type
+        context['history'] = history
+        return context
 
 
 class ProfileUpdatePasswordView(LoginRequiredMixin, TemplateView):
@@ -164,16 +216,13 @@ class HomeView(LoginRequiredMixin, TemplateView):
                 continue
 
             step = game.get_data('token/step/name')
-            print 'game_id : %s, step_name : %s' % (game.id, step)
             if not step:
                 finished_games.append(game)
-                print 'added to finished games (len:%s)' % len(finished_games)
                 continue
 
             rounds = game.get_data('rounds')
             if not rounds:
                 running_games.append(game)
-                print 'added to running games (len:%s)' % len(running_games)
                 continue
 
             white_wins = 0
@@ -185,11 +234,9 @@ class HomeView(LoginRequiredMixin, TemplateView):
                     black_wins += 1
             winning_games = int(game.get_data('game_options/winning_games'))
             if white_wins >= winning_games or black_wins >= winning_games:
-                print 'added to finished games2 (len:%s)' % len(finished_games)
                 finished_games.append(game)
                 continue
 
-            print 'added to running games2 (len:%s)' % len(running_games)
             running_games.append(game)
 
         context['games'] = games
@@ -311,7 +358,75 @@ class MenuView(View):
         elif action == 'reset_game':
             game_logic.reset_game()
 
+        elif action == 'update_option':
+            option_name = kwargs['name']
+            option_value = kwargs['value']
+            game_logic.game_data.set_data('game_options/%s' % option_name, option_value)
+
+        elif action == 'save_board':
+            comment = kwargs['value']
+            saved_game = {
+                'comment': comment,
+                'board': game_logic.game_data.get_data('board'),
+                'token': game_logic.game_data.get_data('token')
+            }
+            saved_games = game_logic.game_data.get_data('saved_games')
+            new_index = 1
+            if saved_games:
+                new_index = len(saved_games) + 1
+            new_index = '%03d.' % new_index
+            game_logic.game_data.set_data('saved_games/%s' % new_index, saved_game)
+        elif action == 'load_previous_log':
+            token_logs = game_logic.game_data.get_data('token/logs')
+            if token_logs:
+                token_logs_len = len(token_logs)
+                if token_logs_len > 0:
+                    previous_log_index = '%03d.' % (token_logs_len - 1)
+                    kwargs['action'] = 'restore_log'
+                    kwargs['name'] = '_'
+                    kwargs['value'] = previous_log_index
+                    return HttpResponseRedirect(reverse('menu-action', kwargs=kwargs))
+        elif action == 'restore_log':
+            log_index = kwargs['value']
+            self._restore_log(source='logs', log_index=log_index, game_logic=game_logic)
+        elif action == 'restore_saved_game':
+            log_index = kwargs['value']
+            self._restore_log(source='saved_games', log_index=log_index, game_logic=game_logic)
+        else:
+            print 'unknown action : %s' % action
+
         return HttpResponseRedirect(reverse('chess-game', kwargs={'pk': game_id}))
+
+    def _restore_log(self, source, log_index, game_logic):
+        if source == 'saved_games':
+            restored_board = game_logic.game_data.get_data('saved_games/%s/board' % log_index)
+            restored_token = game_logic.game_data.get_data('saved_games/%s/token' % log_index)
+        elif source == 'logs':
+            restored_board = game_logic.game_data.get_data('token/logs/%s/board' % log_index)
+            restored_token = game_logic.game_data.get_data('token/logs/%s/token' % log_index)
+
+            # backup current logs
+            token_logs = game_logic.game_data.get_data('token/logs')
+            if token_logs:
+                # clean inappropriate logs
+                cleaned_logs = dict()
+                for token_log_key, token_log in token_logs.items():
+                    if int(token_log_key[:-1]) <= int(log_index[:-1]):
+                        cleaned_logs[token_log_key] = token_log
+                restored_token['logs'] = cleaned_logs
+            else:
+                print 'restore_log. no token_logs restored ?'
+        else:
+            print 'error : unknown source : %s' % source
+            return False
+
+        if restored_board and restored_token:
+            game_logic.game_data.set_data('board', restored_board)
+            game_logic.game_data.set_data('token', restored_token)
+        else:
+            print '*** warning *** restore error: board:%s, token:%s' % (restored_board, restored_token)
+            return False
+        return True
 
 
 class CreateChessGameView(LoginRequiredMixin, FormView):

@@ -9,91 +9,198 @@
         padding-left: 3px;
         padding-right: 3px;
     }
+    .btn-side-white, .btn-side-white a {
+        color: #999;
+    }
+    .btn-side-black, .btn-side-black a {
+        color: #000;
+    }
+    .btn-side-white-inv, .btn-side-white-inv a {
+        color: #eee;
+    }
+    .btn-side-black-inv, .btn-side-black-inv a {
+        color: #777;
+    }
 </style>
 <div class="row">
     <div class="panel col-lg-6 col-md-8 col-sm-12 col-xs-12">
-        {% with even_color=board.color_set.board_cell_light_color %}
-        {% with odd_color=board.color_set.board_cell_dark_color %}
-        <table border="1" class="chess-board">
-            {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.8 line_key=8 even=even_color odd=odd_color %}
-            {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.7 line_key=7 even=odd_color odd=even_color %}
-            {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.6 line_key=6 even=even_color odd=odd_color %}
-            {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.5 line_key=5 even=odd_color odd=even_color %}
-            {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.4 line_key=4 even=even_color odd=odd_color %}
-            {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.3 line_key=3 even=odd_color odd=even_color %}
-            {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.2 line_key=2 even=even_color odd=odd_color %}
-            {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.1 line_key=1 even=odd_color odd=even_color %}
-            <tr align="center" class="chess_board_bottom_line">
-                <td></td><td>a</td><td>b</td><td>c</td><td>d</td><td>e</td><td>f</td><td>g</td><td>h</td>
-            </tr>
-        </table>
-        {% endwith %}
-        {% endwith %}
-        <div id="panel_promotion" style="display: none;">
-            <div class="col-lg-3">Pawn promotion :</div>
-            <div class="col-lg-7">
-                <table border="1">
-                    <tr>
-                        <td>
-                            <a id="{{ l_key }}_{{ c_key }}" href="{% url 'piece-promote' pk=game.id role_name='Q' %}">
-                                <img src="/static/chess_engine/pieces/{{ game_data.token.step.side|slice:'0:1' }}_queen.png" />
-                            </a>
-                        </td>
-                        <td>
-                            <a id="{{ l_key }}_{{ c_key }}" href="{% url 'piece-promote' pk=game.id role_name='R' %}">
-                                <img src="/static/chess_engine/pieces/{{ game_data.token.step.side|slice:'0:1' }}_rook.png" />
-                            </a>
-                        </td>
-                        <td>
-                            <a id="{{ l_key }}_{{ c_key }}" href="{% url 'piece-promote' pk=game.id role_name='B' %}">
-                                <img src="/static/chess_engine/pieces/{{ game_data.token.step.side|slice:'0:1' }}_bishop.png" />
-                            </a>
-                        </td>
-                        <td>
-                            <a id="{{ l_key }}_{{ c_key }}" href="{% url 'piece-promote' pk=game.id role_name='H' %}">
-                                <img src="/static/chess_engine/pieces/{{ game_data.token.step.side|slice:'0:1' }}_horse.png" />
-                            </a>
-                        </td>
-                    </tr>
-                </table>
+        <div class="panel">
+            {% with even_color=board.color_set.board_cell_light_color %}
+            {% with odd_color=board.color_set.board_cell_dark_color %}
+            <table border="1" class="chess-board">
+                {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.8 line_key=8 even=even_color odd=odd_color %}
+                {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.7 line_key=7 even=odd_color odd=even_color %}
+                {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.6 line_key=6 even=even_color odd=odd_color %}
+                {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.5 line_key=5 even=odd_color odd=even_color %}
+                {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.4 line_key=4 even=even_color odd=odd_color %}
+                {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.3 line_key=3 even=odd_color odd=even_color %}
+                {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.2 line_key=2 even=even_color odd=odd_color %}
+                {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.1 line_key=1 even=odd_color odd=even_color %}
+                <tr align="center" class="chess_board_bottom_line">
+                    <td></td><td>a</td><td>b</td><td>c</td><td>d</td><td>e</td><td>f</td><td>g</td><td>h</td>
+                </tr>
+            </table>
+            {% endwith %}
+            {% endwith %}
+            <div id="panel_promotion" style="display: none;">
+                <div class="col-lg-3">Pawn promotion :</div>
+                <div class="col-lg-7">
+                    <table border="1">
+                        <tr>
+                            <td>
+                                <a id="{{ l_key }}_{{ c_key }}" href="{% url 'piece-promote' pk=game.id role_name='Q' %}">
+                                    <img src="/static/chess_engine/pieces/{{ game_data.token.step.side|slice:'0:1' }}_queen.png" />
+                                </a>
+                            </td>
+                            <td>
+                                <a id="{{ l_key }}_{{ c_key }}" href="{% url 'piece-promote' pk=game.id role_name='R' %}">
+                                    <img src="/static/chess_engine/pieces/{{ game_data.token.step.side|slice:'0:1' }}_rook.png" />
+                                </a>
+                            </td>
+                            <td>
+                                <a id="{{ l_key }}_{{ c_key }}" href="{% url 'piece-promote' pk=game.id role_name='B' %}">
+                                    <img src="/static/chess_engine/pieces/{{ game_data.token.step.side|slice:'0:1' }}_bishop.png" />
+                                </a>
+                            </td>
+                            <td>
+                                <a id="{{ l_key }}_{{ c_key }}" href="{% url 'piece-promote' pk=game.id role_name='H' %}">
+                                    <img src="/static/chess_engine/pieces/{{ game_data.token.step.side|slice:'0:1' }}_horse.png" />
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
             </div>
-        </div>
 
-        {% if user_can_play or user_is_creator %}
-        <div id="panel_buttons" style="margin-top: 7px;">
-            <ul class="list-inline">
+            {% if user_can_play or user_is_creator %}
+            <div class="panel-body" id="panel_buttons" style="margin-top: 7px;">
+                <ul class="list-inline">
+                    {% if user_can_play %}
+                    <li><a id="button_surrender_checkmate" class="btn btn-danger" href="{% url 'menu-action' pk=game.id action='surrender_checkmate' name='_' value=game_data.token.step.side %}"><span class="glyphicon glyphicon-king"></span> Surrender (checkmate)</a></li>
+                    {% endif %}
+                    {% if user_is_creator %}
+                    <li><a id="button_reset_round" class="btn btn-warning" href="{% url 'menu-action' pk=game.id action='reset_round' name='_' value=game_data.token.step.side %}"><span class="glyphicon glyphicon-remove-circle"></span> Reset round</a></li>
+                    <li><a id="button_reset_game" class="btn btn-warning" href="{% url 'menu-action' pk=game.id action='reset_game' name='_' value=game_data.token.step.side %}"><span class="glyphicon glyphicon-remove-sign"></span> Reset game</a></li>
+                    {% endif %}
+                </ul>
                 {% if user_can_play %}
-                <li><a id="button_surrender_checkmate" class="btn btn-danger" href="{% url 'menu-action' pk=game.id action='surrender_checkmate' value=game_data.token.step.side %}">Surrender (checkmate)</a></li>
+                <ul class="list-inline">
+                    <li>
+                        <a data-toggle="modal" data-target="#SaveGameModal" data-keyboard="false" class="btn btn-primary">
+                            <span class="glyphicon glyphicon-floppy-save"></span> Save board
+                        </a>
+                    </li>
+                    {% if not game_data.game_options.ranked %}
+                        {% if game_data.saved_games|length > 0 %}
+                            <li class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                    <span class="glyphicon glyphicon-floppy-open"></span>
+                                    Restore board
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu pull-right">
+                                    {% for game_key, saved_game in game_data.saved_games.items|dictsort:"0.lower" %}
+                                    <li>
+                                        <a href="{% url "menu-action" pk=game.id action="restore_saved_game" name="logging" value=game_key %}" style="font-weight: bold">{{ saved_game.comment }}</a>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li><a class="btn btn-default disabled"><span class="glyphicon glyphicon-floppy-open"></span> No saved boards.</a></li>
+                        {% endif %}
+                    {% else %}
+                        <li>
+                            <span title="Can't load board in a ranked game.">
+                                <a class="btn btn-default disabled"><span class="glyphicon glyphicon-floppy-open"></span> Restore board</a>
+                            </span>
+                        </li>
+                    {% endif %}
+                </ul>
+                <ul class="list-inline">
+                    {% if game_data.game_options.logging == 'on' %}
+                        <li><a href="{% url "menu-action" pk=game.id action="update_option" name="logging" value="off" %}" class="btn btn-warning"><span class="glyphicon glyphicon-copy"></span> Disable logging</a></li>
+                        {% if not game_data.game_options.ranked %}
+                        <li><a href="{% url "menu-action" pk=game.id action="load_previous_log" name="_" value="_" %}" class="btn btn-primary"><span class="glyphicon glyphicon-step-backward"></span> Previous</a></li>
+                        {% endif %}
+                    {% else %}
+                        <li><a href="{% url "menu-action" pk=game.id action="update_option" name="logging" value="on" %}" class="btn btn-primary"><span class="glyphicon glyphicon-copy"></span> Enable logging</a></li>
+                    {% endif %}
+                </ul>
+                <div id="SaveGameModal" class="modal fade" role="dialog">
+                    <form href="{% url "menu-action" pk=game.id action="save_board" name="a" value="a" %}" role="form">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    Save board
+                                </div>
+                                <div class="modal-body">
+                                    <div class="inline">
+                                        <label for="input_comment">Comment</label>
+                                        <input id="input_comment" type="text" size="20">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary" onclick="submitSaveGameForm(); return false;">Submit</button>
+                                </div>
+                                <script>
+                                    function submitSaveGameForm() {
+                                        var comment_value = $('#input_comment').val();
+                                        window.location.href = '/game/{{ game.id }}/menu/save_board/a/' + comment_value;
+                                        return false;
+                                    }
+                                </script>
+                            </div>
+                        </div>
+                    </form>
+                </div>
                 {% endif %}
-                {% if user_is_creator %}
-                <li><a id="button_reset_round" class="btn btn-warning" href="{% url 'menu-action' pk=game.id action='reset_round' value=game_data.token.step.side %}">Reset current round</a></li>
-                <li><a id="button_reset_game" class="btn btn-warning" href="{% url 'menu-action' pk=game.id action='reset_game' value=game_data.token.step.side %}">Reset game</a></li>
-                {% endif %}
-            </ul>
+            </div>
+            {% endif %}
         </div>
-        {% endif %}
     </div>
 
-    <div class="panel col-lg-3 col-md-4 col-sm-6 col-xs-12" id="panel_special_data">
-        <div>
-            <label class="alert">Turn :
+    <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+        <div class="panel">
+            <label class="alert">Round
+            {% with rounds=game_data.rounds %}
+            {% with winning_games=game_data.game_options.winning_games %}
+                {% if game_data.result %}
+                    <a class="btn btn-lg btn-default disabled">{{ rounds|length }}</a>
+                {% else %}
+                    <a class="btn btn-lg btn-default disabled">{{ rounds|length|add:"1" }}</a>
+                {% endif %}
+                / <a class="btn btn-lg btn-default disabled">{{ winning_games|add:winning_games|add:"-1" }}</a>
+            {% endwith %}
+            {% endwith %}
+            </label>
+            {% with white_user_id=game_data.participants.white.1 %}
+            {% with black_user_id=game_data.participants.black.1 %}
+            {% with white_user=white_user_id|get_user %}
+            {% with black_user=black_user_id|get_user %}
+            <label class="alert">Turn
             {% if user_can_play and game_data.token.step.side == 'white' %}
-                <span class="alert label-success">White</span>
-                <span class="alert alert alert-info">Black</span>
+                <a class="btn btn-lg btn-success disabled"><span class="glyphicon glyphicon-pawn"></span> {{ white_user.username }}</a>
+                <a class="btn btn-lg btn-default disabled btn-side-black"><span class="glyphicon glyphicon-pawn"></span> {{ black_user.username }}</a>
             {% elif user_can_play and game_data.token.step.side == 'black' %}
-                <span class="alert alert-info">White</span>
-                <span class="alert label-success">Black</span>
+                <a class="btn btn-lg btn-default disabled"><span class="glyphicon glyphicon-pawn btn-side-white"></span> {{ white_user.username }}</a>
+                <a class="btn btn-lg btn-success disabled btn-side-black"><span class="glyphicon glyphicon-pawn"></span> {{ black_user.username }}</a>
             {% elif not user_can_play and game_data.token.step.side == 'white' %}
-                <span class="alert label-primary">White</span>
-                <span class="alert alert-info">Black</span>
+                <a class="btn btn-lg btn-primary disabled"><span class="glyphicon glyphicon-pawn"></span> {{ white_user.username }}</a>
+                <a class="btn btn-lg btn-default disabled btn-side-black"><span class="glyphicon glyphicon-pawn"></span> {{ black_user.username }}</a>
             {% elif not user_can_play and game_data.token.step.side == 'black' %}
-                <span class="alert alert-info">White</span>
-                <span class="alert label-primary">Black</span>
+                <a class="btn btn-lg btn-default disabled"><span class="glyphicon glyphicon-pawn btn-side-white"></span> {{ white_user.username }}</a>
+                <a class="btn btn-lg btn-primary disabled btn-side-black"><span class="glyphicon glyphicon-pawn"></span> {{ black_user.username }}</a>
             {% endif %}
             </label>
+            {% endwith %}
+            {% endwith %}
+            {% endwith %}
+            {% endwith %}
 
             {% if game_data.token.step.data.impossible_move %}
-                <div class="alert alert-warning" id="panel_message">
+                <div class="alert alert-danger" id="panel_message">
                     <strong>Impossible move !</strong><br />
                     Reason : {{ game_data.token.step.data.impossible_move }}
                 </div>
@@ -120,36 +227,46 @@
 
                 <span onclick="toggle_panel('debug_logs');">Logs <span id="button_toggle_debug_logs">&gt;</span></span><br />
                 <div id="debug_logs" style="display: none">{{ game_data|render_realjson2html:'token/logs'|safe }}</div>
+
+                <span onclick="toggle_panel('debug_saved_games');">Saved games <span id="button_toggle_debug_saved_games">&gt;</span></span><br />
+                <div id="debug_saved_games" style="display: none">{{ game_data|render_realjson2html:'saved_games'|safe }}</div>
             </div>
         </div>
         {% endif %}
     </div>
 
-    <div class="panel col-lg-3 col-md-4 col-sm-6 col-xs-12">
-        <h4 onclick="toggle_panel('panel_log');">Log <span id="button_toggle_panel_log">&gt;</span></h4><br/>
-        <div id="panel_log" style="display: none; overflow-y:auto; overflow-x:hidden; height: 546px;">
-            <table border="1">
-                <tr><td><b>Step</b></td>
-                    <td><b>Offic.</b></td>
-                    <td><b>Piece</b></td>
-                    <td><b>Source</b></td>
-                    <td><b>Target</b></td>
-                    <td><b>Eat</b></td>
-                </tr>
-                {% for log_key, log in game_data.token.logs.items|dictsort:"0.lower" %}
-                <tr>
-                    <td>{{ log_key }}</td>
-                    <td>{{ log.official }}</td>
-                    <td>{{ log.source.piece.r }}</td>
-                    <td>{{ log.source.x }}{{ log.source.y }}</td>
-                    <td>{{ log.target.x }}{{ log.target.y }}</td>
-                    <td>{{ log.target.piece.r }}</td>
-                </tr>
-                {% endfor %}
-            </table>
+    <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+        <div class="panel">
+            <h4 onclick="toggle_panel('panel_log');">Log <span id="button_toggle_panel_log">&gt;</span></h4><br/>
+            <div id="panel_log" style="display: none; overflow-y:auto; overflow-x:hidden; height: {{ game_data.token.logs|length|get_table_height:546 }}px;">
+                <table border="1" class="table">
+                    <tr><td><b>Step</b></td>
+                        <td><b>Offic.</b></td>
+                        <td><b>Piece</b></td>
+                        <td><b>Eat</b></td>
+                        {% if not game_data.game_options.ranked %}
+                            <td><b>Restore</b></td>
+                        {% endif %}
+                    </tr>
+                    {% for log_key, log in game_data.token.logs.items|dictsort:"0.lower" %}
+                    <tr>
+                        <td>{{ log_key }}</td>
+                        <td>{{ log.official }}</td>
+                        <td>{{ log.source.piece.r }}</td>
+                        <td>{{ log.target.piece.r }}</td>
+                        {% if not game_data.game_options.ranked %}
+                            <td align="center">
+                            {% if log.board and log.token %}
+                                <a href="{% url "menu-action" pk=game.id action="restore_log" name="_" value=log_key %}" class="btn btn-primary" title="Restore"><span class="glyphicon glyphicon-floppy-open"></span></a>
+                            {% endif %}
+                            </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
         </div>
     </div>
-
 </div>
 
 {% if game_data.token.step.name == 'promote' and user_can_play %}

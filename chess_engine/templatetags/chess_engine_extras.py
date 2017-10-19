@@ -3,10 +3,22 @@ from json2html import *
 
 from django import template
 from django.contrib.auth.models import User
+from chess_engine.models import *
 
 from utils import utils
 
 register = template.Library()
+
+
+@register.filter
+def multiply(left, right):
+    return left * right
+
+
+@register.filter
+def get_table_height(lines_number, max_height):
+    table_height = lines_number * 50
+    return table_height if table_height < max_height else max_height
 
 
 @register.filter
@@ -30,8 +42,24 @@ def access(value, path):
 
 
 @register.filter
-def get_user(value):
-    users = User.objects.filter(id=value)
-    if users.count() == 1:
-        return users.first()
-    return False
+def get_user(user_id):
+    if not user_id:
+        return False
+    user = User.objects.filter(id=user_id).first()
+    if not user:
+        return False
+    return user
+
+
+@register.filter
+def can_join_game(user, game):
+    if not user or not game:
+        return False
+    if game.id == 138:
+        print '@filter: game : %s' % game
+        print '@filter: game_options/ranked : %s' % game.get_data('game_options/ranked')
+
+    if game.get_data('game_options/ranked'):
+        if user.id in [int(game.get_data('participants/white/1')), int(game.get_data('participants/black/1'))]:
+            return False
+    return True
