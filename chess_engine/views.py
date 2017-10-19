@@ -325,9 +325,8 @@ class CreateChessGameView(LoginRequiredMixin, FormView):
         return kwargs
 
     def form_valid(self, form):
-        (status, msg) = form.execute()
-
-        return HttpResponseRedirect(reverse('home'))
+        (status, game) = form.execute()
+        return HttpResponseRedirect(reverse('chess-game', kwargs={'pk': game.id}))
 
     def form_invalid(self, form):
         return HttpResponseRedirect(reverse('home'))

@@ -43,4 +43,4 @@ class CreateChessGameForm(forms.Form):
 
         except Exception as e:
             return False, 'Game creation error : %s' % e.message
-        return True, 'Game created'
+        return True, game
