@@ -73,16 +73,90 @@
             </div>
 
             {% if user_can_play or user_is_creator %}
-            <div id="panel_buttons" style="margin-top: 7px;">
+            <div class="panel-body" id="panel_buttons" style="margin-top: 7px;">
                 <ul class="list-inline">
                     {% if user_can_play %}
-                    <li><a id="button_surrender_checkmate" class="btn btn-danger" href="{% url 'menu-action' pk=game.id action='surrender_checkmate' value=game_data.token.step.side %}"><span class="glyphicon glyphicon-king"></span> Surrender (checkmate)</a></li>
+                    <li><a id="button_surrender_checkmate" class="btn btn-danger" href="{% url 'menu-action' pk=game.id action='surrender_checkmate' name='_' value=game_data.token.step.side %}"><span class="glyphicon glyphicon-king"></span> Surrender (checkmate)</a></li>
                     {% endif %}
                     {% if user_is_creator %}
-                    <li><a id="button_reset_round" class="btn btn-warning" href="{% url 'menu-action' pk=game.id action='reset_round' value=game_data.token.step.side %}"><span class="glyphicon glyphicon-remove-circle"></span> Reset round</a></li>
-                    <li><a id="button_reset_game" class="btn btn-warning" href="{% url 'menu-action' pk=game.id action='reset_game' value=game_data.token.step.side %}"><span class="glyphicon glyphicon-remove-sign"></span> Reset game</a></li>
+                    <li><a id="button_reset_round" class="btn btn-warning" href="{% url 'menu-action' pk=game.id action='reset_round' name='_' value=game_data.token.step.side %}"><span class="glyphicon glyphicon-remove-circle"></span> Reset round</a></li>
+                    <li><a id="button_reset_game" class="btn btn-warning" href="{% url 'menu-action' pk=game.id action='reset_game' name='_' value=game_data.token.step.side %}"><span class="glyphicon glyphicon-remove-sign"></span> Reset game</a></li>
                     {% endif %}
                 </ul>
+                {% if user_can_play %}
+                <ul class="list-inline">
+                    <li>
+                        <a data-toggle="modal" data-target="#SaveGameModal" data-keyboard="false" class="btn btn-primary">
+                            <span class="glyphicon glyphicon-floppy-save"></span> Save board
+                        </a>
+                    </li>
+                    {% if not game_data.game_options.ranked %}
+                        {% if game_data.saved_games|length > 0 %}
+                            <li class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                    <span class="glyphicon glyphicon-floppy-open"></span>
+                                    Restore board
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu pull-right">
+                                    {% for game_key, saved_game in game_data.saved_games.items|dictsort:"0.lower" %}
+                                    <li>
+                                        <a href="{% url "menu-action" pk=game.id action="restore_saved_game" name="logging" value=game_key %}" style="font-weight: bold">{{ saved_game.comment }}</a>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li><a class="btn btn-default disabled"><span class="glyphicon glyphicon-floppy-open"></span> No saved boards.</a></li>
+                        {% endif %}
+                    {% else %}
+                        <li>
+                            <span title="Can't load board in a ranked game.">
+                                <a class="btn btn-default disabled"><span class="glyphicon glyphicon-floppy-open"></span> Restore board</a>
+                            </span>
+                        </li>
+                    {% endif %}
+                </ul>
+                <ul class="list-inline">
+                    {% if game_data.game_options.logging == 'on' %}
+                        <li><a href="{% url "menu-action" pk=game.id action="update_option" name="logging" value="off" %}" class="btn btn-warning"><span class="glyphicon glyphicon-copy"></span> Disable logging</a></li>
+                        {% if not game_data.game_options.ranked %}
+                        <li><a href="" class="btn btn-primary"><span class="glyphicon glyphicon-step-backward"></span> Previous</a></li>
+                        <li><a href="" class="btn btn-primary"><span class="glyphicon glyphicon-step-forward"></span> Next</a></li>
+                        {% endif %}
+                    {% else %}
+                        <li><a href="{% url "menu-action" pk=game.id action="update_option" name="logging" value="on" %}" class="btn btn-primary"><span class="glyphicon glyphicon-copy"></span> Enable logging</a></li>
+                    {% endif %}
+                </ul>
+                <div id="SaveGameModal" class="modal fade" role="dialog">
+                    <form href="{% url "menu-action" pk=game.id action="save_board" name="a" value="a" %}" role="form">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    Save board
+                                </div>
+                                <div class="modal-body">
+                                    <div class="inline">
+                                        <label for="input_comment">Comment</label>
+                                        <input id="input_comment" type="text" size="20">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary" onclick="submitSaveGameForm(); return false;">Submit</button>
+                                </div>
+                                <script>
+                                    function submitSaveGameForm() {
+                                        var comment_value = $('#input_comment').val();
+                                        window.location.href = '/game/{{ game.id }}/menu/save_board/a/' + comment_value;
+                                        return false;
+                                    }
+                                </script>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                {% endif %}
             </div>
             {% endif %}
         </div>
@@ -154,6 +228,9 @@
 
                 <span onclick="toggle_panel('debug_logs');">Logs <span id="button_toggle_debug_logs">&gt;</span></span><br />
                 <div id="debug_logs" style="display: none">{{ game_data|render_realjson2html:'token/logs'|safe }}</div>
+
+                <span onclick="toggle_panel('debug_saved_games');">Saved games <span id="button_toggle_debug_saved_games">&gt;</span></span><br />
+                <div id="debug_saved_games" style="display: none">{{ game_data|render_realjson2html:'saved_games'|safe }}</div>
             </div>
         </div>
         {% endif %}
@@ -163,22 +240,28 @@
         <div class="panel">
             <h4 onclick="toggle_panel('panel_log');">Log <span id="button_toggle_panel_log">&gt;</span></h4><br/>
             <div id="panel_log" style="display: none; overflow-y:auto; overflow-x:hidden; height: 546px;">
-                <table border="1">
+                <table border="1" class="table">
                     <tr><td><b>Step</b></td>
                         <td><b>Offic.</b></td>
                         <td><b>Piece</b></td>
-                        <td><b>Source</b></td>
-                        <td><b>Target</b></td>
                         <td><b>Eat</b></td>
+                        {% if not game_data.game_options.ranked %}
+                            <td><b>Restore</b></td>
+                        {% endif %}
                     </tr>
                     {% for log_key, log in game_data.token.logs.items|dictsort:"0.lower" %}
                     <tr>
                         <td>{{ log_key }}</td>
                         <td>{{ log.official }}</td>
                         <td>{{ log.source.piece.r }}</td>
-                        <td>{{ log.source.x }}{{ log.source.y }}</td>
-                        <td>{{ log.target.x }}{{ log.target.y }}</td>
                         <td>{{ log.target.piece.r }}</td>
+                        {% if not game_data.game_options.ranked %}
+                            <td align="center">
+                            {% if log.board and log.token %}
+                                <a href="{% url "menu-action" pk=game.id action="restore_log" name="_" value=log_key %}" class="btn btn-primary" title="Restore"><span class="glyphicon glyphicon-floppy-open"></span></a>
+                            {% endif %}
+                            </td>
+                        {% endif %}
                     </tr>
                     {% endfor %}
                 </table>

@@ -92,6 +92,13 @@ class GamePersistentData (PersistentObject):
         }
         if 'target_piece' in move_data:
             log_data['target']['piece'] = move_data['target_piece']
+
+        # auto-logging
+        if self.get_data('game_options/logging') == 'on':
+            log_data['board'] = self.get_data('board')
+            log_data['token'] = self.get_data('token')
+            print 'GamePersistentData.add_log: board saved.'
+
         self.add_item('token', 'logs', log_data, '%03d.')
 
 

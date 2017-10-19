@@ -214,8 +214,9 @@
       'name': 'xxx',
       'winning_games': 1/2/n,
       'creator': user_id,
-      'ranked': true/false
-      'public': true/false
+      'ranked': true/false,
+      'public': true/false,
+      'logging': true/false,
    },
    'participants': {
         'white': {
@@ -247,11 +248,21 @@
 
 ## known bugs
 ### GRAVE (not contournable)
-* avoid player to join a ranked game on both sides
 
 ### MAJOR (contournable manually)
+* Enabled logging overloads game_data
+    * should remove logs/[n]/token/logs from render2jsondebug
+    * should clean logs from token before saving the token (and find a better way to ensure prev/next options)
+    * should disable logging option (leave only manual save option)
+    * should test performance with mysql
+    * should test performance with real webserver
 
 ### MINOR
+[ui]
+* waiting better performances in logging, should remove logging buttons :
+ * enable/disable logging
+ * load prev/next log
+
 * promotion available when checkmate                    todo : a verifier
 
 

@@ -430,6 +430,7 @@ class ChessGame:
         history = self.game_data.get_data('history')
         game_options = self.game_data.get_data('game_options')
         participants = self.game_data.get_data('participants')
+        saved_games = self.game_data.get_data('saved_games')
 
         # save round results
         self._save_game_result(result)
@@ -454,6 +455,7 @@ class ChessGame:
         self.game_data.set_data('participants', participants)
         self.game_data.set_data('rounds', rounds)
         self.game_data.set_data('result', results)
+        self.game_data.set_data('saved_games', saved_games)
 
     def _check_promotion(self, piece, data):
         if piece.role.name == 'P':

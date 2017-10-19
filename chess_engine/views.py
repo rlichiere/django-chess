@@ -358,6 +358,53 @@ class MenuView(View):
         elif action == 'reset_game':
             game_logic.reset_game()
 
+        elif action == 'update_option':
+            option_name = kwargs['name']
+            option_value = kwargs['value']
+            game_logic.game_data.set_data('game_options/%s' % option_name, option_value)
+
+        elif action == 'save_board':
+            comment = kwargs['value']
+            saved_game = {
+                'comment': comment,
+                'board': game_logic.game_data.get_data('board'),
+                'token': game_logic.game_data.get_data('token')
+            }
+            saved_games = game_logic.game_data.get_data('saved_games')
+            new_index = 1
+            if saved_games:
+                new_index = len(saved_games) + 1
+            new_index = '%03d' % new_index
+            game_logic.game_data.set_data('saved_games/%s' % new_index, saved_game)
+        elif action == 'load_previous':
+            # get current log number (how to store it ? in a new token key ?)
+            # calculate previous log number
+            # load its board
+            print 'action(load_previous): log_index : ??'
+        elif action == 'load_next':
+            # get current log number (how to store it ? in a new token key ?)
+            # calculate next log number
+            # load its board
+            print 'action(load_next): log_index : ??'
+        elif action == 'restore_log':
+            log_index = kwargs['value']
+            # load log game at log_index
+            restored_board = game_logic.game_data.get_data('logs/%s/board' % log_index)
+            restored_token = game_logic.game_data.get_data('logs/%s/token' % log_index)
+            if restored_board and restored_token:
+                game_logic.game_data.get_data('board', restored_board)
+                game_logic.game_data.get_data('token', restored_token)
+        elif action == 'restore_saved_game':
+            log_index = kwargs['value']
+            # load saved game at log_index
+            restored_board = game_logic.game_data.get_data('saved_games/%s/board' % log_index)
+            restored_token = game_logic.game_data.get_data('saved_games/%s/token' % log_index)
+            if restored_board and restored_token:
+                game_logic.game_data.set_data('board', restored_board)
+                game_logic.game_data.set_data('token', restored_token)
+        else:
+            print 'unknown action : %s' % action
+
         return HttpResponseRedirect(reverse('chess-game', kwargs={'pk': game_id}))
 
 

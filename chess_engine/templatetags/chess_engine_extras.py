@@ -49,7 +49,6 @@ def can_join_game(user, game):
         print '@filter: game_options/ranked : %s' % game.get_data('game_options/ranked')
 
     if game.get_data('game_options/ranked'):
-        print 'this game is ranked.'
         if user.id in [int(game.get_data('participants/white/1')), int(game.get_data('participants/black/1'))]:
             return False
     return True
