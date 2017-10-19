@@ -58,7 +58,7 @@
 ### feature_ranked_games
 [game logic]
 * elo management (https://fr.wikipedia.org/wiki/Classement_Elo)
-* save/load game and logs management
+* save/load game management (manual and auto)
 
 [ui]
 * history of ranked games
