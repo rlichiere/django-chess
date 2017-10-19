@@ -3,6 +3,7 @@ from json2html import *
 
 from django import template
 from django.contrib.auth.models import User
+from chess_engine.models import *
 
 from utils import utils
 
@@ -35,3 +36,17 @@ def get_user(value):
     if users.count() == 1:
         return users.first()
     return False
+
+@register.filter
+def can_join_game(user, game):
+    if not user or not game:
+        return False
+    if game.id == 138:
+        print '@filter: game : %s' % game
+        print '@filter: game_options/ranked : %s' % game.get_data('game_options/ranked')
+
+    if game.get_data('game_options/ranked'):
+        print 'this game is ranked.'
+        if user.id in [int(game.get_data('participants/white/1')), int(game.get_data('participants/black/1'))]:
+            return False
+    return True

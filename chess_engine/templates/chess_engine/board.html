@@ -9,6 +9,18 @@
         padding-left: 3px;
         padding-right: 3px;
     }
+    .btn-side-white, .btn-side-white a {
+        color: #999;
+    }
+    .btn-side-black, .btn-side-black a {
+        color: #111;
+    }
+    .btn-side-white-inv, .btn-side-white-inv a {
+        color: #eee;
+    }
+    .btn-side-black-inv, .btn-side-black-inv a {
+        color: #777;
+    }
 </style>
 <div class="row">
     <div class="panel col-lg-6 col-md-8 col-sm-12 col-xs-12">
@@ -63,11 +75,11 @@
         <div id="panel_buttons" style="margin-top: 7px;">
             <ul class="list-inline">
                 {% if user_can_play %}
-                <li><a id="button_surrender_checkmate" class="btn btn-danger" href="{% url 'menu-action' pk=game.id action='surrender_checkmate' value=game_data.token.step.side %}">Surrender (checkmate)</a></li>
+                <li><a id="button_surrender_checkmate" class="btn btn-danger" href="{% url 'menu-action' pk=game.id action='surrender_checkmate' value=game_data.token.step.side %}"><span class="glyphicon glyphicon-king"></span> Surrender (checkmate)</a></li>
                 {% endif %}
                 {% if user_is_creator %}
-                <li><a id="button_reset_round" class="btn btn-warning" href="{% url 'menu-action' pk=game.id action='reset_round' value=game_data.token.step.side %}">Reset current round</a></li>
-                <li><a id="button_reset_game" class="btn btn-warning" href="{% url 'menu-action' pk=game.id action='reset_game' value=game_data.token.step.side %}">Reset game</a></li>
+                <li><a id="button_reset_round" class="btn btn-warning" href="{% url 'menu-action' pk=game.id action='reset_round' value=game_data.token.step.side %}"><span class="glyphicon glyphicon-remove-circle"></span> Reset round</a></li>
+                <li><a id="button_reset_game" class="btn btn-warning" href="{% url 'menu-action' pk=game.id action='reset_game' value=game_data.token.step.side %}"><span class="glyphicon glyphicon-remove-sign"></span> Reset game</a></li>
                 {% endif %}
             </ul>
         </div>
