@@ -18,45 +18,44 @@
     {% with black_user_id=context.game_logic.game_data.data|access:'participants/black/1' %}
     {% with user_can_join=user|can_join_game:context.game_logic.game_data %}
 
-    <span class="btn btn-default"><span class="glyphicon glyphicon-pawn btn-side-white"></span>
-        {% if white_user_id %}
-            {% with white_user=white_user_id|get_user %}
+    {% if white_user_id %}
+        {% with white_user=white_user_id|get_user %}
+        <a class="btn btn-default disabled"><span class="glyphicon glyphicon-pawn btn-side-white"></span>
             <strong>{{ white_user.username }}</strong>
-            {% endwith %}
+        </a>
+        {% endwith %}
+    {% else %}
+        {% if user_can_join %}
+            <a href="{% url 'join-game' pk=context.game_logic.game_data.id side='w' %}" class="btn btn-primary">
+                <span class="glyphicon glyphicon-pawn btn-side-white"></span>
+                Join
+            </a>
         {% else %}
-            {% if user_can_join %}
-                <a href="{% url 'join-game' pk=context.game_logic.game_data.id side='w' %}" class="btn btn-primary"> Join</a>
-            {% else %}
+            <a class="btn btn-default disabled"><span class="glyphicon glyphicon-pawn btn-side-white"></span>
                 <span title="You can't play both sides in a ranked game."><i>No opponent</i></span>
-            {% endif %}
+            </a>
         {% endif %}
-    </span>
+    {% endif %}
     versus
-    <span class="btn btn-default"><span class="glyphicon glyphicon-pawn btn-side-black"></span>
-        {% if black_user_id %}
-            {% with black_user=black_user_id|get_user %}
-            <strong>{{ black_user.username }}</strong>
-            {% endwith %}
+    {% if black_user_id %}
+        {% with black_user=black_user_id|get_user %}
+            <a class="btn btn-default disabled"><span class="glyphicon glyphicon-pawn btn-side-black"></span>
+                <strong>{{ black_user.username }}</strong>
+            </a>
+        {% endwith %}
+    {% else %}
+        {% if user_can_join %}
+            <a href="{% url 'join-game' pk=context.game_logic.game_data.id side='b' %}" class="btn btn-primary">
+                <span class="glyphicon glyphicon-pawn btn-side-black"></span>
+                Join
+            </a>
         {% else %}
-            {% if user_can_join %}
-                <a href="{% url 'join-game' pk=context.game_logic.game_data.id side='b' %}"> Join</a>
-            {% else %}
+            <a class="btn btn-default disabled"><span class="glyphicon glyphicon-pawn btn-side-black"></span>
                 <span title="You can't play both sides in a ranked game."><i>No opponent</i></span>
-            {% endif %}
+            </a>
         {% endif %}
-    </span>
+    {% endif %}
 
-    {% endwith %}
-    {% endwith %}
-    - Round :
-    {% with rounds=context.game_logic.game_data.data|access:'rounds' %}
-    {% with winning_games=context.game_logic.game_data.data|access:'game_options/winning_games' %}
-        {% if context.game_logic.game_data.data|access:'result' %}
-            {{ rounds|length }}
-        {% else %}
-            {{ rounds|length|add:"1" }}
-        {% endif %}
-        / {{ winning_games|add:winning_games|add:"-1" }}
     {% endwith %}
     {% endwith %}
     {% endwith %}

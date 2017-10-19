@@ -31,11 +31,14 @@ def access(value, path):
 
 
 @register.filter
-def get_user(value):
-    users = User.objects.filter(id=value)
-    if users.count() == 1:
-        return users.first()
-    return False
+def get_user(user_id):
+    if not user_id:
+        return False
+    user = User.objects.filter(id=user_id).first()
+    if not user:
+        return False
+    return user
+
 
 @register.filter
 def can_join_game(user, game):
