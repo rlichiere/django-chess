@@ -51,7 +51,6 @@
             {% else %}
                 <td align="right">{{ white_user.username }}</td>
             {% endif %}
-
         {% else %}
         <td align="center"><a href="{% url 'join-game' pk=game.id side='w' %}" class="btn-sm btn-primary">Join</a></td>
         {% endif %}
