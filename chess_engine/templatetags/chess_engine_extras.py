@@ -17,7 +17,7 @@ def multiply(left, right):
 
 @register.filter
 def get_table_height(lines_number, max_height):
-    table_height = (lines_number + 1) * 50
+    table_height = 60 + lines_number * 51
     return table_height if table_height < max_height else max_height
 
 

@@ -2,20 +2,23 @@
 {% load chess_engine_extras %}
 
 {% if games|length > 15 %}
-<div style="overflow-y:auto; height: 600px;">
+<div style="overflow-y:auto; height: 580px;" class="table-responsive table-bordered table-condensed table-hover">
 {% else %}
-<div>
+<div class="table-responsive">
 {% endif %}
 
-<table border="1" class="table">
-<tr>
-    <th>Game name</th>
-    <th>Rounds</th>
-    <th>White</th>
-    <th>Black</th>
-    <th>Public</th>
-    <th>Ranked</th>
-</tr>
+<table class="table table table-bordered table-condensed table-hover">
+<thead>
+    <tr>
+        <th>Game name</th>
+        <th>Rounds</th>
+        <th>White</th>
+        <th>Black</th>
+        <th>Public</th>
+        <th>Ranked</th>
+    </tr>
+</thead>
+<tbody>
 {% for game in games reversed %}
     {% with white_user_id=game.data|access:'participants/white/1' %}
     {% with black_user_id=game.data|access:'participants/black/1' %}
@@ -118,5 +121,6 @@
         <td align="center" colspan="6">No games.</td>
     </tr>
 {% endfor %}
+</tbody>
 </table>
 </div>

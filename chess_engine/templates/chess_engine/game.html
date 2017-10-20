@@ -65,41 +65,39 @@
 {% endblock %}
 
 {% block body %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-lg-12">
-            {# BOARD or RESULT #}
-            {% with token_step_side=context.game_logic.game_data.data|access:'token/step/side' %}
-            {% with rounds=context.game_logic.game_data.data|access:'rounds' %}
-                {% if token_step_side == False %}
-                    {% if rounds|length > 0 %}
-                    <div>
-                        Game ended.<br />
-                        White wins : {{ context.game_results.white_wins }}<br />
-                        Black wins : {{ context.game_results.black_wins }}<br />
-                    </div>
-                    {% else %}
-                        {% with white_user_id=context.game_logic.game_data.data|access:'participants/white/1' %}
-                        {% with black_user_id=context.game_logic.game_data.data|access:'participants/black/1' %}
-                            <br />
-                            Waiting players.<br /><br />
-                            {% if not white_user_id %}
-                                <a href="{% url 'join-game' pk=context.game_logic.game_data.id side='w' %}">Play as White</a>
-                                <br />
-                            {% endif %}
-                            {% if not black_user_id %}
-                                <a href="{% url 'join-game' pk=context.game_logic.game_data.id side='b' %}">Play as Black</a>
-                                <br />
-                            {% endif %}
-                        {% endwith %}
-                        {% endwith %}
-                    {% endif %}
+<div class="row">
+    <div class="col-xs-12">
+        {# BOARD or RESULT #}
+        {% with token_step_side=context.game_logic.game_data.data|access:'token/step/side' %}
+        {% with rounds=context.game_logic.game_data.data|access:'rounds' %}
+            {% if token_step_side == False %}
+                {% if rounds|length > 0 %}
+                <div>
+                    Game ended.<br />
+                    White wins : {{ context.game_results.white_wins }}<br />
+                    Black wins : {{ context.game_results.black_wins }}<br />
+                </div>
                 {% else %}
-                    {{ context.html_board|safe }}
+                    {% with white_user_id=context.game_logic.game_data.data|access:'participants/white/1' %}
+                    {% with black_user_id=context.game_logic.game_data.data|access:'participants/black/1' %}
+                        <br />
+                        Waiting players.<br /><br />
+                        {% if not white_user_id %}
+                            <a href="{% url 'join-game' pk=context.game_logic.game_data.id side='w' %}">Play as White</a>
+                            <br />
+                        {% endif %}
+                        {% if not black_user_id %}
+                            <a href="{% url 'join-game' pk=context.game_logic.game_data.id side='b' %}">Play as Black</a>
+                            <br />
+                        {% endif %}
+                    {% endwith %}
+                    {% endwith %}
                 {% endif %}
-            {% endwith %}
-            {% endwith %}
-        </div>
+            {% else %}
+                {{ context.html_board|safe }}
+            {% endif %}
+        {% endwith %}
+        {% endwith %}
     </div>
 </div>
 {% endblock %}
