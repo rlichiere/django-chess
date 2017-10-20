@@ -86,7 +86,7 @@
 
 [ui]
 * information for all avoid move cases
-
+* link a graphical set to each level (activable by user in its profile)
 
 ### MidTerm
 [game logic]

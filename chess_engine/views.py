@@ -380,12 +380,17 @@ class MenuView(View):
             token_logs = game_logic.game_data.get_data('token/logs')
             if token_logs:
                 token_logs_len = len(token_logs)
-                if token_logs_len > 0:
+                if token_logs_len > 1:
                     previous_log_index = '%03d.' % (token_logs_len - 1)
                     kwargs['action'] = 'restore_log'
                     kwargs['name'] = '_'
                     kwargs['value'] = previous_log_index
                     return HttpResponseRedirect(reverse('menu-action', kwargs=kwargs))
+                else:
+                    kwargs['action'] = 'reset_round'
+                    return HttpResponseRedirect(reverse('menu-action', kwargs=kwargs))
+            else:
+                print 'no logs to restore'
         elif action == 'restore_log':
             log_index = kwargs['value']
             self._restore_log(source='logs', log_index=log_index, game_logic=game_logic)

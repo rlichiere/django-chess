@@ -17,8 +17,16 @@ def multiply(left, right):
 
 @register.filter
 def get_table_height(lines_number, max_height):
-    table_height = lines_number * 50
+    table_height = (lines_number + 1) * 50
     return table_height if table_height < max_height else max_height
+
+
+@register.filter
+def contains_a_line_with_property(data, key_name):
+    for line_k, line in data.items():
+        if key_name in line:
+            return True
+    return False
 
 
 @register.filter

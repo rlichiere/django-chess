@@ -9,6 +9,19 @@
         padding-left: 3px;
         padding-right: 3px;
     }
+    .bg-side-white {
+        background-color: #eee;
+    }
+    .color-side-white {
+        color: #333;
+    }
+    .bg-side-black {
+        background-color: #333;
+    }
+    .color-side-black {
+        color: #eee;
+    }
+
     .btn-side-white, .btn-side-white a {
         color: #999;
     }
@@ -22,11 +35,12 @@
         color: #777;
     }
 </style>
+
+{% with even_color=board.color_set.board_cell_light_color %}
+{% with odd_color=board.color_set.board_cell_dark_color %}
 <div class="row">
     <div class="panel col-lg-6 col-md-8 col-sm-12 col-xs-12">
         <div class="panel">
-            {% with even_color=board.color_set.board_cell_light_color %}
-            {% with odd_color=board.color_set.board_cell_dark_color %}
             <table border="1" class="chess-board">
                 {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.8 line_key=8 even=even_color odd=odd_color %}
                 {% include 'chess_engine/board_line.html' with game=game game_data=game_data line=board.grid.7 line_key=7 even=odd_color odd=even_color %}
@@ -40,8 +54,6 @@
                     <td></td><td>a</td><td>b</td><td>c</td><td>d</td><td>e</td><td>f</td><td>g</td><td>h</td>
                 </tr>
             </table>
-            {% endwith %}
-            {% endwith %}
             <div id="panel_promotion" style="display: none;">
                 <div class="col-lg-3">Pawn promotion :</div>
                 <div class="col-lg-7">
@@ -117,16 +129,26 @@
                         </li>
                     {% endif %}
                 </ul>
+                {% endif %}
                 <ul class="list-inline">
                     {% if game_data.game_options.logging == 'on' %}
-                        <li><a href="{% url "menu-action" pk=game.id action="update_option" name="logging" value="off" %}" class="btn btn-warning"><span class="glyphicon glyphicon-copy"></span> Disable logging</a></li>
-                        {% if not game_data.game_options.ranked %}
-                        <li><a href="{% url "menu-action" pk=game.id action="load_previous_log" name="_" value="_" %}" class="btn btn-primary"><span class="glyphicon glyphicon-step-backward"></span> Previous</a></li>
+                        {% if user_can_play %}
+                            <li><a href="{% url "menu-action" pk=game.id action="update_option" name="logging" value="off" %}" class="btn btn-warning"><span class="glyphicon glyphicon-copy"></span> Disable logging</a></li>
+                        {% else %}
+                            <li><a class="btn btn-default disabled"><span class="glyphicon glyphicon-copy"></span> Logging enabled</a></li>
+                        {% endif %}
+                        {% if not game_data.game_options.ranked and user_can_play %}
+                            <li><a href="{% url "menu-action" pk=game.id action="load_previous_log" name="_" value="_" %}" class="btn btn-primary"><span class="glyphicon glyphicon-step-backward"></span> Previous</a></li>
                         {% endif %}
                     {% else %}
-                        <li><a href="{% url "menu-action" pk=game.id action="update_option" name="logging" value="on" %}" class="btn btn-primary"><span class="glyphicon glyphicon-copy"></span> Enable logging</a></li>
+                        {% if user_can_play %}
+                            <li><a href="{% url "menu-action" pk=game.id action="update_option" name="logging" value="on" %}" class="btn btn-primary"><span class="glyphicon glyphicon-copy"></span> Enable logging</a></li>
+                        {% else %}
+                            <li><a class="btn btn-default disabled"><span class="glyphicon glyphicon-copy"></span> Logging disabled</a></li>
+                        {% endif %}
                     {% endif %}
                 </ul>
+                {% if user_can_play %}
                 <div id="SaveGameModal" class="modal fade" role="dialog">
                     <form href="{% url "menu-action" pk=game.id action="save_board" name="a" value="a" %}" role="form">
                         <div class="modal-dialog">
@@ -163,88 +185,137 @@
 
     <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
         <div class="panel">
-            <label class="alert">Round
-            {% with rounds=game_data.rounds %}
-            {% with winning_games=game_data.game_options.winning_games %}
-                {% if game_data.result %}
-                    <a class="btn btn-lg btn-default disabled">{{ rounds|length }}</a>
-                {% else %}
-                    <a class="btn btn-lg btn-default disabled">{{ rounds|length|add:"1" }}</a>
-                {% endif %}
-                / <a class="btn btn-lg btn-default disabled">{{ winning_games|add:winning_games|add:"-1" }}</a>
-            {% endwith %}
-            {% endwith %}
-            </label>
             {% with white_user_id=game_data.participants.white.1 %}
             {% with black_user_id=game_data.participants.black.1 %}
             {% with white_user=white_user_id|get_user %}
             {% with black_user=black_user_id|get_user %}
-            <label class="alert">Turn
-            {% if user_can_play and game_data.token.step.side == 'white' %}
-                <a class="btn btn-lg btn-success disabled"><span class="glyphicon glyphicon-pawn"></span> {{ white_user.username }}</a>
-                <a class="btn btn-lg btn-default disabled btn-side-black"><span class="glyphicon glyphicon-pawn"></span> {{ black_user.username }}</a>
-            {% elif user_can_play and game_data.token.step.side == 'black' %}
-                <a class="btn btn-lg btn-default disabled"><span class="glyphicon glyphicon-pawn btn-side-white"></span> {{ white_user.username }}</a>
-                <a class="btn btn-lg btn-success disabled btn-side-black"><span class="glyphicon glyphicon-pawn"></span> {{ black_user.username }}</a>
-            {% elif not user_can_play and game_data.token.step.side == 'white' %}
-                <a class="btn btn-lg btn-primary disabled"><span class="glyphicon glyphicon-pawn"></span> {{ white_user.username }}</a>
-                <a class="btn btn-lg btn-default disabled btn-side-black"><span class="glyphicon glyphicon-pawn"></span> {{ black_user.username }}</a>
-            {% elif not user_can_play and game_data.token.step.side == 'black' %}
-                <a class="btn btn-lg btn-default disabled"><span class="glyphicon glyphicon-pawn btn-side-white"></span> {{ white_user.username }}</a>
-                <a class="btn btn-lg btn-primary disabled btn-side-black"><span class="glyphicon glyphicon-pawn"></span> {{ black_user.username }}</a>
-            {% endif %}
-            </label>
-            {% endwith %}
-            {% endwith %}
-            {% endwith %}
-            {% endwith %}
-
-            {% if game_data.token.step.data.impossible_move %}
-                <div class="alert alert-danger" id="panel_message">
-                    <strong>Impossible move !</strong><br />
-                    Reason : {{ game_data.token.step.data.impossible_move }}
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <label>Round</label>
+                    </div>
+                    <div class="col-lg-9">
+                        {% with rounds=game_data.rounds %}
+                        {% with winning_games=game_data.game_options.winning_games %}
+                            {% if game_data.result %}
+                                <a class="btn btn btn-default disabled">{{ rounds|length }}</a>
+                            {% else %}
+                                <a class="btn btn btn-default disabled">{{ rounds|length|add:"1" }}</a>
+                            {% endif %}
+                            / <a class="btn btn btn-default disabled">{{ winning_games|add:winning_games|add:"-1" }}</a>
+                        {% endwith %}
+                        {% endwith %}
+                    </div>
                 </div>
-            {% endif %}
-        </div>
+                <br />
+                <div class="row">
+                    <div class="col-lg-3">
+                        <label>Turn</label>
+                    </div>
+                    <div class="col-lg-9">
+                        {% if user_can_play and game_data.token.step.side == 'white' %}
+                            <a class="btn btn btn-success disabled"><span class="glyphicon glyphicon-pawn"></span> {{ white_user.username }}</a>
+                            <a class="btn btn btn-default disabled btn-side-black"><span class="glyphicon glyphicon-pawn"></span> {{ black_user.username }}</a>
+                        {% elif user_can_play and game_data.token.step.side == 'black' %}
+                            <a class="btn btn btn-default disabled"><span class="glyphicon glyphicon-pawn btn-side-white"></span> {{ white_user.username }}</a>
+                            <a class="btn btn btn-success disabled btn-side-black"><span class="glyphicon glyphicon-pawn"></span> {{ black_user.username }}</a>
+                        {% elif not user_can_play and game_data.token.step.side == 'white' %}
+                            <a class="btn btn btn-primary disabled"><span class="glyphicon glyphicon-pawn"></span> {{ white_user.username }}</a>
+                            <a class="btn btn btn-default disabled btn-side-black"><span class="glyphicon glyphicon-pawn"></span> {{ black_user.username }}</a>
+                        {% elif not user_can_play and game_data.token.step.side == 'black' %}
+                            <a class="btn btn btn-default disabled"><span class="glyphicon glyphicon-pawn btn-side-white"></span> {{ white_user.username }}</a>
+                            <a class="btn btn btn-primary disabled btn-side-black"><span class="glyphicon glyphicon-pawn"></span> {{ black_user.username }}</a>
+                        {% endif %}
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-lg-3">
+                        <label>Material</label>
+                    </div>
+                    <div class="col-lg-9">
+                        <div>
+                            <div class="progress material">
+                                {% with material.percentages.white as p_w %}
+                                {% with material.percentages.black as p_b %}
+                                <div class="progress-bar progress-bar bg-side-white color-side-white" role="progressbar" style="width:{{ p_w }}%;">
+                                    <label>
+                                    {{ material.brut.white }}
+                                    {% if white_user == user %}
+                                        ({{ material.delta.white }})
+                                    {% endif %}
+                                    </label>
+                                </div>
+                                <div class="progress-bar progress-bar bg-side-black color-side-black" role="progressbar" style="width:{{ p_b }}%;">
+                                    <label>
+                                    {{ material.brut.black }}
+                                    {% if black_user == user %}
+                                        ({{ material.delta.black }})
+                                    {% endif %}
+                                    </label>
+                                </div>
+                                {% endwith %}
+                                {% endwith %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                {% if game_data.token.step.data.impossible_move %}
+                    <div class="alert alert-danger" id="panel_message">
+                        <strong>Impossible move !</strong><br />
+                        Reason : {{ game_data.token.step.data.impossible_move }}
+                    </div>
+                {% endif %}
+                </div>
 
-        {% if user.is_superuser %}
-        <div>
-            <h4 onclick="toggle_panel('panel_debug');">Debug <span id="button_toggle_panel_debug">&gt;</span></h4>
-            <div id="panel_debug" style="display: none; overflow-y:auto; height: 490px;">
-                En passant : {{ game_data.token.step.enpassant }}<br /><br />
-                Castling :<ul>
-                    <li>White : {{ game_data.token.step.castle.white }}</li>
-                    <li>Black : {{ game_data.token.step.castle.black }}</li>
-                </ul><br />
-                <span onclick="toggle_panel('debug_step');">Step <span id="button_toggle_debug_step">&gt;</span></span><br/>
-                <div id="debug_step" style="display: none;">{{ game_data|render_realjson2html:'token/step'|safe }}</div>
+                {% if user.is_superuser %}
+                <div class="row">
+                    <div>
+                        <h4 onclick="toggle_panel('panel_debug');">Debug <span id="button_toggle_panel_debug">&gt;</span></h4>
+                        <div id="panel_debug" style="display: none; overflow-y:auto; height: 490px;">
+                            En passant : {{ game_data.token.step.enpassant }}<br /><br />
+                            Castling :<ul>
+                                <li>White : {{ game_data.token.step.castle.white }}</li>
+                                <li>Black : {{ game_data.token.step.castle.black }}</li>
+                            </ul><br />
+                            <span onclick="toggle_panel('debug_step');">Step <span id="button_toggle_debug_step">&gt;</span></span><br/>
+                            <div id="debug_step" style="display: none;">{{ game_data|render_realjson2html:'token/step'|safe }}</div>
 
-                <span onclick="toggle_panel('debug_rounds');">Rounds <span id="button_toggle_debug_rounds">&gt;</span></span><br />
-                <div id="debug_rounds" style="display: none;">{{ game_data|render_realjson2html:'rounds'|safe }}</div>
+                            <span onclick="toggle_panel('debug_rounds');">Rounds <span id="button_toggle_debug_rounds">&gt;</span></span><br />
+                            <div id="debug_rounds" style="display: none;">{{ game_data|render_realjson2html:'rounds'|safe }}</div>
 
-                <span onclick="toggle_panel('debug_board');">Board <span id="button_toggle_debug_board">&gt;</span></span><br />
-                <div id="debug_board" style="display: none">{{ game_data|render_realjson2html:'board'|safe }}</div>
+                            <span onclick="toggle_panel('debug_board');">Board <span id="button_toggle_debug_board">&gt;</span></span><br />
+                            <div id="debug_board" style="display: none">{{ game_data|render_realjson2html:'board'|safe }}</div>
 
-                <span onclick="toggle_panel('debug_logs');">Logs <span id="button_toggle_debug_logs">&gt;</span></span><br />
-                <div id="debug_logs" style="display: none">{{ game_data|render_realjson2html:'token/logs'|safe }}</div>
+                            <span onclick="toggle_panel('debug_logs');">Logs <span id="button_toggle_debug_logs">&gt;</span></span><br />
+                            <div id="debug_logs" style="display: none">{{ game_data|render_realjson2html:'token/logs'|safe }}</div>
 
-                <span onclick="toggle_panel('debug_saved_games');">Saved games <span id="button_toggle_debug_saved_games">&gt;</span></span><br />
-                <div id="debug_saved_games" style="display: none">{{ game_data|render_realjson2html:'saved_games'|safe }}</div>
+                            <span onclick="toggle_panel('debug_saved_games');">Saved games <span id="button_toggle_debug_saved_games">&gt;</span></span><br />
+                            <div id="debug_saved_games" style="display: none">{{ game_data|render_realjson2html:'saved_games'|safe }}</div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
             </div>
+            {% endwith %}
+            {% endwith %}
+            {% endwith %}
+            {% endwith %}
         </div>
-        {% endif %}
     </div>
 
+    {% if game_data.token.logs.items|length > 0 %}
     <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
         <div class="panel">
-            <h4 onclick="toggle_panel('panel_log');">Log <span id="button_toggle_panel_log">&gt;</span></h4><br/>
-            <div id="panel_log" style="display: none; overflow-y:auto; overflow-x:hidden; height: {{ game_data.token.logs|length|get_table_height:546 }}px;">
+            <div id="panel_log" style="overflow-y:auto; overflow-x:hidden; height: {{ game_data.token.logs|length|get_table_height:546 }}px;">
                 <table border="1" class="table">
                     <tr><td><b>Step</b></td>
                         <td><b>Offic.</b></td>
                         <td><b>Piece</b></td>
                         <td><b>Eat</b></td>
-                        {% if not game_data.game_options.ranked %}
+                        {% if not game_data.game_options.ranked and game_data.token.logs|contains_a_line_with_property:'board' %}
                             <td><b>Restore</b></td>
                         {% endif %}
                     </tr>
@@ -254,7 +325,7 @@
                         <td>{{ log.official }}</td>
                         <td>{{ log.source.piece.r }}</td>
                         <td>{{ log.target.piece.r }}</td>
-                        {% if not game_data.game_options.ranked %}
+                        {% if not game_data.game_options.ranked and game_data.token.logs|contains_a_line_with_property:'board' %}
                             <td align="center">
                             {% if log.board and log.token %}
                                 <a href="{% url "menu-action" pk=game.id action="restore_log" name="_" value=log_key %}" class="btn btn-primary" title="Restore"><span class="glyphicon glyphicon-floppy-open"></span></a>
@@ -267,7 +338,10 @@
             </div>
         </div>
     </div>
+    {% endif %}
 </div>
+{% endwith %}
+{% endwith %}
 
 {% if game_data.token.step.name == 'promote' and user_can_play %}
 <script>

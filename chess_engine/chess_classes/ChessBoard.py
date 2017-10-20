@@ -190,7 +190,7 @@ class Board:
         context['board'] = self
         context['game'] = self.game_data
         context['game_data'] = self.game_data.get_data(None)
-
+        context['material'] = self._measure_material()
         html_board = template.render(context)
         return html_board
 
@@ -278,3 +278,29 @@ class Board:
                         #       % (role_name, column_coord, line_coord)
                         return column_coord, line_coord
         return False, False
+
+    def _measure_material(self):
+        white = 0
+        black = 0
+        for line_k, line in self.grid.items():
+            for column_k, column in line.items():
+                if column != '-':
+                    if column.side.name == 'white':
+                        white += column.role.weight
+                    elif column.side.name == 'black':
+                        black += column.role.weight
+        total = float(white + black)
+        white_percent = round(white * 100 / total, 2)
+        black_percent = 100 - white_percent
+        white_delta = int(white - black)
+        if white_delta > 0:
+            white_delta = '+%s' % white_delta
+        black_delta = black - white
+        if black_delta > 0:
+            black_delta = '+%s' % black_delta
+        result = {
+            'brut': {'white': white, 'black': black},
+            'percentages': {'white': white_percent, 'black': black_percent},
+            'delta': {'white': white_delta, 'black': black_delta},
+        }
+        return result
