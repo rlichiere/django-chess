@@ -209,7 +209,7 @@ class RankingUtils:
         result['victories'] = victories
         result['defeats'] = defeats
         if defeats != 0:
-            result['ratio'] = float(victories / defeats)
+            result['ratio'] = round(float(victories) / float(defeats), 2)
         else:
             result['ratio'] = victories
         return result

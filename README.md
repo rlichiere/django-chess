@@ -248,6 +248,7 @@
 
 ## known bugs
 ### GRAVE (not contournable)
+* crash on checkmate when no plyer in other side
 
 ### MAJOR (contournable manually)
 * Enabled logging overloads game_data

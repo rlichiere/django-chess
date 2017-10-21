@@ -19,7 +19,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for game_history in history reversed %}
+            {% for game_history in history|dictsort:"game_id" reversed %}
             <tr>
                 <td>{{ game_history.game.data|access:'game_options/name' }}</td>
 
