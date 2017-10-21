@@ -7,6 +7,10 @@
     <meta charset="UTF-8">
     <title>Chess - Game</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    {% if context.user_theme and context.user_theme.name != 'default' %}
+        <link href="/static/chess_engine/theme/css/{{ context.user_theme.file_name }}" rel="stylesheet">
+    {% endif %}
+
     {% block head %}{% endblock %}
 </head>
 <body>
