@@ -51,17 +51,35 @@
 * improvements in lobby, game and profile pages
 * show kingcheck
 
-## Incoming
-
-### feature_user_registration
+### 0.0.5
 [game logic]
+* elo management (https://fr.wikipedia.org/wiki/Classement_Elo)
+* save/load game management (manual and auto)
 
 [ui]
+* game page shows players material
+* history of ranked games
+* added filter games history : ranked/unranked/all
+* user theme management
+* major improvements everywhere :
+ * layouts
+ * forms
+ * cleaned colors
+
+## Incoming
 
 
 ## Todo
 
 ### Urgent
+[game logic]
+* load game (except for ranked games)
+    * give possibility to change player sides
+* opened games list : add ranked/unranked option
+
+[ui]
+* add elo level icons
+* show players elo level in ranked games
 
 ### ShortTerm
 [game logic]
@@ -71,14 +89,11 @@
 
 [ui]
 * information for all avoid move cases
-
+* link a graphical set to each level (activable by user in its profile)
 
 ### MidTerm
 [game logic]
 * for viewers : add capacity to move in history and log
-* for players : add capacity to move in log
- * add 'rewrite log' option to enable move-in-log (and find a better label)
- * forbidden for ranked games
 
 ### LongTerm
 [game logic]
@@ -161,7 +176,10 @@
                'x': 'e',
                'y': '4',
                'piece': '-'
-            }
+            },
+            'board': {
+                [board_data],
+            },
          },
          [...]
       }
@@ -196,8 +214,9 @@
       'name': 'xxx',
       'winning_games': 1/2/n,
       'creator': user_id,
-      'ranked': true/false
-      'public': true/false
+      'ranked': true/false,
+      'public': true/false,
+      'logging': true/false,
    },
    'participants': {
         'white': {
@@ -229,10 +248,16 @@
 
 ## known bugs
 ### GRAVE (not contournable)
+* crash on checkmate when no plyer in other side
 
 ### MAJOR (contournable manually)
+* Enabled logging overloads game_data
+    * should test performance with mysql
+    * should test performance with real webserver
+    * should remove boards and logs from render2jsondebug
 
 ### MINOR
+
 * promotion available when checkmate                    todo : a verifier
 
 

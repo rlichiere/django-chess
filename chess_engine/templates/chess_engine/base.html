@@ -7,33 +7,25 @@
     <meta charset="UTF-8">
     <title>Chess - Game</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    {% if context.user_theme and context.user_theme.name != 'default' %}
+        <link href="/static/chess_engine/theme/css/{{ context.user_theme.file_name }}" rel="stylesheet">
+    {% endif %}
 
     {% block head %}{% endblock %}
 </head>
 <body>
     <style>
+        html, body {
+            height: 100%;
+        }
+        .container-fluid {
+            overflow-y: auto;
+            height: 100%;
+        }
         body { padding-top: 55px; }
-
-        .cell-green {
-            background-color: lightgreen;
-        }
-        .cell-red {
-            background-color: #ff5555;
-        }
-        .cell-neutral {
-            background-color: lightgray;
-        }
-        .cell-green .cell-text {
-            color: darkgreen;
-        }
-        .cell-red .cell-text {
-            color: darkred;
-        }
-        .cell-neutral .cell-text {
-            color: darkgrey;
-        }
-        .align-right {
-            text-align: right;
+        .align-right { text-align: right; }
+        TH {
+            text-align: center;
         }
     </style>
     <script>
@@ -54,7 +46,7 @@
         }
     </script>
     <div class="container-fluid">
-        <nav class="navbar navbar-default navbar-inverse navbar-fixed-top">
+        <nav class="navbar navbar-default navbar-fixed-top">
             <div class="container-fluid">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
