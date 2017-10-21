@@ -261,8 +261,10 @@
 * no check/checkmate arbitration (checkmate must be manually played to be applied)
 
 ## known bugs
+
 ### GRAVE (not contournable)
-* crash on checkmate when no plyer in other side
+* crash on checkmate when no player in other side
+* crash on profile when player has no history (= no game result in its rankings)
 
 ### MAJOR (contournable manually)
 * Enabled logging overloads game_data

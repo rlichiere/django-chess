@@ -152,7 +152,7 @@ class UserRanking(PersistentObject):
             'pd': pd,
             'opponent_id': opponent_id,
             'opponent_elo': opponent_elo,
-            'game_id': game_id,
+            'game_id': game_id
         }
         self.set_data('%s/history/%d' % (game_type, len(user_history)), history_data)
         return new_elo

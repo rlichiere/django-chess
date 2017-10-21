@@ -70,10 +70,18 @@
                             <li><a href="{% url "login" %}">Login</a></li>
                             <li><a href="{% url "register" %}">Register</a></li>
                         {% endif %}
+                        <li><a data-toggle="modal" data-target="#ShowDocumentationModal" data-keyboard="false" href="{% url "documentation" %}">Documentation</a></li>
                     </ul>
                 </div>
             </div>
         </nav>
+        <div id="ShowDocumentationModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                </div>
+            </div>
+        </div>
+
         {% block body %}{% endblock %}
     </div>
 

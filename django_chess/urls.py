@@ -20,7 +20,7 @@ from django.contrib.auth import views
 from django.conf.urls.static import static
 from forms import AuthForm
 from chess_engine.views import *
-from views import RegisterView
+from views import *
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -34,5 +34,6 @@ urlpatterns = [
     url(r'^profile/(?P<pk>[0-9]+)/load_data$', ProfileLoadData.as_view(), name='profile-load-data'),
     url(r'^profile/(?P<pk>[0-9]+)/(?P<update_type>[a-z]+)/(?P<key>[a-zA-Z0-9_]+)/(?P<value>[a-zA-Z0-9_ -]+)$',
         ProfileUpdateKeyView.as_view(), name='profile-update-key'),
-    url(r'^logout/$', views.logout, {'next_page': '/login'}, name='logout')
+    url(r'^logout/$', views.logout, {'next_page': '/login'}, name='logout'),
+    url(r'^documentation/$', DocumentationView.as_view(), name='documentation')
 ]

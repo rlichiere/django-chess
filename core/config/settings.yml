@@ -84,7 +84,7 @@ available_pieces:
     required_level: 11
   - name: 'set_12'
     label: 'Set 12'
-    folder_name: 'set_1'
+    folder_name: 'set_2'
     required_level: 12
 
 levels:
