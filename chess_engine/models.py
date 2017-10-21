@@ -158,16 +158,19 @@ class UserRanking(PersistentObject):
         return new_elo
 
     def get_user_level(self, game_type):
-        settings_path = '%s/core/config/settings.yml' % config.PROJECT_ROOT
-        level_gaps = yaml.load(open(settings_path))['levels']
 
-        previous_elo = 0
         user_elo = int(self.get_elo(game_type))
         if not user_elo:
-            return 0
-        level_k = 0
+            return False
+
+        settings_path = '%s/core/config/settings.yml' % config.PROJECT_ROOT
+        level_gaps = yaml.load(open(settings_path))['levels']
         user_level = level_gaps[0]
+        previous_elo = 0
+        level_k = 0
         user_level['id'] = 0
+
+        # todo : should be done reverse
         for level in level_gaps:
             if previous_elo < level['elo'] < user_elo:
                 previous_elo = level['elo']

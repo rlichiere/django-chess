@@ -88,8 +88,8 @@ available_pieces:
     required_level: 12
 
 levels:
-  - elo: -1
-    label: 'Unranked'
+  - elo: 1
+    label: 'Ranked'
     icon: '0.png'
   - elo: 1000
     label: 'Beginner child'

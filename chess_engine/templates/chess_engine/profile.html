@@ -79,11 +79,13 @@
                         </div>
                     </div>
                     <form class="form-vertical">
+                        {% if context.user_level %}
                         <div class="input-group">
                             <div class="input-group-addon"><label class="control-label" for="player_level">Level</label></div>
-                            <input id="player_level" type="text" class="form-control text-muted" title="Level {{ context.performances.level.id }}" value="{{ context.performances.level.label }}" readonly="readonly">
-                            <div class="input-group-addon"><img src="/static/chess_engine/levels/{{ context.performances.level.icon }}" width="20" height="20"/></div>
+                            <input id="player_level" type="text" class="form-control text-muted" title="Level {{ context.user_level.id }}" value="{{ context.user_level.label }}" readonly="readonly">
+                            <div class="input-group-addon"><img src="/static/chess_engine/levels/{{ context.user_level.icon }}" width="20" height="20"/></div>
                         </div>
+                        {% endif %}
                         <div class="input-group">
                             <div class="input-group-addon"><label class="control-label" for="player_elo">Elo</label></div>
                             <input id="player_elo" type="text" class="form-control text-muted" title="Elo" value="{{ context.performances.elo }}" readonly="readonly">

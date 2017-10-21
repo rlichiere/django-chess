@@ -1,11 +1,13 @@
 import yaml
 from django_chess import config
-from chess_engine.models import UserColorSet
+from chess_engine.models import *
 
 
 def add_generic_context(context, request):
     context['user_theme'] = get_user_theme(request.user)
     context['user_pieces'] = get_user_pieces(request.user)
+    user_ranking = UserRanking.objects.get_or_create(user=request.user)[0]
+    context['user_level'] = user_ranking.get_user_level('chess')
 
 
 def add_theme_list(context):
