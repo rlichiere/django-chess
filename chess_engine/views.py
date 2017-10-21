@@ -9,6 +9,7 @@ from django.views.generic import View, TemplateView, FormView
 from chess_classes import ChessLogic, ChessBoard
 from .forms import *
 from .models import *
+from utils import user_utils
 
 
 class ProfileView(LoginRequiredMixin, TemplateView):
@@ -16,6 +17,9 @@ class ProfileView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(ProfileView, self).get_context_data(**kwargs)
+        user_utils.add_generic_context(context, request=self.request)
+        user_utils.add_theme_list(context)
+
         target_user_id = kwargs['pk']
         target_user = User.objects.filter(id=target_user_id).first()
         if not target_user:
@@ -42,7 +46,7 @@ class ProfileView(LoginRequiredMixin, TemplateView):
             user_colorset = UserColorSet(user=target_user)
             default_colorset = ChessBoard.BoardColorSet().get_default_colorset()
             user_colorset.set_data('chess', default_colorset)
-        context['color_set'] = user_colorset.get_data('chess')
+        context['user_customization'] = user_colorset.get_data('')
 
         return {'context': context}
 
@@ -221,16 +225,17 @@ class ProfileUpdateKeyView(LoginRequiredMixin, View):
 
     def get(self, *args, **kwargs):
         user_id = kwargs['pk']
-        game_type = kwargs['game_type']
+        update_type = kwargs['update_type']
         key = kwargs['key']
         value = kwargs['value']
+        print 'ProfileUpdateKeyView.get: %s' % value
 
         user_colorset = UserColorSet.objects.filter(user=user_id).first()
         if key == 'reset':
             if value == 'color_set':
-                user_colorset.set_data('%s' % game_type, ChessBoard.BoardColorSet().get_default_colorset())
+                user_colorset.set_data('%s' % update_type, ChessBoard.BoardColorSet().get_default_colorset())
         else:
-            user_colorset.set_data('%s/%s' % (game_type, key), value)
+            user_colorset.set_data('%s/%s' % (update_type, key), value)
         return HttpResponseRedirect(reverse('profile', kwargs={'pk': self.kwargs['pk']}))
 
 
@@ -238,9 +243,10 @@ class HomeView(LoginRequiredMixin, TemplateView):
     template_name = 'chess_engine/home.html'
 
     def get_context_data(self, *args, **kwargs):
-        games = GamePersistentData.objects.all()
         context = super(HomeView, self).get_context_data(**kwargs)
+        user_utils.add_generic_context(context, request=self.request)
 
+        games = GamePersistentData.objects.all()
         opened_games = list()
         running_games = list()
         finished_games = list()
@@ -287,6 +293,7 @@ class GameView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(GameView, self).get_context_data(**kwargs)
+        user_utils.add_generic_context(context, request=self.request)
 
         game_id = kwargs['pk']
         game_logic = ChessLogic.ChessGame(user_id=self.request.user, game_id=game_id)
