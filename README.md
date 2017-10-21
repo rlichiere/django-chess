@@ -59,7 +59,8 @@
 [ui]
 * game page shows players material
 * history of ranked games
-* filter games history : ranked/unranked/all
+* added filter games history : ranked/unranked/all
+* user theme management
 * major improvements everywhere :
  * layouts
  * forms
@@ -93,9 +94,6 @@
 ### MidTerm
 [game logic]
 * for viewers : add capacity to move in history and log
-* for players : add capacity to move in log
- * add 'rewrite log' option to enable move-in-log (and find a better label)
- * forbidden for ranked games
 
 ### LongTerm
 [game logic]
