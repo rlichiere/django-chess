@@ -46,18 +46,14 @@
                     {% endif %}
                 </div>
                 <div class="panel-body">
-                    <form class="form-horizontal">
-                        <div class="form-group">
-                            <label class="col-xs-2 control-label" for="player_name">Name</label>
-                            <div class="col-xs-10">
-                                <input id="player_name" type="text" class="form-control text-muted" title="Name" value="{{ context.target_user.username }}" readonly="readonly">
-                            </div>
+                    <form class="form-vertical">
+                        <div class="input-group">
+                            <div class="input-group-addon"><label class="control-label" for="player_name">Name</label></div>
+                            <input id="player_name" type="text" class="form-control text-muted" title="Name" value="{{ context.target_user.username }}" readonly="readonly">
                         </div>
-                        <div class="form-group">
-                            <label class="col-xs-2 control-label" for="player_email">Email</label>
-                            <div class="col-xs-10">
-                                <input id="player_email" type="text" class="form-control text-muted" title="Email" value="{{ context.target_user.email }}" readonly="readonly">
-                            </div>
+                        <div class="input-group">
+                            <div class="input-group-addon"><label class="col-xs-2 control-label" for="player_email">Email</label></div>
+                            <input id="player_email" type="text" class="form-control text-muted" title="Email" value="{{ context.target_user.email }}" readonly="readonly">
                         </div>
                     </form>
                 </div>
@@ -82,36 +78,27 @@
                             </div>
                         </div>
                     </div>
-                    <form class="form-horizontal">
-                        <div class="form-group">
-                            <label class="col-xs-2 control-label" for="player_level">Level</label>
-                            <div class="col-xs-10">
-                                <input id="player_level" type="text" class="form-control text-muted" title="Level" value="{{ context.performances.level }}" readonly="readonly">
-                            </div>
+                    <form class="form-vertical">
+                        <div class="input-group">
+                            <div class="input-group-addon"><label class="control-label" for="player_level">Level</label></div>
+                            <input id="player_level" type="text" class="form-control text-muted" title="Level {{ context.performances.level.id }}" value="{{ context.performances.level.label }}" readonly="readonly">
+                            <div class="input-group-addon"><img src="/static/chess_engine/levels/{{ context.performances.level.icon }}" width="20" height="20"/></div>
                         </div>
-                        <div class="form-group">
-                            <label class="col-xs-2 control-label" for="player_elo">Elo</label>
-                            <div class="col-xs-10">
-                                <input id="player_elo" type="text" class="form-control text-muted" title="Elo" value="{{ context.performances.elo }}" readonly="readonly">
-                            </div>
+                        <div class="input-group">
+                            <div class="input-group-addon"><label class="control-label" for="player_elo">Elo</label></div>
+                            <input id="player_elo" type="text" class="form-control text-muted" title="Elo" value="{{ context.performances.elo }}" readonly="readonly">
                         </div>
-                        <div class="form-group">
-                            <label class="col-xs-2 control-label" for="player_victories">Victories</label>
-                            <div class="col-xs-10">
-                                <input id="player_victories" type="text" class="form-control text-muted" title="Number of victories" value="{{ context.performances_parsed.victories }}" readonly="readonly">
-                            </div>
+                        <div class="input-group">
+                            <div class="input-group-addon"><label class="control-label" for="player_victories">Victories</label></div>
+                            <input id="player_victories" type="text" class="form-control text-muted" title="Number of victories" value="{{ context.performances_parsed.victories }}" readonly="readonly">
                         </div>
-                        <div class="form-group">
-                            <label class="col-xs-2 control-label" for="player_defeatus">Defeats</label>
-                            <div class="col-xs-10">
-                                <input id="player_defeatus" type="text" class="form-control text-muted" title="Number of defeats" value="{{ context.performances_parsed.defeats }}" readonly="readonly">
-                            </div>
+                        <div class="input-group">
+                            <div class="input-group-addon"><label class="control-label" for="player_victories">Defeats</label></div>
+                            <input id="player_defeats" type="text" class="form-control text-muted" title="Number of defeats" value="{{ context.performances_parsed.defeats }}" readonly="readonly">
                         </div>
-                        <div class="form-group">
-                            <label class="col-xs-2 control-label" for="player_ratio">Ratio</label>
-                            <div class="col-xs-10">
-                                <input id="player_ratio" type="text" class="form-control text-muted" title="Ratio" value="{{ context.performances_parsed.ratio }}" readonly="readonly">
-                            </div>
+                        <div class="input-group">
+                            <div class="input-group-addon"><label class="control-label" for="player_ratio">Ratio</label></div>
+                            <input id="player_ratio" type="text" class="form-control text-muted" title="Ratio" value="{{ context.performances_parsed.ratio }}" readonly="readonly">
                         </div>
                     </form>
                 </div>
@@ -252,7 +239,9 @@
                                 <select class="form-control" id="theme" title="Theme selection">
                                     <option value="default">Default</option>
                                     {% for theme in context.available_themes %}
+                                    {% if theme.required_level <= context.performances.level.id %}
                                     <option value="{{ theme.name }}"{% if user_theme == theme.name %} selected="selected"{% endif %}>{{ theme.label }}</option>
+                                    {% endif %}
                                     {% endfor %}
                                 </select>
                                 {% endwith %}
@@ -267,7 +256,9 @@
                                 {% with user_pieces=context.user_customization.main.piece_set %}
                                 <select class="form-control" id="piece_set" title="Pieces set selection">
                                     {% for piece_set in context.available_pieces %}
+                                    {% if piece_set.required_level <= context.performances.level.id %}
                                     <option value="{{ piece_set.name }}"{% if user_pieces == piece_set.name %} selected="selected"{% endif %}>{{ piece_set.label }}</option>
+                                    {% endif %}
                                     {% endfor %}
                                 </select>
                                 {% endwith %}
