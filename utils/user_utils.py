@@ -14,19 +14,26 @@ available_themes = [
 
 available_pieces = [
     {'name': 'default', 'label': 'Default', 'folder_name': 'default'},
+    {'name': 'set_1', 'label': 'Set 1', 'folder_name': 'set_1', 'required_level': 1},
 ]
 
 
 def add_generic_context(context, request):
     context['user_theme'] = get_user_theme(request.user)
+    context['user_pieces'] = get_user_pieces(request.user)
 
 
 def add_theme_list(context):
-    context['available_themes'] = get_theme_list()
+    context['available_themes'] = get_themes_list()
+    context['available_pieces'] = get_pieces_list()
 
 
-def get_theme_list():
+def get_themes_list():
     return available_themes
+
+
+def get_pieces_list():
+    return available_pieces
 
 
 def get_user_theme(user):
@@ -43,4 +50,15 @@ def get_user_theme(user):
     return dict()
 
 
-""" pieces """
+def get_user_pieces(user):
+    user_color_set = UserColorSet.objects.filter(user=user).first()
+    if not user_color_set:
+        return dict()
+    user_pieces_name = user_color_set.get_data('main/piece_set')
+    if not user_pieces_name:
+        return available_pieces[0]
+
+    for piece_set in available_pieces:
+        if piece_set['name'] == user_pieces_name:
+            return piece_set
+    return dict()

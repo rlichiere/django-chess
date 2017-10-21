@@ -66,8 +66,19 @@
  * forms
  * cleaned colors
 
+### 0.0.6
+[game logic]
+
+[ui]
+
 ## Incoming
 
+### feature_custom_piece_set
+[game_logic]
+* user piece management
+
+[ui]
+* added piece selector in profile page
 
 ## Todo
 
