@@ -5,61 +5,51 @@
 {% block title %}Lobby{% endblock %}
 
 {% block body %}
-    <div class="row">
-        <div class="col-lg-12 col-md-8 col-sm-8">
-            <div class="col-lg-4 col-md-6">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <div class="panel-title">Opened games</div>
-                    </div>
-                    <div class="panel-body">
-                        {% include 'chess_engine/lobby_list_games.html' with games=context.opened_games %}
-                    </div>
-                </div>
+<div class="row">
+    <div class="col-xs-12 col-md-6 col-lg-4">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <label class="panel-title">Opened games</label>
             </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                            <div class="panel-title">
-                                Running games
-                                {% if context.view.request.user.id %}
-                                <div id="CreateGameModal" class="modal fade" role="dialog">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="pull-right">
-                                    <a class="btn-sm btn-primary" data-toggle="modal" data-target="#CreateGameModal" data-keyboard="false" href="{% url 'create-game' %}" >
-                                        <span class="glyphicon glyphicon-plus"></span> Create game
-                                    </a>
-                                </div>
-                                {% endif %}
-                            </div>
-                    </div>
-                    <div class="panel-body">
-                        {% include 'chess_engine/lobby_list_games.html' with games=context.running_games %}
-                    </div>
-                    {% if context.view.request.user.id %}
-                    <div id="CreateGameModal" class="modal fade" role="dialog">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <div class="panel-title">Finished games</div>
-                    </div>
-                    <div class="panel-body">
-                        {% include 'chess_engine/lobby_list_games.html' with games=context.finished_games %}
-                    </div>
-                </div>
-            </div>
+            {% include 'chess_engine/lobby_list_games.html' with games=context.opened_games %}
         </div>
     </div>
+    <div class="col-xs-12 col-md-6 col-lg-4">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <label class="panel-title">Running games</label>
+                {% if context.view.request.user.id %}
+                <div id="CreateGameModal" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                        </div>
+                    </div>
+                </div>
+                <div class="pull-right">
+                    <a class="btn-sm btn-primary" data-toggle="modal" data-target="#CreateGameModal" data-keyboard="false" href="{% url 'create-game' %}" >
+                        <span class="glyphicon glyphicon-plus"></span> Create game
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            {% include 'chess_engine/lobby_list_games.html' with games=context.running_games %}
+            {% if context.view.request.user.id %}
+            <div id="CreateGameModal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-12 col-lg-4">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <label class="panel-title">Finished games</label>
+            </div>
+            {% include 'chess_engine/lobby_list_games.html' with games=context.finished_games %}
+        </div>
+    </div>
+</div>
 {% endblock %}

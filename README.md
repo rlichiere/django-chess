@@ -52,17 +52,21 @@
 * show kingcheck
 
 ### 0.0.5
-
-## Incoming
-
-### feature_ranked_games
 [game logic]
 * elo management (https://fr.wikipedia.org/wiki/Classement_Elo)
 * save/load game management (manual and auto)
 
 [ui]
+* game page shows players material
 * history of ranked games
-* minor improvements
+* filter games history : ranked/unranked/all
+* major improvements everywhere :
+ * layouts
+ * forms
+ * cleaned colors
+
+## Incoming
+
 
 ## Todo
 
@@ -70,8 +74,6 @@
 [game logic]
 * load game (except for ranked games)
     * give possibility to change player sides
-* add option to activate 'save-all-moves'
-    * add ui buttons play-rewind and play-forward
 * opened games list : add ranked/unranked option
 
 [ui]
@@ -86,7 +88,7 @@
 
 [ui]
 * information for all avoid move cases
-
+* link a graphical set to each level (activable by user in its profile)
 
 ### MidTerm
 [game logic]
@@ -248,12 +250,13 @@
 
 ## known bugs
 ### GRAVE (not contournable)
+* crash on checkmate when no plyer in other side
 
 ### MAJOR (contournable manually)
 * Enabled logging overloads game_data
-    * should remove boards and logs from render2jsondebug
     * should test performance with mysql
     * should test performance with real webserver
+    * should remove boards and logs from render2jsondebug
 
 ### MINOR
 

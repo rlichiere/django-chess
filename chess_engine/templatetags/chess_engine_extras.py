@@ -17,8 +17,16 @@ def multiply(left, right):
 
 @register.filter
 def get_table_height(lines_number, max_height):
-    table_height = lines_number * 50
+    table_height = 60 + lines_number * 51
     return table_height if table_height < max_height else max_height
+
+
+@register.filter
+def contains_a_line_with_property(data, key_name):
+    for line_k, line in data.items():
+        if key_name in line:
+            return True
+    return False
 
 
 @register.filter
@@ -55,9 +63,6 @@ def get_user(user_id):
 def can_join_game(user, game):
     if not user or not game:
         return False
-    if game.id == 138:
-        print '@filter: game : %s' % game
-        print '@filter: game_options/ranked : %s' % game.get_data('game_options/ranked')
 
     if game.get_data('game_options/ranked'):
         if user.id in [int(game.get_data('participants/white/1')), int(game.get_data('participants/black/1'))]:

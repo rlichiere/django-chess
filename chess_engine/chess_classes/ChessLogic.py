@@ -546,13 +546,14 @@ class ChessGame:
                 move_data['check'] = 'check'
             self.game_data.set_data('token/step/name', 'waitCellSource')
 
-        # ecrire le log
-        self.game_data.add_log(move_data)
-
         if side == 'white':
             self.game_data.set_data('token/step/side', 'black')
         else:
             self.game_data.set_data('token/step/side', 'white')
+
+        # ecrire le log
+        self.game_data.add_log(move_data)
+
         print 'TURN FINALIZED'
 
     def _check_color_authorization(self, piece):
