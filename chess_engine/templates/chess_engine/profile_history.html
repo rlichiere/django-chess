@@ -1,0 +1,62 @@
+{% load static %}
+{% load chess_engine_extras %}
+<div class="table-responsive" style="overflow-y:auto; min-height: 60px; max-height: 400px;">
+    <table class="table table-bordered table-condensed table-hover">
+    <thead>
+        <tr>
+            <th>Game name</th>
+            <th>Opponent</th>
+            <th>Rounds</th>
+            <th>Result</th>
+            {% if not context.filter_rank or context.filter_rank == 'all' %}
+                <th>Ranked</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for history in context.player_history reversed %}
+            {% if history.data.data|access:"result" %}
+            <tr>
+                <td><a href="{% url "chess-game" pk=history.data.id %}">{{ history.data.data|access:"game_options/name" }}</a></td>
+                <td><a href="{% url "profile" pk=history.player_opponent.id %}">{{ history.player_opponent.username }}</a></td>
+
+                <td align="center">
+                {% for c in history.player_round_list %}
+                    {% if c == 'W' %}
+                        <a class="btn-sm btn-success disabled"><span class="glyphicon glyphicon-ok"></span></a>
+                    {% elif c == 'L' %}
+                        <a class="btn-sm btn-danger disabled"><span class="glyphicon glyphicon-remove"></span></a>
+                    {% elif c == 'D' %}
+                        <a class="btn-sm btn-primary disabled"><span class="glyphicon glyphicon-minus"></span></a>
+                    {% else %}
+                        <a class="btn-sm btn-primary disabled"><span class="glyphicon glyphicon-question-sign"></span></a>
+                    {% endif %}
+                {% endfor %}
+                </td>
+
+                {# Win/Lost #}
+                {% if history.player_result == 'win' %}
+                    <td align="center" class="label-success"><span class="glyphicon glyphicon-ok"></span></td>
+                {% elif history.player_result == 'lost' %}
+                    <td align="center" class="label-danger"><span class="glyphicon glyphicon-remove"></span></td>
+                {% elif history.player_result == 'draw' %}
+                    <td align="center" class="label-primary"><span class="glyphicon glyphicon-pause"></span></td>
+                {% elif history.player_result == 'both'%}
+                    <td align="center" class="label-default"><span class="glyphicon glyphicon-duplicate"></span></td>
+                {% else %}
+                    <td align="center" class="label-primary"><span class="glyphicon glyphicon-question-sign"></span></td>
+                {% endif %}
+
+                {% if not context.filter_rank or context.filter_rank == 'all' %}
+                <td align="center">
+                    {% if history.data.data|access:"game_options/ranked" %}
+                        <span class="glyphicon glyphicon-star"></span>
+                    {% endif %}
+                </td>
+                {% endif %}
+            </tr>
+            {% endif %}
+        {% endfor %}
+    </tbody>
+    </table>
+</div>

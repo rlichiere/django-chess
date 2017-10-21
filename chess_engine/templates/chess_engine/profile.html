@@ -25,6 +25,8 @@
         window.location.href = url;
     }
     </script>
+    <div style="display: none;"><form>{% csrf_token %}</form></div>
+
     <div class="row">
         <div class="col-xs-12 col-sm-6 col-lg-4">
             <div class="panel panel-info">
@@ -128,63 +130,15 @@
         <div class="col-xs-12 col-lg-4">
             <div class="panel panel-info">
                 <div class="panel-heading">
-                    Unranked
+                    History
+                    <span class="pull-right">
+                        <label>Ranked <input type="radio" class="filter_rank" name="filter_rank" value="ranked"></label>
+                        &nbsp;&nbsp;&nbsp;<label>Unranked <input type="radio" class="filter_rank" name="filter_rank" value="unranked"></label>
+                        &nbsp;&nbsp;&nbsp;<label>All <input type="radio" class="filter_rank" name="filter_rank" value="all" checked></label>
+                    </span>
                 </div>
-                <div class="table-responsive" style="overflow-y:auto; min-height: 60px; max-height: 400px;">
-                    <table class="table table-bordered table-condensed table-hover">
-                    <thead>
-                        <tr>
-                            <th>Game name</th>
-                            <th>Opponent</th>
-                            <th>Rounds</th>
-                            <th>Result</th>
-                            <th>Ranked</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for history in context.player_history reversed %}
-                            {% if history.data.data|access:"result" %}
-                            <tr>
-                                <td><a href="{% url "chess-game" pk=history.data.id %}">{{ history.data.data|access:"game_options/name" }}</a></td>
-                                <td><a href="{% url "profile" pk=history.player_opponent.id %}">{{ history.player_opponent.username }}</a></td>
-
-                                <td align="center">
-                                {% for c in history.player_round_list %}
-                                    {% if c == 'W' %}
-                                        <a class="btn-sm btn-success disabled"><span class="glyphicon glyphicon-ok"></span></a>
-                                    {% elif c == 'L' %}
-                                        <a class="btn-sm btn-danger disabled"><span class="glyphicon glyphicon-remove"></span></a>
-                                    {% elif c == 'D' %}
-                                        <a class="btn-sm btn-primary disabled"><span class="glyphicon glyphicon-minus"></span></a>
-                                    {% else %}
-                                        <a class="btn-sm btn-primary disabled"><span class="glyphicon glyphicon-question-sign"></span></a>
-                                    {% endif %}
-                                {% endfor %}
-                                </td>
-
-                                {# Win/Lost #}
-                                {% if history.player_result == 'win' %}
-                                    <td align="center" class="label-success"><span class="glyphicon glyphicon-ok"></span></td>
-                                {% elif history.player_result == 'lost' %}
-                                    <td align="center" class="label-danger"><span class="glyphicon glyphicon-remove"></span></td>
-                                {% elif history.player_result == 'draw' %}
-                                    <td align="center" class="label-primary"><span class="glyphicon glyphicon-pause"></span></td>
-                                {% elif history.player_result == 'both'%}
-                                    <td align="center" class="label-default"><span class="glyphicon glyphicon-duplicate"></span></td>
-                                {% else %}
-                                    <td align="center" class="label-primary"><span class="glyphicon glyphicon-question-sign"></span></td>
-                                {% endif %}
-
-                                <td align="center">
-                                    {% if history.data.data|access:"game_options/ranked" %}
-                                        <span class="glyphicon glyphicon-star"></span>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% endif %}
-                        {% endfor %}
-                    </tbody>
-                    </table>
+                <div class="panel-content" id="panel_history_content">
+                    {% include "chess_engine/profile_history.html" %}
                 </div>
             </div>
         </div>
@@ -295,4 +249,26 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block extra_script %}
+<script>
+        var csrf_element;
+        $(".filter_rank").click(function() {
+            var filter_rank_value = $(this).val();
+            var load_data_url = "{% url 'profile-load-data' pk=request.user.id %}";
+
+            csrf_elements = document.getElementsByName('csrfmiddlewaretoken');
+            csrf_element = csrf_elements[0];
+            var csrf_value = csrf_element.value;
+            var form_data = {
+                csrfmiddlewaretoken: csrf_value,
+                filter_rank: filter_rank_value,
+                target_user_id: {{ context.target_user.id }}
+            };
+            $.post(load_data_url, form_data, function(data) {
+                $('#panel_history_content').html(data);
+            });
+        });
+</script>
 {% endblock %}

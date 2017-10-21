@@ -3,6 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
+from django.template import loader
 from django.views.generic import View, TemplateView, FormView
 
 from chess_classes import ChessLogic, ChessBoard
@@ -34,10 +35,61 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         context['performances_parsed'] = parsed_perf_data
 
         # search user games
+        context['player_history'] = ProfileLoadData().get_player_history(target_user_id)
+
+        user_colorset = UserColorSet.objects.filter(user=target_user).first()
+        if not user_colorset:
+            user_colorset = UserColorSet(user=target_user)
+            default_colorset = ChessBoard.BoardColorSet().get_default_colorset()
+            user_colorset.set_data('chess', default_colorset)
+        context['color_set'] = user_colorset.get_data('chess')
+
+        return {'context': context}
+
+    def get(self, *args, **kwargs):
+        context = self.get_context_data(*args, **kwargs)
+        if not context:
+            return HttpResponseRedirect(reverse('login'))
+        return super(ProfileView, self).get(*args, **kwargs)
+
+
+class ProfileLoadData(LoginRequiredMixin, TemplateView):
+    template_name = 'chess_engine/profile_history.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ProfileLoadData, self).get_context_data(**kwargs)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+
+        target_user_id = self.request.POST['target_user_id']
+        filter_rank = self.request.POST['filter_rank']
+
+        player_history = self.get_player_history(target_user_id=target_user_id, filter_rank=filter_rank)
+        print 'ProfileLoadData.post: player_history len : %s' % len(player_history)
+
+        context['player_history'] = player_history
+        context['target_user_id'] = target_user_id
+        context['filter_rank'] = filter_rank
+        template_context = dict()
+        template_context['context'] = context
+
+        html_result = loader.get_template(self.template_name).render(template_context)
+        return HttpResponse(html_result)
+
+    def get_player_history(self, target_user_id, filter_rank=None):
         history = list()
         games = GamePersistentData.objects.all()
         for game in games:
             user_side = False
+
+            game_ranked = game.get_data('game_options/ranked')
+            if filter_rank == 'ranked' and not game_ranked:
+                continue
+            if filter_rank == 'unranked' and game_ranked:
+                continue
+
             whites = game.get_data('participants/white')
             if whites:
                 for white_k, white in whites.items():
@@ -92,29 +144,14 @@ class ProfileView(LoginRequiredMixin, TemplateView):
                     game_result['player_round_list'] = player_round_list
 
                 history.append(game_result)
-        context['player_history'] = history
-
-        user_colorset = UserColorSet.objects.filter(user=target_user).first()
-        if not user_colorset:
-            user_colorset = UserColorSet(user=target_user)
-            default_colorset = ChessBoard.BoardColorSet().get_default_colorset()
-            user_colorset.set_data('chess', default_colorset)
-        context['color_set'] = user_colorset.get_data('chess')
-
-        return {'context': context}
-
-    def get(self, *args, **kwargs):
-        context = self.get_context_data(*args, **kwargs)
-        if not context:
-            return HttpResponseRedirect(reverse('login'))
-        return super(ProfileView, self).get(*args, **kwargs)
+        return history
 
 
-class ProfileShowHistoryView(LoginRequiredMixin, TemplateView):
+class ProfileShowRankingHistoryView(LoginRequiredMixin, TemplateView):
     template_name = 'chess_engine/show_history.html'
 
     def get_context_data(self, **kwargs):
-        context = super(ProfileShowHistoryView, self).get_context_data()
+        context = super(ProfileShowRankingHistoryView, self).get_context_data()
         target_user_id = kwargs['pk']
         target_user = User.objects.filter(id=target_user_id).first()
         if not target_user:
