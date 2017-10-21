@@ -52,10 +52,6 @@
 * show kingcheck
 
 ### 0.0.5
-
-## Incoming
-
-### feature_ranked_games
 [game logic]
 * elo management (https://fr.wikipedia.org/wiki/Classement_Elo)
 * save/load game management (manual and auto)
@@ -68,6 +64,9 @@
  * layouts
  * forms
  * cleaned colors
+
+## Incoming
+
 
 ## Todo
 
