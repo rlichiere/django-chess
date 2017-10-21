@@ -1,0 +1,48 @@
+{% load widget_tweaks %}
+{% load chess_engine_extras %}
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <h4 class="modal-title">Ranking history</h4>
+</div>
+<div class="modal-body">
+    <div class="table-responsive">
+    <table class="table table-bordered table-condensed table-hover">
+        <thead>
+            <tr>
+                <th>Game</th>
+                <th>Result</th>
+                <th>Delta Elo</th>
+                <th>Elo</th>
+                <th>Opponent</th>
+                <th>Opponent Elo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for game_history in history|dictsort:"game_id" reversed %}
+            <tr>
+                <td>{{ game_history.game.data|access:'game_options/name' }}</td>
+
+                {% if game_history.w == 1 %}
+                    <td class="label-success" align="center"><span class="glyphicon glyphicon-ok"></span></td>
+                {% elif game_history.w == 0.5 %}
+                    <td class="label-primary" align="center"><span class="glyphicon glyphicon-pause"></span></td>
+                {% elif game_history.w == 0 %}
+                    <td class="label-danger" align="center"><span class="glyphicon glyphicon-remove"></span></td>
+                {% else %}
+                    <td class="label-default" align="center"></td>
+                {% endif %}
+
+                <td>{{ game_history.elo_delta }}</td>
+                <td>{{ game_history.new_elo }}</td>
+                <td>{{ game_history.opponent.username }}</td>
+                <td>{{ game_history.opponent_elo }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+</div>

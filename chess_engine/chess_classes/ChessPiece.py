@@ -2,39 +2,40 @@ from abc import ABCMeta, abstractmethod
 
 
 class PieceRole:
-    def __init__(self, name, label):
+    def __init__(self, name, label, weight):
         self.name = name
         self.label = label
+        self.weight = weight
 
 
 class PieceRolePawn(PieceRole):
     def __init__(self):
-        PieceRole.__init__(self, 'P', 'Pawn')
+        PieceRole.__init__(self, 'P', 'Pawn', 1)
 
 
 class PieceRoleRook(PieceRole):
     def __init__(self):
-        PieceRole.__init__(self, 'R', 'Rook')
+        PieceRole.__init__(self, 'R', 'Rook', 5)
 
 
 class PieceRoleHorse(PieceRole):
     def __init__(self):
-        PieceRole.__init__(self, 'H', 'Horse')
+        PieceRole.__init__(self, 'H', 'Horse', 3)
 
 
 class PieceRoleBishop(PieceRole):
     def __init__(self):
-        PieceRole.__init__(self, 'B', 'Bishop')
+        PieceRole.__init__(self, 'B', 'Bishop', 3)
 
 
 class PieceRoleQueen(PieceRole):
     def __init__(self):
-        PieceRole.__init__(self, 'Q', 'Queen')
+        PieceRole.__init__(self, 'Q', 'Queen', 9)
 
 
 class PieceRoleKing(PieceRole):
     def __init__(self):
-        PieceRole.__init__(self, 'K', 'King')
+        PieceRole.__init__(self, 'K', 'King', 0)
 
 
 class Piece(object):

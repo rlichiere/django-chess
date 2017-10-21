@@ -2,107 +2,124 @@
 {% load chess_engine_extras %}
 
 {% if games|length > 15 %}
-<div style="overflow-y:auto; height: 600px;">
+<div style="overflow-y:auto; height: 580px;" class="table-responsive">
 {% else %}
-<div>
+<div class="table-responsive">
 {% endif %}
 
-<table border="1" class="table">
-<tr>
-    <th>Game name</th>
-    <th>Rounds</th>
-    <th>White</th>
-    <th>Black</th>
-    <th>Public</th>
-    <th>Ranked</th>
-</tr>
-{% for game in games %}
-    {% with white_user_id=game.data|access:'participants/white/1' %}
-    {% with black_user_id=game.data|access:'participants/black/1' %}
-    {% with white_user=white_user_id|get_user %}
-    {% with black_user=black_user_id|get_user %}
-    {% with game_creator_id=game.data|access:'game_options/creator' %}
+    <table class="table table-bordered table-condensed table-hover">
+    <thead>
+        <tr>
+            <th>Game</th>
+            <th>Rounds</th>
+            <th>White</th>
+            <th>Black</th>
+            <th>Public</th>
+            <th>Ranked</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for game in games reversed %}
+        {% with white_user_id=game.data|access:'participants/white/1' %}
+        {% with black_user_id=game.data|access:'participants/black/1' %}
+        {% with white_user=white_user_id|get_user %}
+        {% with black_user=black_user_id|get_user %}
+        {% with game_creator_id=game.data|access:'game_options/creator' %}
+        {% with user_can_join=user|can_join_game:game %}
+        <tr>
+            {# game name #}
+            <td align="left">
+                {% if request.user.is_superuser %}
+                <a href="{% url 'chess-game' pk=game.id %}">
+                {% endif %}
+                    <strong>{{ game.data|access:'game_options/name' }}</strong>
+                {% if request.user.is_superuser %}
+                </a>
+                {% endif %}
+            </td>
 
-    <tr>
-        {# game name #}
-        <td align="right">
-            {% if request.user.is_superuser %}
-            <a href="{% url 'chess-game' pk=game.id %}">
+            {# rounds #}
+            <td align="center">
+            {% with winning_games=game.data|access:'game_options/winning_games' %}
+            {% with rounds=game.data|access:'rounds' %}
+            {% with token_step_side=game.data|access:'token/step/side' %}
+            {% if token_step_side == False %}
+                {{ rounds|length }}/{{ winning_games|add:winning_games|add:'-1' }}
+            {% else %}
+                {{ rounds|length|add:"1" }}/{{ winning_games|add:winning_games|add:'-1' }}
             {% endif %}
-                <strong>{{ game.data|access:'game_options/name' }}</strong>
-            {% if request.user.is_superuser %}
-            </a>
-            {% endif %}
-        </td>
+            {% endwith %}
+            {% endwith %}
+            {% endwith %}
+            </td>
 
-        {# rounds #}
-        <td align="center">
-        {% with winning_games=game.data|access:'game_options/winning_games' %}
-        {% with rounds=game.data|access:'rounds' %}
-        {% with token_step_side=game.data|access:'token/step/side' %}
-        {% if token_step_side == False %}
-            {{ rounds|length }}/{{ winning_games|add:winning_games|add:'-1' }}
-        {% else %}
-            {{ rounds|length|add:"1" }}/{{ winning_games|add:winning_games|add:'-1' }}
-        {% endif %}
+            {# white #}
+            {% if white_user != False %}
+                {% if white_user.username == user.username %}
+                    <td align="center"><a href="{% url "chess-game" pk=game.id %}" class="btn-sm btn-success">Play</a></td>
+                {% else %}
+                    <td align="left">{{ white_user.username }}</td>
+                {% endif %}
+            {% else %}
+            <td align="center">
+            {% if user_can_join %}
+                <a href="{% url 'join-game' pk=game.id side='w' %}" class="btn-sm btn-primary">Join</a>
+            {% else %}
+                <span class="btn-sm glyphicon glyphicon-minus-sign"></span>
+            {% endif %}
+            </td>
+            {% endif %}
+
+            {# black #}
+            {% if black_user != False %}
+                {% if black_user.username == user.username %}
+                    <td align="center"><a href="{% url "chess-game" pk=game.id %}" class="btn-sm btn-success">Play</a></td>
+                {% else %}
+                    <td align="left">{{ black_user.username }}</td>
+                {% endif %}
+            {% else %}
+            <td align="center">
+            {% if user_can_join %}
+                <a href="{% url 'join-game' pk=game.id side='b' %}" class="btn-sm btn-primary">Join</a>
+            {% else %}
+                <span class="btn-sm glyphicon glyphicon-minus-sign"></span>
+            {% endif %}
+            </td>
+            {% endif %}
+
+            {# public #}
+            <td align="center">
+            {% if white_user.username == user.username or black_user.username == user.username or game_creator_id == user.id %}
+                {% if game.data|access:'game_options/public' %}
+                    <a href="{% url 'chess-game' pk=game.id %}" class="btn-sm btn-success"><span class="glyphicon glyphicon-eye-open"></span></a>
+                {% else %}
+                    <a href="{% url 'chess-game' pk=game.id %}" class="btn-sm btn-success"><span class="glyphicon glyphicon-eye-close"></span></a>
+                {% endif %}
+            {% else %}
+                {% if game.data|access:'game_options/public' %}
+                    <a href="{% url 'chess-game' pk=game.id %}" class="btn-sm btn-primary"><span class="glyphicon glyphicon-eye-open"></span></a>
+                {% endif %}
+            {% endif %}
+            </td>
+
+            {# ranked #}
+            <td align="center">
+                {% if game.data|access:'game_options/ranked' %}
+                <span class="glyphicon glyphicon-star"></span>
+                {% endif %}
+            </td>
+        </tr>
         {% endwith %}
         {% endwith %}
         {% endwith %}
-        </td>
-
-        {# white #}
-        {% if white_user != False %}
-            {% if white_user.username == user.username %}
-                <td align="center"><a href="{% url "chess-game" pk=game.id %}" class="btn-sm btn-success">Play</a></td>
-            {% else %}
-                <td align="right">{{ white_user.username }}</td>
-            {% endif %}
-        {% else %}
-        <td align="center"><a href="{% url 'join-game' pk=game.id side='w' %}" class="btn-sm btn-primary">Join</a></td>
-        {% endif %}
-
-        {# black #}
-        {% if black_user != False %}
-            {% if black_user.username == user.username %}
-                <td align="center"><a href="{% url "chess-game" pk=game.id %}" class="btn-sm btn-success">Play</a></td>
-            {% else %}
-                <td align="right">{{ black_user.username }}</td>
-            {% endif %}
-        {% else %}
-        <td align="center"><a href="{% url 'join-game' pk=game.id side='b' %}" class="btn-sm btn-primary">Join</a></td>
-        {% endif %}
-
-        {# public #}
-        <td align="center">
-        {% if white_user.username == user.username or black_user.username == user.username or game_creator_id == user.id %}
-            {% if game.data|access:'game_options/public' %}
-                <a href="{% url 'chess-game' pk=game.id %}" class="btn-sm btn-success"><span class="glyphicon glyphicon-eye-open"></span></a>
-            {% else %}
-                <a href="{% url 'chess-game' pk=game.id %}" class="btn-sm btn-success"><span class="glyphicon glyphicon-eye-close"></span></a>
-            {% endif %}
-        {% else %}
-            {% if game.data|access:'game_options/public' %}
-                <a href="{% url 'chess-game' pk=game.id %}" class="btn-sm btn-primary"><span class="glyphicon glyphicon-eye-open"></span></a>
-            {% endif %}
-        {% endif %}
-        </td>
-
-        {# ranked #}
-        <td align="center">
-            {% if game.data|access:'game_options/ranked' %}
-            <span class="glyphicon glyphicon-star"></span>
-            {% endif %}
-        </td>
-    </tr>
-    {% endwith %}
-    {% endwith %}
-    {% endwith %}
-    {% endwith %}
-    {% endwith %}
-{% empty %}
-    <tr>
-        <td align="center" colspan="6">No games.</td>
-    </tr>
-{% endfor %}
-</table>
+        {% endwith %}
+        {% endwith %}
+        {% endwith %}
+    {% empty %}
+        <tr>
+            <td align="center" colspan="6">No games.</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
 </div>
