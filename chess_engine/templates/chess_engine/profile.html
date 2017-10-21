@@ -31,7 +31,7 @@
         <div class="col-xs-12 col-sm-6 col-lg-4">
             <div class="panel panel-info">
                 <div class="panel-heading">
-                    General information
+                    <label class="panel-title">General information</label>
                     {% if context.target_user == request.user %}
                     <div id="UpdatePasswordModal" class="modal fade" role="dialog">
                         <div class="modal-dialog">
@@ -65,7 +65,7 @@
         <div class="col-xs-12 col-sm-6 col-lg-4">
             <div class="panel panel-info">
                 <div class="panel-heading">
-                    Performance
+                    <label class="panel-title">Performance</label>
                     {% if context.performances %}
                     <div class="pull-right">
                         <a href="https://fr.wikipedia.org/wiki/Classement_Elo" target="_blank"><span class="glyphicon glyphicon-info-sign"></span></a>
@@ -119,7 +119,7 @@
         <div class="col-xs-12 col-lg-4">
             <div class="panel panel-info">
                 <div class="panel-heading">
-                    History
+                    <label class="panel-title">History</label>
                     <span class="pull-right">
                         <label>Ranked <input type="radio" class="filter_rank" name="filter_rank" value="ranked"></label>
                         &nbsp;&nbsp;&nbsp;<label>Unranked <input type="radio" class="filter_rank" name="filter_rank" value="unranked"></label>
@@ -136,7 +136,7 @@
         <div class="col-xs-12">
             <div class="panel panel-info">
                 <div class="panel-heading">
-                    Color set
+                    <label class="panel-title">Color set</label>
                 </div>
                 <div class="panel-body">
                     <div class="row">
