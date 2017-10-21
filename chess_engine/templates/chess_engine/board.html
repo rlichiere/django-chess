@@ -39,7 +39,7 @@
 {% with even_color=board.color_set.board_cell_light_color %}
 {% with odd_color=board.color_set.board_cell_dark_color %}
 <div class="row">
-    <div class="col-xs-12 col-sm-12 col-md-8 col-lg-6">
+    <div class="col-xs-12 col-sm-9 col-md-7 col-lg-6">
         <div class="panel">
             <div class="panel-body">
                 <table border="1" class="chess-board">
@@ -184,7 +184,7 @@
             </div>
         </div>
     </div>
-    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+    <div class="col-xs-4 col-sm-3 col-md-2 col-lg-3">
         <div class="panel">
             {% with white_user_id=game_data.participants.white.1 %}
             {% with black_user_id=game_data.participants.black.1 %}
@@ -308,7 +308,7 @@
     </div>
 
     {% if game_data.token.logs.items|length > 0 %}
-    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+    <div class="col-xs-8 col-sm-12 col-md-3 col-lg-3">
         <div class="panel">
             <div id="panel_log" style="overflow-y:auto; overflow-x:hidden; height: {{ game_data.token.logs|length|get_table_height:660 }}px;">
                 <div class="table-responsive">

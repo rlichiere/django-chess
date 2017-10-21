@@ -63,9 +63,6 @@ def get_user(user_id):
 def can_join_game(user, game):
     if not user or not game:
         return False
-    if game.id == 138:
-        print '@filter: game : %s' % game
-        print '@filter: game_options/ranked : %s' % game.get_data('game_options/ranked')
 
     if game.get_data('game_options/ranked'):
         if user.id in [int(game.get_data('participants/white/1')), int(game.get_data('participants/black/1'))]:
