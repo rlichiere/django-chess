@@ -82,6 +82,7 @@
 * profile : added piece selector
 * profile : filter theme and piece set depending on player level
 * nav : added Admin link
+* added Documentation
 
 ## Todo
 
