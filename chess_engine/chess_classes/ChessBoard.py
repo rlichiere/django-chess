@@ -37,13 +37,13 @@ class BoardColorSet:
 
     def get_default_colorset(self):
         res = dict()
-        res['board_cell_dark_color'] = '999'
-        res['board_cell_light_color'] = 'ccc'
-        res['source_piece'] = '559'
-        res['target_piece'] = '595'
-        res['king_checked'] = 'f22'
-        res['board_edge_cells_background_color'] = 'ccc'
-        res['board_edge_cells_text_color'] = '444'
+        res['board_cell_dark_color'] = '999999'
+        res['board_cell_light_color'] = 'cccccc'
+        res['source_piece'] = '555599'
+        res['target_piece'] = '559955'
+        res['king_checked'] = 'ff2222'
+        res['board_edge_cells_background_color'] = 'cccccc'
+        res['board_edge_cells_text_color'] = '444444'
         res['board_font_family'] = 'Verdana'
         res['board_font_size'] = '16'
         return res

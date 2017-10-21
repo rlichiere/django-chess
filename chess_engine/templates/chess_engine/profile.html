@@ -17,12 +17,11 @@
     </style>
     <script>
     function update_colorset(update_type, input_id) {
-        var input_value = '';
-        input_value = $('#' + input_id).val();
-        console.log('input_id:' + input_id + ', ' + $('#' + input_id).val() );
+        var input_value = $('#' + input_id).val();
+        if (input_value.substr(0, 1) == '#') {
+            input_value = input_value.substr(1);
+        }
         url = '/profile/{{ context.target_user.id }}/' + update_type + '/' + input_id + '/' + input_value;
-        console.log('url:' + url);
-
         window.location.href = url;
     }
     </script>
@@ -139,87 +138,87 @@
                 <div class="panel-heading">
                     <label class="panel-title">Color set</label>
                 </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                <span class="panel-body">
+                    <span class="row">
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4 col-xl-3">
                             <h4>Board cells</h4>
-                            <form class="form-horizontal">
-                                <div class="form-group">
-                                    <label class="col-xs-3 control-label" for="board_cell_light_color">Light</label>
-                                    <div class="col-xs-5">
-                                        <input type="text" class="form-control" id="board_cell_light_color" title="Light cells" value="{{ context.user_customization.chess.board_cell_light_color }}">
-                                    </div>
-                                    <div class="col-xs-2"><img style="background-color: #{{ context.user_customization.chess.board_cell_light_color }};" src="/static/chess_engine/pieces/w_pawn.png" width="32" height="32"></div>
-                                    <div class="col-xs-2"><a href="#" onclick="update_colorset('chess', 'board_cell_light_color');">save</a></div>
+                            <form class="form-vertical">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><label class="control-label" for="board_cell_light_color">Light</label></span>
+                                    <input type="color" class="form-control" id="board_cell_light_color" title="Light cells" value="#{{ context.user_customization.chess.board_cell_light_color }}">
+                                    <span class="input-group-addon" id="board_cell_light_color_text">#{{ context.user_customization.chess.board_cell_light_color }}</span>
+                                    <span class="input-group-addon" style="padding: 0px;"><img style="background-color: #{{ context.user_customization.chess.board_cell_light_color }};" src="/static/chess_engine/pieces/w_pawn.png" width="32" height="32"></span>
+                                    <span class="input-group-addon" style="padding: 0px;"><img style="background-color: #{{ context.user_customization.chess.board_cell_light_color }};" src="/static/chess_engine/pieces/b_pawn.png" width="32" height="32"></span>
+                                    <span class="input-group-btn"><a class="btn btn-primary" href="#" onclick="update_colorset('chess', 'board_cell_light_color');"><span class="glyphicon glyphicon-floppy-save"></span></a></span>
                                 </div>
-                                <div class="form-group">
-                                    <label class="col-xs-3 control-label" for="board_cell_dark_color">Dark</label>
-                                    <div class="col-xs-5">
-                                        <input type="text" class="form-control" id="board_cell_dark_color" title="Dark cells" value="{{ context.user_customization.chess.board_cell_dark_color }}" maxlength="6">
-                                    </div>
-                                    <div class="col-xs-2"><img style="background-color: #{{ context.user_customization.chess.board_cell_dark_color }};" src="/static/chess_engine/pieces/w_pawn.png" width="32" height="32"></div>
-                                    <div class="col-xs-2"><a href="#" onclick="update_colorset('chess', 'board_cell_dark_color');">save</a></div>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><label class="control-label" for="board_cell_dark_color">Dark</label></span>
+                                    <input type="color" class="form-control" id="board_cell_dark_color" title="Dark cells" value="#{{ context.user_customization.chess.board_cell_dark_color }}">
+                                    <span class="input-group-addon" id="board_cell_dark_color_text">#{{ context.user_customization.chess.board_cell_dark_color }}</span>
+                                    <span class="input-group-addon" style="padding: 0px;"><img style="background-color: #{{ context.user_customization.chess.board_cell_dark_color }};" src="/static/chess_engine/pieces/w_pawn.png" width="32" height="32"></span>
+                                    <span class="input-group-addon" style="padding: 0px;"><img style="background-color: #{{ context.user_customization.chess.board_cell_dark_color }};" src="/static/chess_engine/pieces/b_pawn.png" width="32" height="32"></span>
+                                    <span class="input-group-btn"><a class="btn btn-primary" href="#" onclick="update_colorset('chess', 'board_cell_dark_color');"><span class="glyphicon glyphicon-floppy-save"></span></a></span>
                                 </div>
-                                <div class="form-group">
-                                    <label class="col-xs-3 control-label" for="source_piece">Selected</label>
-                                    <div class="col-xs-5">
-                                        <input type="text" class="form-control" id="source_piece" title="Selected cell" value="{{ context.user_customization.chess.source_piece }}" maxlength="6">
-                                    </div>
-                                    <div class="col-xs-2"><img style="background-color: #{{ context.user_customization.chess.source_piece }};" src="/static/chess_engine/pieces/w_pawn.png" width="32" height="32"></div>
-                                    <div class="col-xs-2"><a href="#" onclick="update_colorset('chess', 'source_piece');">save</a></div>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><label class="control-label" for="source_piece">Selected</label></span>
+                                    <input type="color" class="form-control" id="source_piece" title="Selected cell" value="#{{ context.user_customization.chess.source_piece }}">
+                                    <span class="input-group-addon" id="source_piece_text">#{{ context.user_customization.chess.source_piece }}</span>
+                                    <span class="input-group-addon" style="padding: 0px;"><img style="background-color: #{{ context.user_customization.chess.source_piece }};" src="/static/chess_engine/pieces/w_pawn.png" width="32" height="32"></span>
+                                    <span class="input-group-addon" style="padding: 0px;"><img style="background-color: #{{ context.user_customization.chess.source_piece }};" src="/static/chess_engine/pieces/b_pawn.png" width="32" height="32"></span>
+                                    <span class="input-group-btn"><a class="btn btn-primary" href="#" onclick="update_colorset('chess', 'source_piece');"><span class="glyphicon glyphicon-floppy-save"></span></a></span>
                                 </div>
-                                <div class="form-group">
-                                    <label class="col-xs-3 control-label" for="target_piece">Target</label>
-                                    <div class="col-xs-5">
-                                        <input type="text" class="form-control" id="target_piece" title="Target cell" value="{{ context.user_customization.chess.target_piece }}" maxlength="6">
-                                    </div>
-                                    <div class="col-xs-2"><img style="background-color: #{{ context.user_customization.chess.target_piece }};" src="/static/chess_engine/pieces/w_pawn.png" width="32" height="32"></div>
-                                    <div class="col-xs-2"><a href="#" onclick="update_colorset('chess', 'target_piece');">save</a></div>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><label class="control-label" for="target_piece">Target</label></span>
+                                    <input type="color" class="form-control" id="target_piece" title="Target cell" value="#{{ context.user_customization.chess.target_piece }}">
+                                    <span class="input-group-addon" id="target_piece_text">#{{ context.user_customization.chess.target_piece }}</span>
+                                    <span class="input-group-addon" style="padding: 0px;"><img style="background-color: #{{ context.user_customization.chess.target_piece }};" src="/static/chess_engine/pieces/w_pawn.png" width="32" height="32"></span>
+                                    <span class="input-group-addon" style="padding: 0px;"><img style="background-color: #{{ context.user_customization.chess.target_piece }};" src="/static/chess_engine/pieces/b_pawn.png" width="32" height="32"></span>
+                                    <span class="input-group-btn"><a class="btn btn-primary" href="#" onclick="update_colorset('chess', 'target_piece');"><span class="glyphicon glyphicon-floppy-save"></span></a></span>
                                 </div>
-                                <div class="form-group">
-                                    <label class="col-xs-3 control-label" for="king_checked">Check</label>
-                                    <div class="col-xs-5">
-                                        <input type="text" class="form-control" id="king_checked" title="King checked" value="{{ context.user_customization.chess.king_checked }}" maxlength="6">
-                                    </div>
-                                    <div class="col-xs-2"><img style="background-color: #{{ context.user_customization.chess.king_checked }};" src="/static/chess_engine/pieces/w_king.png" width="32" height="32"></div>
-                                    <div class="col-xs-2"><a href="#" onclick="update_colorset('chess', 'king_checked');">save</a></div>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><label class="control-label" for="king_checked">Check</label></span>
+                                    <input type="color" class="form-control" id="king_checked" title="King checked" value="#{{ context.user_customization.chess.king_checked }}">
+                                    <span class="input-group-addon" id="king_checked_text">#{{ context.user_customization.chess.king_checked }}</span>
+                                    <span class="input-group-addon" style="padding: 0px;"><img style="background-color: #{{ context.user_customization.chess.king_checked }};" src="/static/chess_engine/pieces/w_king.png" width="32" height="32"></span>
+                                    <span class="input-group-addon" style="padding: 0px;"><img style="background-color: #{{ context.user_customization.chess.king_checked }};" src="/static/chess_engine/pieces/b_king.png" width="32" height="32"></span>
+                                    <span class="input-group-btn"><a class="btn btn-primary" href="#" onclick="update_colorset('chess', 'king_checked');"><span class="glyphicon glyphicon-floppy-save"></span></a></span>
                                 </div>
                             </form>
                         </div>
-                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-3">
                             <h4>Edge cells</h4>
-                            <form class="form-horizontal">
-                                <div class="form-group">
-                                    <label class="col-xs-3 col-sm-5 control-label" for="board_edge_cells_background_color">Background</label>
-                                    <div class="col-xs-7 col-sm-5">
-                                        <input type="text" class="form-control" id="board_edge_cells_background_color" title="Edge cell background color" value="{{ context.user_customization.chess.board_edge_cells_background_color }}" maxlength="6">
-                                    </div>
-                                    <div class="col-xs-2"><a href="#" onclick="update_colorset('chess', 'board_edge_cells_background_color');">save</a></div>
+                            <form class="form-vertical">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><label class="control-label" for="board_edge_cells_background_color">Background</label></span>
+                                    <input type="color" class="form-control" id="board_edge_cells_background_color" title="Background" value="#{{ context.user_customization.chess.board_edge_cells_background_color }}">
+                                    <span class="input-group-addon" id="board_edge_cells_background_color_text">#{{ context.user_customization.chess.board_edge_cells_background_color }}</span>
+                                    <span class="input-group-addon" style="padding: 0px;"><img style="background-color: #{{ context.user_customization.chess.board_edge_cells_background_color }};" src="/static/chess_engine/pieces/w_pawn.png" width="32" height="32"></span>
+                                    <span class="input-group-btn"><a class="btn btn-primary" href="#" onclick="update_colorset('chess', 'board_edge_cells_background_color');"><span class="glyphicon glyphicon-floppy-save"></span></a></span>
                                 </div>
-                                <div class="form-group">
-                                    <label class="col-xs-3 col-sm-5 control-label" for="board_edge_cells_text_color">Font color</label>
-                                    <div class="col-xs-7 col-sm-5">
-                                        <input type="text" class="form-control" id="board_edge_cells_text_color" title="Edge cell font color" value="{{ context.user_customization.chess.board_edge_cells_text_color }}" maxlength="6">
-                                    </div>
-                                    <div class="col-xs-2"><a href="#" onclick="update_colorset('chess', 'board_edge_cells_text_color');">save</a></div>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><label class="control-label" for="board_edge_cells_text_color">Font color</label></span>
+                                    <input type="color" class="form-control" id="board_edge_cells_text_color" title="Edge cell font color" value="#{{ context.user_customization.chess.board_edge_cells_text_color }}">
+                                    <span class="input-group-addon" id="board_edge_cells_text_color_text">#{{ context.user_customization.chess.board_edge_cells_text_color }}</span>
+                                    <span class="input-group-addon" style="padding: 0px;"><img style="background-color: #{{ context.user_customization.chess.board_edge_cells_text_color }};" src="/static/chess_engine/pieces/w_pawn.png" width="32" height="32"></span>
+                                    <span class="input-group-btn"><a class="btn btn-primary" href="#" onclick="update_colorset('chess', 'board_edge_cells_text_color');"><span class="glyphicon glyphicon-floppy-save"></span></a></span>
                                 </div>
-                                <div class="form-group">
-                                    <label class="col-xs-3 col-sm-5 control-label" for="board_font_family">Font family</label>
-                                    <div class="col-xs-7 col-sm-5">
-                                        <input type="text" class="form-control" id="board_font_family" title="Edge cell font family" value="{{ context.user_customization.chess.board_font_family }}">
-                                    </div>
-                                    <div class="col-xs-2"><a href="#" onclick="update_colorset('chess', 'board_font_family');">save</a></div>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><label class="control-label" for="board_font_family">Font family</label></span>
+                                    <input type="text" class="form-control" id="board_font_family" title="Edge cell font family" value="{{ context.user_customization.chess.board_font_family }}">
+                                    <span class="input-group-btn"><a class="btn btn-primary" href="#" onclick="update_colorset('chess', 'board_font_family');"><span class="glyphicon glyphicon-floppy-save"></span></a></span>
                                 </div>
-                                <div class="form-group">
-                                    <label class="col-xs-3 col-sm-5 control-label" for="board_font_size">Font size</label>
-                                    <div class="col-xs-7 col-sm-5">
-                                        <input type="text" class="form-control" id="board_font_size" title="Edge cell font size" value="{{ context.user_customization.chess.board_font_size }}" maxlength="3">
-                                    </div>
-                                    <div class="col-xs-2"><a href="#" onclick="update_colorset('chess', 'board_font_size');">save</a></div>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><label class="control-label" for="board_font_size">Font size</label></span>
+                                    <input type="text" class="form-control" id="board_font_size" title="Edge cell font size" value="{{ context.user_customization.chess.board_font_size }}" maxlength="3">
+                                    <span class="input-group-btn"><a class="btn btn-primary" href="#" onclick="update_colorset('chess', 'board_font_size');"><span class="glyphicon glyphicon-floppy-save"></span></a></span>
+                                </div>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><label class="control-label" for="board_font_size">Font sample</label></span>
+                                    <span class="input-group-addon" style="padding: 0px;"><label class="edge_cell">1 a</label></span>
                                 </div>
                             </form>
                         </div>
-                        <div class="col-xs-6 col-sm-7 col-md-4 col-lg-3">
+                        <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 col-xl-3">
                             <table border="1">
                                 <tr>
                                     <td class="edge_cell" align="center">3</td>
@@ -247,9 +246,9 @@
                                 </tr>
                             </table>
                         </div>
-                        <div class="col-xs-12 col-sm-5 col-md-4 col-lg-3">
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-2 col-xl-3">
                             <h4>Theme</h4>
-                            <form class="form-horizontal">
+                            <form>
                                 <div class="input-group">
                                     {% with user_theme=context.user_customization.main.theme %}
                                     <select class="form-control" id="theme" title="Theme selection">
