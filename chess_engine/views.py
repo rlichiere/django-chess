@@ -67,7 +67,6 @@ class ProfileLoadData(LoginRequiredMixin, TemplateView):
         filter_rank = self.request.POST['filter_rank']
 
         player_history = self.get_player_history(target_user_id=target_user_id, filter_rank=filter_rank)
-        print 'ProfileLoadData.post: player_history len : %s' % len(player_history)
 
         context['player_history'] = player_history
         context['target_user_id'] = target_user_id
