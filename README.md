@@ -71,6 +71,8 @@
 * changed settings.py with MIDDLEWARE_CLASSES
 * added requirements.txt
 * added migrations
+* added create_superuser management command
+ 
 [game logic]
 * corrected a bug when a new player views a game before going to his profile
 
