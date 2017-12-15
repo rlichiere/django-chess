@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'chess_engine.apps.ChessEngineConfig',
 ]
 
-MIDDLEWARE = [
+MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
