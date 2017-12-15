@@ -1,32 +1,61 @@
-from chess_engine.models import UserColorSet
-
-""" themes """
-available_themes = [
-    {'name': 'alpen', 'label': 'Alpen', 'file_name': 'bootstrap-alpen.css'},
-    {'name': 'gluestudio', 'label': 'Glue Studio', 'file_name': 'bootstrap-GlueStudio.css'},
-    {'name': 'dream_magnet', 'label': 'Dream Magnet', 'file_name': 'bootstrap-lagunabeach-dream-magnet.css'},
-    {'name': 'miss_anthropy', 'label': 'Miss Anthropy', 'file_name': 'bootstrap-Miss-Anthropy.css'},
-    {'name': 'sugar', 'label': 'Sugar', 'file_name': 'bootstrap-Sugar.css'},
-    {'name': 'mystery_machine', 'label': 'Mistery Machine', 'file_name': 'bootstrap-valeryanaglz-mystery-machine.css', 'required_level': 1},
-    {'name': 'yasmino', 'label': 'Yasmino', 'file_name': 'bootstrap-Yasmino.css', 'required_level': 2},
-    {'name': 'good_friends', 'label': 'Good Friends', 'file_name': 'bootstrap-Yasmino-Good-Friends.css', 'required_level': 3},
-]
-
-available_pieces = [
-    {'name': 'default', 'label': 'Default', 'folder_name': 'default'},
-]
+import yaml
+from django_chess import config
+from chess_engine.models import *
 
 
 def add_generic_context(context, request):
     context['user_theme'] = get_user_theme(request.user)
+    context['user_pieces'] = get_user_pieces(request.user)
+    user_ranking = UserRanking.objects.get_or_create(user=request.user)[0]
+    context['user_level'] = user_ranking.get_user_level('chess')
 
 
 def add_theme_list(context):
-    context['available_themes'] = get_theme_list()
+    context['available_themes'] = get_themes_list()
+    context['available_pieces'] = get_pieces_list()
 
 
-def get_theme_list():
+def get_themes_list():
+    settings_path = '%s/core/config/settings.yml' % config.PROJECT_ROOT
+    available_themes = yaml.load(open(settings_path))['available_themes']
     return available_themes
+
+
+def get_levels_list(add_bonuses=None):
+    settings_path = '%s/core/config/settings.yml' % config.PROJECT_ROOT
+    levels = yaml.load(open(settings_path))['levels']
+    level_k = 0
+
+    theme_list = dict()
+    piece_list = dict()
+    if add_bonuses:
+        theme_list = get_themes_list()
+        piece_list = get_pieces_list()
+
+    for level in levels:
+        level['id'] = level_k
+        bonus = dict()
+        if add_bonuses:
+            for theme in theme_list:
+                if 'required_level' in theme:
+                    if theme['required_level'] == level_k:
+                        bonus['theme'] = theme
+                        break
+            for piece_set in piece_list:
+                if 'required_level' in piece_set:
+                    if piece_set['required_level'] == level_k:
+                        bonus['piece_set'] = piece_set
+                        break
+            if len(bonus) > 0:
+                level['bonus'] = bonus
+        level_k += 1
+    return levels
+
+
+def get_pieces_list():
+    settings_path = '%s/core/config/settings.yml' % config.PROJECT_ROOT
+    available_pieces = yaml.load(open(settings_path))['available_pieces']
+    return available_pieces
 
 
 def get_user_theme(user):
@@ -37,10 +66,24 @@ def get_user_theme(user):
     if not theme_name:
         return dict()
 
-    for theme in available_themes:
+    theme_list = get_themes_list()
+    for theme in theme_list:
         if theme['name'] == theme_name:
             return theme
     return dict()
 
 
-""" pieces """
+def get_user_pieces(user):
+    user_color_set = UserColorSet.objects.filter(user=user).first()
+    if not user_color_set:
+        return dict()
+    user_pieces_name = user_color_set.get_data('main/piece_set')
+
+    pieces_list = get_pieces_list()
+    if not user_pieces_name:
+        return pieces_list[0]
+
+    for piece_set in pieces_list:
+        if piece_set['name'] == user_pieces_name:
+            return piece_set
+    return dict()

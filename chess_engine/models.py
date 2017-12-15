@@ -1,12 +1,14 @@
 from __future__ import unicode_literals
 import json
 import math
+import yaml
 
 from django.db import models
 from django.contrib.auth.models import User
 
 from chess_engine.chess_classes import ChessUtils
 from utils import utils
+from django_chess import config
 
 # Create your models here.
 
@@ -150,34 +152,32 @@ class UserRanking(PersistentObject):
             'pd': pd,
             'opponent_id': opponent_id,
             'opponent_elo': opponent_elo,
-            'game_id': game_id,
+            'game_id': game_id
         }
         self.set_data('%s/history/%d' % (game_type, len(user_history)), history_data)
         return new_elo
 
     def get_user_level(self, game_type):
-        level_gaps = {
-            '1000': 'Beginner child',
-            '1150': 'Belgium beginner',
-            '1200': 'Beginner',
-            '1400': 'Amateur',
-            '1600': 'Good player',
-            '1800': 'Very good player',
-            '2000': 'National level',
-            '2200': 'Master',
-            '2300': 'Grandmaster',
-            '2400': 'International master',
-            '2500': 'International grandmaster',
-            # '2600': 'Top 240',
-            # '2650': 'Top 100',
-            '2700': 'Super grandmaster',
-            # '2750': 'Top 10',
-        }
-        previous_level = 1000
+
+        user_elo = int(self.get_elo(game_type))
+        if not user_elo:
+            return False
+
+        settings_path = '%s/core/config/settings.yml' % config.PROJECT_ROOT
+        level_gaps = yaml.load(open(settings_path))['levels']
+        user_level = level_gaps[0]
+        previous_elo = 0
+        level_k = 0
+        user_level['id'] = 0
+
+        # todo : should be done reverse
         for level in level_gaps:
-            if previous_level < int(level) < int(self.get_elo(game_type)):
-                previous_level = int(level)
-        return level_gaps[str(previous_level)]
+            if previous_elo < level['elo'] < user_elo:
+                previous_elo = level['elo']
+                user_level = level
+                user_level['id'] = level_k
+            level_k += 1
+        return user_level
 
 
 class RankingUtils:

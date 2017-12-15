@@ -1,0 +1,174 @@
+{% load widget_tweaks %}
+{% load chess_engine_extras %}
+
+<div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Documentation</h4>
+</div>
+<div class="modal-body">
+    <nav class="navbar navbar-inverse navbar-fixed">
+        <ul class="nav navbar-nav">
+            <li class="active"><a href="#home" data-toggle="tab">Home</a></li>
+            <li><a href="#register" data-toggle="tab">Register</a></li>
+            <li><a href="#create_game" data-toggle="tab">Create game</a></li>
+            <li><a href="#play_game" data-toggle="tab">Play</a></li>
+            <li><a href="#observe_game" data-toggle="tab">Observe</a></li>
+            <li><a href="#profile" data-toggle="tab">Profile</a></li>
+            <li><a href="#ranking" data-toggle="tab">Ranking</a></li>
+        </ul>
+    </nav>
+    <div class="tab-content">
+        <div class="tab-pane fade active in" id="home">
+            <p>
+                Welcome in <strong>Chess</strong> documentation.<br />
+                Main game features are described in following pages.
+            </p>
+        </div>
+        <div class="tab-pane fade" id="register">
+            <p>
+                You need a player account in order to play the game.<br />
+                <br />
+                To create a player account, click <strong><i>Register</i></strong> link on the top right menu.<br />
+                Then, choose a <strong><i>login</i></strong>, <strong><i>email</i></strong> and <strong><i>password</i></strong> to proceed registration.
+            </p>
+            <div class="alert alert-warning">
+                <ul>
+                    <li>Login must be unique. It is used as public player name</li>
+                    <li>Email must be unique. However, we do not use this information actually</li>
+                    <li>There is not password recovery method actually</li>
+                </ul>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="create_game">
+            <p>Click <strong><i>Create game</i></strong> button in the lobby page to create a new game.<br />
+                Everybody can create a game, without any limitation.
+            </p>
+            <ul>
+                <li><b>Game name</b> : mandatory. Must not exceed 200 caracters</li>
+                <li><b>Winning games</b> : Number of winning rounds required to win the match</li>
+                <li><b>Play as</b> : Choose your side. You can also select <strong><i>Do not play</i></strong> to create a game without playing a side</li>
+                <li><b>Public</b> : Game will be visible for all players</li>
+                <li><b>Ranked</b> : Game result will influence players Elo</li>
+            </ul>
+        </div>
+        <div class="tab-pane fade" id="play_game">
+            <p>If you want to play a chess game, you need to participate to a game.<br />
+                Each game has two player slots : one slot per side (white/black).<br /><br />
+                To participate to a game, you can :
+            </p>
+            <ul>
+                <li><strong><i>Create</i></strong> a new game and <strong><i>select</i></strong> your side in creation form</li>
+                <li><strong><i>Join</i></strong> a existing game</li>
+            </ul>
+            <div class="alert alert-warning">
+                <ul>
+                    <li>You can join games only if a side is free</li>
+                    <li>You can't unsubscribe from a game you participate</li>
+                </ul>
+            </div>
+            <label>Game composition</label>
+            <ul>
+                <li><strong><i>Game and rounds</i></strong> : a game consists of one to seven rounds</li>
+                <li><strong><i>Winning rounds</i></strong> : you can choose the number of winning rounds at the game creation</li>
+                <li><strong><i>Game start</i></strong> : game starts its first round as soon as a player chooses white side</li>
+                <li><strong><i>Round start</i></strong> : round starts immediately after the previous round</li>
+                <li><strong><i>End of round</i></strong>
+                    <ul>
+                        <li>The round ends when player uses the <strong><i>Surrender</i></strong> button</li>
+                        <li><strong>The result of a round do not influences participants Elo</strong></li>
+                    </ul>
+                </li>
+                <li><strong><i>End of game</i></strong>
+                    <ul>
+                        <li>The game automatically finishes when a player reaches the number of required winning rounds</li>
+                        <li>Finished games are shown in <strong><i>Finished games</i></strong> list</li>
+                        <li><strong>The result of a game influences participants Elo depending on their result and opponent Elo</strong></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="tab-pane fade" id="observe_game">
+            <p>Games can be observed by non-playing spectators</p>
+            <ul>
+                <li><strong><i>Public games</i></strong> : anybody can observe a public game by using the Eye button</li>
+                <li><strong><i>Creator games</i></strong> : creator of a game can observe it if he does not participate to it</li>
+            </ul>
+            <p>Spectators cannot influence a game.</p>
+        </div>
+        <div class="tab-pane fade" id="profile">
+            <p>Profile page shows player informations :</p>
+            <label>General informations</label> : login and email of player.<br />
+            Click <strong><i>Change password</i></strong> to modify player password.<br />
+            <br />
+            <label>Performance</label> : player ranked statistics.
+            <ul>
+                <li><b>Level</b> : level of player, determined by its Elo.<br />
+                    See <a href="#" onclick="toggle_panel('panel_doc_level_list');">levels list <span id="button_toggle_panel_doc_level_list">&gt;</span></a> for detailed informations about levels
+                    <div id="panel_doc_level_list" style="display: none;">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-condensed table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Level</th>
+                                    <th>Label</th>
+                                    <th>Elo gap</th>
+                                    <th>Icon</th>
+                                    <th>Theme bonus</th>
+                                    <th>Pieces bonus</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for level in levels_list %}
+                                <tr>
+                                    <td>{{ level.id }}</td>
+                                    <td>{{ level.label }}</td>
+                                    <td>{{ level.elo }}</td>
+                                    <td><img src="/static/chess_engine/levels/{{ level.icon }}" width="32" height="32"></td>
+                                    <td>{% if level.bonus.theme %}{{ level.bonus.theme.label }}{% endif %}</td>
+                                    <td>
+                                        {% if level.bonus.piece_set %}
+                                            <img src="/static/chess_engine/pieces/{{ level.bonus.piece_set.folder_name }}/w_pawn.png" width="32" height="32">
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            </table>
+                        </div>
+                        <ul>
+                            <li><b>Level</b> : level number</li>
+                            <li><b>Label</b> : level label</li>
+                            <li><b>Elo gap</b> : Elo gap to reach for next level</li>
+                            <li><b>Icon</b> : Icon representing the level</li>
+                            <li><b>Bonuses</b> : reaching a level unlocks its theme and pieces bonuses, which become available for selection in profile page.<br />
+                                Downgrading a level deactivate possibility to use them.
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li><b>Elo</b> : Elo indicator of player. This number represents player's skill depending on each ranked game result and opponent Elo</li>
+                <li><b>Victories</b> : number of player victories in ranked mode</li>
+                <li><b>Defeats</b> : number of player defeats in ranked mode</li>
+                <li><b>Ratio</b> : ratio of player, determined by its victories and defeats</li>
+                <li><b>Ranked history</b> : shows history of ranked games</li>
+            </ul>
+        </div>
+        <div class="tab-pane fade" id="ranking">
+            <p><strong><i>Ranked games</i></strong> involve their participant's Elo.<br /><br />
+                When a player wins a ranked game, his Elo increases depending on opponent Elo.<br />
+                More the opponent has a higher Elo, more the player will earn points.<br />
+                Elo decreases the same way if he looses the game.
+            </p>
+            <ul>
+                <li>Elo can't be inferior to zero</li>
+                <li>Replay options are not available on ranked games.<br />
+                    However, replay of ranked games is planned for a future version.
+                </li>
+            </ul>
+            <p>Increasing Elo is also an opportunity to reach a higher level and unlock bonuses (themes and pieces sets).</p>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+</div>

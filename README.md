@@ -66,8 +66,23 @@
  * forms
  * cleaned colors
 
+### 0.0.6
+[game logic]
+
+[ui]
+
 ## Incoming
 
+### feature_custom_piece_set
+[game_logic]
+* user custom pieces management
+* yamled available_themes, available_pieces and levels
+
+[ui]
+* profile : added piece selector
+* profile : filter theme and piece set depending on player level
+* nav : added Admin link
+* added Documentation
 
 ## Todo
 
@@ -247,8 +262,10 @@
 * no check/checkmate arbitration (checkmate must be manually played to be applied)
 
 ## known bugs
+
 ### GRAVE (not contournable)
-* crash on checkmate when no plyer in other side
+* crash on checkmate when no player in other side
+* crash on profile when player has no history (= no game result in its rankings)
 
 ### MAJOR (contournable manually)
 * Enabled logging overloads game_data

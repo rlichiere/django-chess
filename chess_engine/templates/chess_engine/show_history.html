@@ -3,7 +3,7 @@
 
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal">&times;</button>
-    <h4 class="modal-title">Ranking history</h4>
+    <h4 class="modal-title">Ranked games history</h4>
 </div>
 <div class="modal-body">
     <div class="table-responsive">
@@ -21,7 +21,7 @@
         <tbody>
             {% for game_history in history|dictsort:"game_id" reversed %}
             <tr>
-                <td>{{ game_history.game.data|access:'game_options/name' }}</td>
+                <td><a href="{% url "chess-game" pk=game_history.game.id %}">{{ game_history.game.data|access:'game_options/name' }}</a></td>
 
                 {% if game_history.w == 1 %}
                     <td class="label-success" align="center"><span class="glyphicon glyphicon-ok"></span></td>
