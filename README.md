@@ -71,8 +71,8 @@
 * changed settings.py with MIDDLEWARE_CLASSES
 * added requirements.txt
 * added migrations
-
 [game logic]
+* corrected a bug when a new player views a game before going to his profile
 
 [ui]
 

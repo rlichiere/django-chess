@@ -74,16 +74,19 @@ def get_user_theme(user):
 
 
 def get_user_pieces(user):
+    pieces_list = get_pieces_list()
+
     user_color_set = UserColorSet.objects.filter(user=user).first()
     if not user_color_set:
-        return dict()
-    user_pieces_name = user_color_set.get_data('main/piece_set')
+        return pieces_list[0]
 
-    pieces_list = get_pieces_list()
+    user_pieces_name = user_color_set.get_data('main/piece_set')
     if not user_pieces_name:
         return pieces_list[0]
 
     for piece_set in pieces_list:
         if piece_set['name'] == user_pieces_name:
             return piece_set
-    return dict()
+
+    print 'WARNING: get_user_pieces: user piece set not found.\nUser set:\n%s\nPiece sets: \n%s\n' % (user_pieces_name, pieces_list)
+    return pieces_list[0]
