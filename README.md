@@ -73,7 +73,7 @@
 * added migrations
 * added create_superuser management command
 * added mysql database connection
-* added DB_PORT management
+* added DB_PORT management 
 
 [game logic]
 * corrected a bug when a new player views a game before going to his profile
