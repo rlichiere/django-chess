@@ -11,12 +11,11 @@ class Command(BaseCommand):
 
     def handle(self, **options):
         if not options['login'] or not options['email'] or not options['password']:
-            print '[CRITICAL] Expecting a login, email and password.'
+            print '[CRITICAL] create_superuser: Expecting a login, email and password.'
             exit(1)
 
         if User.objects.filter(username=options['login']).count() > 0:
-            print ('[WARNING] Admin still exists')
-            exit(1)
-
-        User.objects.create_superuser(username=options['login'], email=options['email'], password=options['password'])
-        print ('[INFORMATION] Admin created.')
+            print ('[INFORMATION] create_superuser: Admin already exists.')
+        else:
+            User.objects.create_superuser(username=options['login'], email=options['email'], password=options['password'])
+            print ('[INFORMATION] create_superuser: Admin created.')
