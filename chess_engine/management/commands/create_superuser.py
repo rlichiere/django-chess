@@ -14,7 +14,7 @@ class Command(BaseCommand):
             print '[CRITICAL] Expecting a login, email and password.'
             exit(1)
 
-        if User.objects.filter(name=options['login']).count() > 0:
+        if User.objects.filter(username=options['login']).count() > 0:
             print ('[WARNING] Admin still exists')
             exit(1)
 
