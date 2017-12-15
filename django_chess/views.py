@@ -5,6 +5,16 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.views.generic import TemplateView
 from forms import RegistrationForm
+from utils import user_utils
+
+
+class DocumentationView(TemplateView):
+    template_name = 'chess_engine/documentation.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(DocumentationView, self).get_context_data(**kwargs)
+        context['levels_list'] = user_utils.get_levels_list(add_bonuses=True)
+        return context
 
 
 class RegisterView(TemplateView):

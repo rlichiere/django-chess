@@ -62,15 +62,26 @@
                         {% if request.user.id %}
                             <li><a href="/">Lobby</a></li>
                             <li><a href="{% url "profile" pk=request.user.id %}">Profile</a></li>
+                            {% if request.user.is_superuser %}
+                            <li><a href="/admin">Admin</a></li>
+                            {% endif %}
                             <li><a href="{% url "logout" %}">Logout</a></li>
                         {% else %}
                             <li><a href="{% url "login" %}">Login</a></li>
                             <li><a href="{% url "register" %}">Register</a></li>
                         {% endif %}
+                        <li><a data-toggle="modal" data-target="#ShowDocumentationModal" data-keyboard="false" href="{% url "documentation" %}">Documentation</a></li>
                     </ul>
                 </div>
             </div>
         </nav>
+        <div id="ShowDocumentationModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                </div>
+            </div>
+        </div>
+
         {% block body %}{% endblock %}
     </div>
 

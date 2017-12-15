@@ -228,7 +228,7 @@ class ProfileUpdateKeyView(LoginRequiredMixin, View):
         update_type = kwargs['update_type']
         key = kwargs['key']
         value = kwargs['value']
-        print 'ProfileUpdateKeyView.get: %s' % value
+        print 'ProfileUpdateKeyView.get: key:%s, value:%s' % (key, value)
 
         user_colorset = UserColorSet.objects.filter(user=user_id).first()
         if key == 'reset':

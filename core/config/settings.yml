@@ -1,0 +1,141 @@
+available_themes:
+  - name: 'alpen'
+    label: 'Alpen'
+    file_name: 'bootstrap-alpen.css'
+  - name: 'gluestudio'
+    label: 'Glue Studio'
+    file_name: 'bootstrap-GlueStudio.css'
+    required_level: 1
+  - name: 'dream_magnet'
+    label: 'Dream Magnet'
+    file_name: 'bootstrap-lagunabeach-dream-magnet.css'
+    required_level: 2
+  - name: 'miss_anthropy'
+    label: 'Miss Anthropy'
+    file_name: 'bootstrap-Miss-Anthropy.css'
+    required_level: 3
+  - name: 'sugar'
+    label: 'Sugar'
+    file_name: 'bootstrap-Sugar.css'
+    required_level: 4
+  - name: 'mystery_machine'
+    label: 'Mistery Machine'
+    file_name: 'bootstrap-valeryanaglz-mystery-machine.css'
+    required_level: 5
+  - name: 'yasmino'
+    label: 'Yasmino'
+    file_name: 'bootstrap-Yasmino.css'
+    required_level: 6
+  - name: 'good_friends'
+    label: 'Good Friends'
+    file_name: 'bootstrap-Yasmino-Good-Friends.css'
+    required_level: 7
+
+available_pieces:
+  - name: 'default'
+    label: 'Default'
+    folder_name: 'default'
+  - name: 'alternative'
+    label: 'Alternative'
+    folder_name: 'alternative'
+  - name: 'set_1'
+    label: 'Set 1'
+    folder_name: 'set_1'
+    required_level: 1
+  - name: 'set_2'
+    label: 'Set 2'
+    folder_name: 'set_2'
+    required_level: 2
+  - name: 'set_3'
+    label: 'Set 3'
+    folder_name: 'set_1'
+    required_level: 3
+  - name: 'set_4'
+    label: 'Set 4'
+    folder_name: 'set_1'
+    required_level: 4
+  - name: 'set_5'
+    label: 'Set 5'
+    folder_name: 'set_1'
+    required_level: 5
+  - name: 'set_6'
+    label: 'Set 6'
+    folder_name: 'set_1'
+    required_level: 6
+  - name: 'set_7'
+    label: 'Set 7'
+    folder_name: 'set_1'
+    required_level: 7
+  - name: 'set_8'
+    label: 'Set 8'
+    folder_name: 'set_1'
+    required_level: 8
+  - name: 'set_9'
+    label: 'Set 9'
+    folder_name: 'set_1'
+    required_level: 9
+  - name: 'set_10'
+    label: 'Set 10'
+    folder_name: 'set_1'
+    required_level: 10
+  - name: 'set_11'
+    label: 'Set 11'
+    folder_name: 'set_1'
+    required_level: 11
+  - name: 'set_12'
+    label: 'Set 12'
+    folder_name: 'set_2'
+    required_level: 12
+
+levels:
+  - elo: 1
+    label: 'Ranked'
+    icon: '0.png'
+  - elo: 1000
+    label: 'Beginner child'
+    icon: '1.png'
+    required_level: 1
+  - elo: 1150
+    label: 'Belgium beginner'
+    icon: '2.png'
+    required_level: 2
+  - elo: 1200
+    label: 'Beginner'
+    icon: '3.png'
+    required_level: 3
+  - elo: 1400
+    label: 'Amateur'
+    icon: '4.png'
+    required_level: 4
+  - elo: 1600
+    label: 'Good player'
+    icon: '5.png'
+    required_level: 5
+  - elo: 1800
+    label: 'Very good player'
+    icon: '6.png'
+    required_level: 6
+  - elo: 2000
+    label: 'National level'
+    icon: '7.png'
+    required_level: 7
+  - elo: 2200
+    label: 'Master'
+    icon: '8.png'
+    required_level: 8
+  - elo: 2300
+    label: 'Grandmaster'
+    icon: '9.png'
+    required_level: 9
+  - elo: 2400
+    label: 'International master'
+    icon: '10.png'
+    required_level: 10
+  - elo: 2500
+    label: 'International grandmaster'
+    icon: '11.png'
+    required_level: 11
+  - elo: 2700
+    label: 'Super grandmaster'
+    icon: '12.png'
+    required_level: 12
