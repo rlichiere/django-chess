@@ -1,0 +1,4 @@
+Django==1.9
+PyYAML==3.11
+django-widget-tweaks==1.4.1
+json2html==1.2.1
