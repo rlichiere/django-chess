@@ -10,7 +10,7 @@ class Command(BaseCommand):
         parser.add_argument('-p', '--password', help="Password", default=None)
 
     def handle(self, **options):
-        if not options['login'] or not options['email'] or not options['pasword']:
+        if not options['login'] or not options['email'] or not options['password']:
             print '[CRITICAL] Expecting a login, email and password.'
             exit(1)
 
