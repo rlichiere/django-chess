@@ -70,6 +70,7 @@
 [feature_kimdeploy]
 * changed settings.py with MIDDLEWARE_CLASSES
 * added requirements.txt
+* added migrations
 
 [game logic]
 
