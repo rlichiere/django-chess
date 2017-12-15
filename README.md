@@ -67,6 +67,10 @@
  * cleaned colors
 
 ### 0.0.6
+[feature_kimdeploy]
+* changed settings.py with MIDDLEWARE_CLASSES
+* added requirements.txt
+
 [game logic]
 
 [ui]
