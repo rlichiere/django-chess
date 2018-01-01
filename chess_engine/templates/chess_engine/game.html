@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block title %}
-    <label><strong>{{ context.game_logic.game_data.data|access:'game_options/name' }}</strong></label>
+    <label>Chess - <strong>{{ context.game_logic.game_data.data|access:'game_options/name' }}</strong></label>
     :
     {% with white_user_id=context.game_logic.game_data.data|access:'participants/white/1' %}
     {% with black_user_id=context.game_logic.game_data.data|access:'participants/black/1' %}

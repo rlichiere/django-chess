@@ -24,9 +24,10 @@ from views import *
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'', include('chess_engine.urls')),
-    url(r'^login/$', views.login, {'template_name': 'chess_engine/login.html', 'authentication_form': AuthForm},
-        name="login"),
+    url(r'^$', HomeView.as_view(), name="home"),
+    url(r'^chess', include('chess_engine.urls')),
+    url(r'^memo', include('game_memo.urls')),
+    url(r'^login/$', views.login, {'template_name': 'chess_engine/login.html', 'authentication_form': AuthForm}, name="login"),
     url(r'^register/$', RegisterView.as_view(), name="register"),
     url(r'^profile/(?P<pk>[0-9]+)$', ProfileView.as_view(), name='profile'),
     url(r'^profile/(?P<pk>[0-9]+)/update_password$', ProfileUpdatePasswordView.as_view(), name='update-password'),

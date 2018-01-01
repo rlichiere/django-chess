@@ -8,6 +8,15 @@ from forms import RegistrationForm
 from utils import user_utils
 
 
+
+class HomeView(TemplateView):
+    template_name = 'django_chess/home.html'
+
+    def get_context_data(self, *args, **kwargs):
+         context = super(HomeView, self).get_context_data(**kwargs)
+         return context
+
+
 class DocumentationView(TemplateView):
     template_name = 'chess_engine/documentation.html'
 

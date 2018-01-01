@@ -5,7 +5,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Chess - Game</title>
+    <title>Game</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     {% if context.user_theme and context.user_theme.name != 'default' %}
         <link href="/static/chess_engine/theme/css/{{ context.user_theme.file_name }}" rel="stylesheet">
@@ -55,12 +55,12 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <span class="navbar-brand"><strong>Chess</strong> {% block title %}{% endblock %}</span>
+                    <span class="navbar-brand"><strong><a href="{% url 'chess-home' %}">Game</a></strong> {% block title %}{% endblock %}</span>
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav navbar-right">
                         {% if request.user.id %}
-                            <li><a href="/">Lobby</a></li>
+                            <li><a href="{% url 'home' %}">Lobby</a></li>
                             <li><a href="{% url "profile" pk=request.user.id %}">Profile</a></li>
                             {% if request.user.is_superuser %}
                             <li><a href="/admin">Admin</a></li>

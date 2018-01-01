@@ -1,0 +1,48 @@
+{% load static %}
+
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <script src="{% static 'game_memo/js/processing.js' %}"></script>
+
+  <!-- Bootstrap Core CSS -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+
+<div class="container-fluid">
+    <div class="col-lg-7">
+        <canvas id="mycanvas" width="700" height="700"></canvas>
+    </div>
+    <div class="col-lg-5">
+        <div class="panel panel-default">
+            <div class="panel-header">
+                <label class="panel-title">Memo !</label>
+            </div>
+            <div class="panel-body">
+                <form action="#" onsubmit="return false;">
+                    Number of cards : <input type="text" name="number_of_cards" title="Number of cards" value="16"><br/>
+                    Number of lines : <input type="text" name="number_of_lines" title="Number of lines" value="4"><br/>
+                    <br/>
+                    <button onclick="onOptionsChanged();">Update</button>
+                </form>
+                <br />
+                <div>
+                    Player clicks : <span id="player_click_count"></span><br>
+                    <div>Player score : <span id="player_score"></span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'game_memo/js/engine.js' %}"></script>
+
+<script>
+    initializeGame();
+</script>
+
+</body>
+</html>
