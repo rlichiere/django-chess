@@ -1,38 +1,18 @@
+{% extends 'django_chess/base.html' %}
 {% load static %}
 {% load chess_engine_extras %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Game</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    {% if context.user_theme and context.user_theme.name != 'default' %}
-        <link href="/static/chess_engine/theme/css/{{ context.user_theme.file_name }}" rel="stylesheet">
-    {% endif %}
+{% block title_main %}<a href="{% url 'chess-home' %}">Lobby</a> {% block title %}{% endblock %}{% endblock %}
 
-    {% block head %}{% endblock %}
-</head>
-<body>
-    <style>
-        html, body {
-            height: 100%;
-        }
-        .container-fluid {
-            overflow-y: auto;
-            height: 100%;
-        }
-        body { padding-top: 55px; }
-        .align-right { text-align: right; }
-        TH {
-            text-align: center;
-        }
-    </style>
+{% block body_style %}
+{% endblock %}
+
+{% block body_script %}
     <script>
         function toggle_panel(div_to_toggle) {
             $('#' + div_to_toggle).toggle();
             var button_toggle = $('#button_toggle_' + div_to_toggle);
-            prev_html = button_toggle.html();
+            var prev_html = button_toggle.html();
             if (prev_html == '&lt;') {
                 button_toggle.html('&gt;');
             } else {
@@ -45,50 +25,14 @@
             onDocumentReadyCallbacks[onDocumentReadyCallbacks.length] = functionName;
         }
     </script>
-    <div class="container-fluid">
-        <nav class="navbar navbar-default navbar-fixed-top">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <span class="navbar-brand"><strong><a href="{% url 'chess-home' %}">Game</a></strong> {% block title %}{% endblock %}</span>
-                </div>
-                <div id="navbar" class="navbar-collapse collapse">
-                    <ul class="nav navbar-nav navbar-right">
-                        {% if request.user.id %}
-                            <li><a href="{% url 'home' %}">Lobby</a></li>
-                            <li><a href="{% url "profile" pk=request.user.id %}">Profile</a></li>
-                            {% if request.user.is_superuser %}
-                            <li><a href="/admin">Admin</a></li>
-                            {% endif %}
-                            <li><a href="{% url "logout" %}">Logout</a></li>
-                        {% else %}
-                            <li><a href="{% url "login" %}">Login</a></li>
-                            <li><a href="{% url "register" %}">Register</a></li>
-                        {% endif %}
-                        <li><a data-toggle="modal" data-target="#ShowDocumentationModal" data-keyboard="false" href="{% url "documentation" %}">Documentation</a></li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-        <div id="ShowDocumentationModal" class="modal fade" role="dialog">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                </div>
-            </div>
-        </div>
 
-        {% block body %}{% endblock %}
-    </div>
+{% endblock %}
 
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-    <!-- Bootstrap Core JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    {% block extra_script %}{% endblock %}
+{% block body_main %}
+    {% block body %}{% endblock %}
+{% endblock %}
+
+{% block extra_script %}
 
     <script>
         $(document).ready(function() {
@@ -97,5 +41,4 @@
             }
         });
     </script>
-</body>
-</html>
+{% endblock %}
