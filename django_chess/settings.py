@@ -27,7 +27,7 @@ SECRET_KEY = 'm9wyknb(pvgc2#ua#z(9y5(b38+-_ng!q&_8n2z2v@u3i3$(tn'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-settings_path = '%s/core/config/settings_private.yml' % BASE_DIR
+settings_path = '%s/core/config/settings.yml' % BASE_DIR
 settings = yaml.load(open(settings_path))
 if 'allowed_hosts' in settings:
     ALLOWED_HOSTS = settings['allowed_hosts']
@@ -86,7 +86,7 @@ DATABASES = {
     #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     # }
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.environ.get('DB_NAME'),
         'HOST': os.environ.get('DB_HOST'),
         'PORT': os.environ.get('DB_PORT'),
@@ -133,6 +133,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+
+# Media files
+MEDIA_URL =  '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 # Login Redirect
 LOGIN_URL = 'login'
