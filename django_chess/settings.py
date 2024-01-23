@@ -27,11 +27,16 @@ SECRET_KEY = 'm9wyknb(pvgc2#ua#z(9y5(b38+-_ng!q&_8n2z2v@u3i3$(tn'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-settings_path = '%s/core/config/settings_private.yml' % BASE_DIR
-settings = yaml.load(open(settings_path))
-if 'allowed_hosts' in settings:
-    ALLOWED_HOSTS = settings['allowed_hosts']
-print 'ALLOWED_HOSTS : %s' % ALLOWED_HOSTS
+
+settings_path = os.path.join(BASE_DIR, 'core', 'config', 'settings_private.yml')
+if os.path.exists(settings_path):
+    with open(settings_path) as file:
+        settings = yaml.load(file, Loader=yaml.FullLoader)
+    if 'allowed_hosts' in settings:
+        ALLOWED_HOSTS = settings['allowed_hosts']
+    print('ALLOWED_HOSTS:', ALLOWED_HOSTS)
+else:
+    print(f'File not found: {settings_path}')
 
 # Application definition
 
@@ -46,7 +51,7 @@ INSTALLED_APPS = [
     'chess_engine.apps.ChessEngineConfig',
 ]
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -54,6 +59,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
 ]
 
 ROOT_URLCONF = 'django_chess.urls'
@@ -81,18 +87,10 @@ WSGI_APPLICATION = 'django_chess.wsgi.application'
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    # }
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('DB_NAME'),
-        'HOST': os.environ.get('DB_HOST'),
-        'PORT': os.environ.get('DB_PORT'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASS'),
-    }
+     'default': {
+         'ENGINE': 'django.db.backends.sqlite3',
+         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+     }
 }
 
 
@@ -137,3 +135,5 @@ STATIC_URL = '/static/'
 # Login Redirect
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

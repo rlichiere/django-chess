@@ -89,7 +89,7 @@ class Piece(object):
             if ennemy_piece_c and ennemy_piece_l:
                 # print 'Piece.is_in_danger: ennemy %s (c:%s, l:%s)' % (ennemy_piece, ennemy_piece_c, ennemy_piece_l)
                 if ennemy_piece.is_move_valid(ennemy_piece_c, ennemy_piece_l, src_c, src_l):
-                    print 'Piece.is_in_danger: %s is targeted by %s' % (self, ennemy_piece)
+                    print ('Piece.is_in_danger: %s is targeted by %s' % (self, ennemy_piece))
                     return True
         # print 'Piece.is_in_danger(src_c:%s, src_l:%s) False.' % (src_c, src_l)
         return False
@@ -222,7 +222,7 @@ class Piece(object):
                 num_step += 1
             return True
         else:
-            print 'Piece._check_path_disponibility_vertical: strange case'
+            print ('Piece._check_path_disponibility_vertical: strange case')
             return False
 
     """ utils """
@@ -274,25 +274,25 @@ class PiecePawn(Piece):
             if self.side.name == 'white':
                 # check if move in good way
                 if not dest_y > src_y:
-                    print 'PiecePawn.is_move_valid: wrong way'
+                    print ('PiecePawn.is_move_valid: wrong way')
                     return False
 
                 if dest_y - src_y <= max_len:
                     # si dest_x,dest_y est occupee, on ne peut pas s'y deplacer
                     if not self.board.is_cell_free(dest_x, dest_y):
-                        print 'PiecePawn.is_move_valid: target is not free'
+                        print ('PiecePawn.is_move_valid: target is not free')
                         return False
                     return True
             else:
                 # check if move in good way
                 if not dest_y < src_y:
-                    print 'PiecePawn.is_move_valid: wrong way'
+                    print ('PiecePawn.is_move_valid: wrong way')
                     return False
 
                 if src_y - dest_y <= max_len:
                     # si dest_x,dest_y est occupee, on ne peut pas s'y deplacer
                     if not self.board.is_cell_free(dest_x, dest_y):
-                        print 'PiecePawn.is_move_valid: target is not free'
+                        print ('PiecePawn.is_move_valid: target is not free')
                         return False
                     return True
 
@@ -303,7 +303,7 @@ class PiecePawn(Piece):
             # check enpassant case
             if enpassant_data:
                 if (dest_y == enpassant_data['y']) and (dest_x == enpassant_data['x']):
-                    print 'PiecePawn._is_move_valid_specific: enpassable :D'
+                    print ('PiecePawn._is_move_valid_specific: enpassable :D')
                     return True
                 else:
                     # print 'PiecePawn._is_move_valid_specific: no enpassable :('
@@ -495,7 +495,7 @@ class PieceKing(Piece):
                     # check if path is not checked
                     if self._castle_path_is_targeted(castle_call_case):
                         return False
-                    print 'PieceKing.is_move_valid: castle call valid on %s' % castle_call_case
+                    print ('PieceKing.is_move_valid: castle call valid on %s' % castle_call_case)
                     return True
             return False
         # normal case
