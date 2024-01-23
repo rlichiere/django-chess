@@ -53,7 +53,7 @@ class Board:
     template_name = 'chess_engine/board.html'
 
     def __init__(self, user_id):
-        print 'ChessBoard.__init__'
+        print ('ChessBoard.__init__')
         self.grid = dict()
         self.game_data = None
         self.sides = dict()
@@ -66,10 +66,10 @@ class Board:
         self.game_data = game_data
         loaded_grid = self.game_data.get_data('board')
         if not loaded_grid:
-            print 'Board.load_grid: unfound data, so create new one.'
+            print ('Board.load_grid: unfound data, so create new one.')
             self.load_new_grid()
             self.save_grid()
-            print 'Board.load_grid: created.'
+            print ('Board.load_grid: created.')
         else:
             # build Pieces from data
             for line_key in loaded_grid:
@@ -97,11 +97,11 @@ class Board:
                         elif cell['r'] == 'K':
                             piece = ChessPiece.PieceKing(self, cell['n'], side)
                         utils.access(self.grid, '%s/%s' % (line_key, cell_key), piece)
-            print 'Board.load_grid: loaded.'
+            print ('Board.load_grid: loaded.')
 
     def save_grid(self):
         self.game_data.set_data('board', self.grid)
-        print 'Board.save_grid: saved.'
+        print ('Board.save_grid: saved.')
 
     def load_new_grid(self):
         whites = Side('white')
@@ -213,7 +213,7 @@ class Board:
         target_piece = self.get_piece_at(target_y, target_x)
         if target_piece != '-':
             if target_piece.side.name == piece.side.name:
-                print 'you cannot kill your own pieces (%s, %s) dude ! (%s == %s)' % (target_x, target_y, target_piece.side.name, piece.side.name)
+                print ('you cannot kill your own pieces (%s, %s) dude ! (%s == %s)' % (target_x, target_y, target_piece.side.name, piece.side.name))
                 return True
         return False
 
@@ -221,7 +221,7 @@ class Board:
         target_piece = self.get_piece_at(target_y, target_x)
         if target_piece != "-":
             if target_piece.side.name != piece.side.name:
-                print 'this is an enemy'
+                print ('this is an enemy')
                 return True
         return False
 
@@ -254,7 +254,7 @@ class Board:
                     piece = cell
                     if cell['n'] == searched_piece.name and cell['s'] == searched_piece.side.name[0:1]:
                         return column_coord, line_coord
-        print 'ChessBoard.get_piece_coords: *** warning *** piece not found : %s' % searched_piece
+        print ('ChessBoard.get_piece_coords: *** warning *** piece not found : %s' % searched_piece)
         return False, False
 
     def get_piece_from_role(self, role_name, side):

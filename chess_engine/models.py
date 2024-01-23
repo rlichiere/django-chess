@@ -102,17 +102,17 @@ class GamePersistentData (PersistentObject):
             if 'logs' in token:
                 token['logs'] = '-'
             log_data['token'] = token
-            print 'GamePersistentData.add_log: board saved.'
+            print ('GamePersistentData.add_log: board saved.')
 
         self.add_item('token', 'logs', log_data, '%03d.')
 
 
 class UserColorSet(PersistentObject):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
 class UserRanking(PersistentObject):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def get_elo(self, game_type):
         return self.get_data('%s/elo' % game_type)
