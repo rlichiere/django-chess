@@ -1,0 +1,43 @@
+version: "3"
+services:
+  chess-app:
+    restart: always
+    build: . # Current directory!
+    command: gunicorn django_chess.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - static_volume:/usr/src/app/static
+      - media_volume:/usr/src/app/mediafiles
+      - .:/usr/src/app
+    expose:
+      - 8000
+    depends_on:
+      - chess-db
+
+  chess-nginx:
+    restart: always
+    container_name: chess-nginx
+    build: ./nginx
+    ports:
+      - 91:80
+    volumes:
+      - static_volume:/usr/src/app/static
+      - media_volume:/usr/src/app/mediafiles
+    depends_on:
+      - chess-app
+
+  chess-db:
+    image: postgres:10.1-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      POSTGRES_DB: "chess_default_db"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "chess123"
+
+volumes:
+  static_volume:
+  media_volume:
+  postgres_data:

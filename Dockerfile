@@ -20,11 +20,11 @@ RUN pip install -r requirements.txt
 
 COPY . $APPDIR
 
-ENV DB_NAME='db' \
-    DB_HOST='host' \
-    DB_PORT='3306' \
-    DB_USER='login' \
-    DB_PASS='pass'
+ENV DB_NAME='chess_default_db' \
+    DB_HOST='chess-db' \
+    DB_PORT='5432' \
+    DB_USER='postgres' \
+    DB_PASS='chess123'
 
 COPY app-start.sh /app-start.sh
 RUN chmod +x /app-start.sh
