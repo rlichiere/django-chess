@@ -1,12 +1,12 @@
 from json2html import *
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.views.generic import View, TemplateView, FormView
 
-from chess_classes import ChessLogic, ChessBoard
+from .chess_classes import ChessLogic, ChessBoard
 from .forms import *
 from .models import *
 from utils import user_utils
@@ -123,7 +123,7 @@ class ProfileLoadData(LoginRequiredMixin, TemplateView):
                 elif user_side == 'both':
                     opponent_id = game.get_data('participants/black/1')
                 else:
-                    print 'warning: unknown opponent for user_side %s' % user_side
+                    print ('warning: unknown opponent for user_side %s' % user_side)
                     opponent_id = 1
                 opponent = User.objects.get(id=opponent_id)
                 game_result['player_opponent'] = opponent
@@ -158,7 +158,7 @@ class ProfileShowRankingHistoryView(LoginRequiredMixin, TemplateView):
         target_user_id = kwargs['pk']
         target_user = User.objects.filter(id=target_user_id).first()
         if not target_user:
-            print 'unknown user : %s' % target_user_id
+            print ('unknown user : %s' % target_user_id)
             return context
 
         history = list()
@@ -184,7 +184,7 @@ class ProfileShowRankingHistoryView(LoginRequiredMixin, TemplateView):
                             game_history['opponent_elo'] = opponent_elo
                     history.append(game_history)
         else:
-            print 'unknown type : %s' % type
+            print ('unknown type : %s' % type)
         context['history'] = history
         return context
 
@@ -202,11 +202,11 @@ class ProfileUpdatePasswordView(LoginRequiredMixin, TemplateView):
         new_password = request.POST['password']
 
         if request.user.is_superuser:
-            print 'Superuser cannot change its password here.'
+            print ('Superuser cannot change its password here.')
             return HttpResponseRedirect('/profile/%s' % user_target_id)
 
         if int(user_target_id) != request.user.id and not request.user.is_superuser:
-            print 'Only superuser can change other users password.'
+            print ('Only superuser can change other users password.')
             return HttpResponseRedirect('/profile/%s' % user_target_id)
 
         try:
@@ -228,7 +228,7 @@ class ProfileUpdateKeyView(LoginRequiredMixin, View):
         update_type = kwargs['update_type']
         key = kwargs['key']
         value = kwargs['value']
-        print 'ProfileUpdateKeyView.get: key:%s, value:%s' % (key, value)
+        print ('ProfileUpdateKeyView.get: key:%s, value:%s' % (key, value))
 
         user_colorset = UserColorSet.objects.filter(user=user_id).first()
         if key == 'reset':
@@ -345,7 +345,7 @@ class PieceActionView(View):
         action = kwargs['action']
         line_k = kwargs['line']
         column_k = kwargs['column']
-        print 'PieceAction.get : game_id : %s, action : %s, line : %s, column : %s' % (game_id, action, line_k, column_k)
+        print ('PieceAction.get : game_id : %s, action : %s, line : %s, column : %s' % (game_id, action, line_k, column_k))
 
         game_logic = ChessLogic.ChessGame(user_id=self.request.user.id, game_id=game_id)
         if not game_logic:
@@ -361,7 +361,7 @@ class PieceActionView(View):
             return HttpResponseRedirect(reverse('chess-game', kwargs={'pk': game_id}))
 
         else:
-            print 'PieceAction.get ERROR: unknown action : %s' % action
+            print ('PieceAction.get ERROR: unknown action : %s' % action)
         return HttpResponseRedirect(reverse('home'))
 
 
@@ -433,7 +433,7 @@ class MenuView(View):
                     kwargs['action'] = 'reset_round'
                     return HttpResponseRedirect(reverse('menu-action', kwargs=kwargs))
             else:
-                print 'no logs to restore'
+                print ('no logs to restore')
         elif action == 'restore_log':
             log_index = kwargs['value']
             self._restore_log(source='logs', log_index=log_index, game_logic=game_logic)
@@ -441,7 +441,7 @@ class MenuView(View):
             log_index = kwargs['value']
             self._restore_log(source='saved_games', log_index=log_index, game_logic=game_logic)
         else:
-            print 'unknown action : %s' % action
+            print ('unknown action : %s' % action)
 
         return HttpResponseRedirect(reverse('chess-game', kwargs={'pk': game_id}))
 
@@ -463,16 +463,16 @@ class MenuView(View):
                         cleaned_logs[token_log_key] = token_log
                 restored_token['logs'] = cleaned_logs
             else:
-                print 'restore_log. no token_logs restored ?'
+                print ('restore_log. no token_logs restored ?')
         else:
-            print 'error : unknown source : %s' % source
+            print ('error : unknown source : %s' % source)
             return False
 
         if restored_board and restored_token:
             game_logic.game_data.set_data('board', restored_board)
             game_logic.game_data.set_data('token', restored_token)
         else:
-            print '*** warning *** restore error: board:%s, token:%s' % (restored_board, restored_token)
+            print ('*** warning *** restore error: board:%s, token:%s' % (restored_board, restored_token))
             return False
         return True
 
@@ -503,7 +503,7 @@ class JoinGameView(LoginRequiredMixin, View):
 
         games = GamePersistentData.objects.filter(id=game_id)
         if games.count() != 1:
-            print 'Unknown game'
+            print ('Unknown game')
             return HttpResponseRedirect(reverse('home'))
 
         if side == 'w':
@@ -511,7 +511,7 @@ class JoinGameView(LoginRequiredMixin, View):
         elif side == 'b':
             side = 'black'
         else:
-            print 'Unknown side'
+            print ('Unknown side')
             return HttpResponseRedirect(reverse('home'))
 
         game = games.first()

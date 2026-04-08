@@ -17,13 +17,19 @@ def add_theme_list(context):
 
 def get_themes_list():
     settings_path = '%s/core/config/settings.yml' % config.PROJECT_ROOT
-    available_themes = yaml.load(open(settings_path))['available_themes']
+    with open(settings_path) as file:
+        settings = yaml.load(file, Loader=yaml.FullLoader)
+
+    available_themes = settings.get('available_themes', [])
     return available_themes
 
 
 def get_levels_list(add_bonuses=None):
     settings_path = '%s/core/config/settings.yml' % config.PROJECT_ROOT
-    levels = yaml.load(open(settings_path))['levels']
+    with open(settings_path) as file:
+        settings = yaml.load(file, Loader=yaml.FullLoader)
+
+    levels = settings.get('levels', [])
     level_k = 0
 
     theme_list = dict()
@@ -54,7 +60,9 @@ def get_levels_list(add_bonuses=None):
 
 def get_pieces_list():
     settings_path = '%s/core/config/settings.yml' % config.PROJECT_ROOT
-    available_pieces = yaml.load(open(settings_path))['available_pieces']
+    with open(settings_path) as file:
+        settings = yaml.load(file, Loader=yaml.FullLoader)
+    available_pieces = settings.get('available_pieces', [])
     return available_pieces
 
 
@@ -88,5 +96,5 @@ def get_user_pieces(user):
         if piece_set['name'] == user_pieces_name:
             return piece_set
 
-    print 'WARNING: get_user_pieces: user piece set not found.\nUser set:\n%s\nPiece sets: \n%s\n' % (user_pieces_name, pieces_list)
+    print ('WARNING: get_user_pieces: user piece set not found.\nUser set:\n%s\nPiece sets: \n%s\n' % (user_pieces_name, pieces_list))
     return pieces_list[0]
